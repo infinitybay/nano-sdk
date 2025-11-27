@@ -1,0 +1,63 @@
+{
+  "name": "nano-sdk",
+  "version": "1.0.0",
+  "description": "SDK for the Nano cryptocurrency with strong typing, Zod schemas, RPC interface, and cryptographic utilities for TypeScript developers.",
+  "keywords": [
+    "nano",
+    "nano node",
+    "nanocurrency",
+    "crypto",
+    "cryptocurrency",
+    "rpc",
+    "sdk",
+    "typescript",
+    "zod"
+  ],
+  "homepage": "https://github.com/infinitybay/nano-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/infinitybay/nano-sdk/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/infinitybay/nano-sdk.git"
+  },
+  "license": "MIT",
+  "author": "Andreas Lichnovsky",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "config": {
+    "nanoRpcUrl": "http://45.90.120.106:7076"
+  },
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "prepare": "npm run build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "jest --runInBand --config jest.unit.config.ts",
+    "test:integration": "jest --runInBand --config jest.integration.config.ts"
+  },
+  "dependencies": {
+    "bignumber.js": "^9.3.1",
+    "blakejs": "^1.2.1",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.10.1",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "globals": "^16.5.0",
+    "jest": "^30.2.0",
+    "prettier": "^3.7.1",
+    "rimraf": "^6.1.2",
+    "ts-jest": "^29.4.5",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.48.0"
+  }
+}

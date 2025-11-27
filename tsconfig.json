@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",                       /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019' or 'ESNEXT'. */
+    "module": "CommonJS",                     /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */
+    "lib": ["ES2020"],                        /* Specify library files to be included in the compilation. */
+    "declaration": true,                      /* Generate .d.ts files for every TypeScript or JavaScript file inside the project. */
+    "allowJs": false,                         /* Allow javascript files to be compiled. */
+    "outDir": "dist",                         /* Redirect output structure to the directory. */
+    "rootDir": "src",                         /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    "strict": true,                           /* Enable all strict type-checking options. */
+    "noImplicitAny": true,                    /* Raise error on expressions and declarations with an implied 'any' type. */
+    "noUnusedLocals": true,                   /* Enable error reporting when local variables aren't read. */
+    "noUnusedParameters": true,               /* Raise an error when a function parameter isn't read. */
+    "noFallthroughCasesInSwitch": true,       /* Enable error reporting for fallthrough cases in switch statements. */
+    "noUncheckedSideEffectImports": true,     /* Check side effect imports. */
+    "esModuleInterop": true,                  /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
+    "resolveJsonModule": true,                /* Include modules imported with '.json' extension */
+    "types": ["node", "jest"],
+  },
+  "include": ["src"],
+  "exclude": ["dist", "node_modules"]
+}

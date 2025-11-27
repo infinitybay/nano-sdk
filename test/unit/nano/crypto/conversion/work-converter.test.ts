@@ -1,0 +1,40 @@
+import {
+  bytesToWork,
+  safeBytesToWork,
+  safeWorkToBytes,
+  workToBytes,
+} from "../../../../../src/nano/crypto/conversion/work-converter";
+import { TestData } from "../../../test-data";
+
+describe("Work conversion utilities", () => {
+  test("round-trips work values through byte conversion", () => {
+    const validWorks = [
+      TestData.Valid.Work1(),
+      TestData.Valid.Work2().toLowerCase(),
+      TestData.Valid.Work3(),
+      TestData.Valid.Work4().toUpperCase(),
+    ];
+
+    for (const validWork of validWorks) {
+      const workBytes = workToBytes(validWork);
+      const work = bytesToWork(workBytes);
+      expect(work.toUpperCase()).toBe(validWork.toUpperCase());
+    }
+  });
+
+  test("rejects invalid work values", () => {
+    const invalidWorks = [
+      TestData.Invalid.Work.InvalidCharacters(),
+      TestData.Invalid.Work.TooLong(),
+      TestData.Invalid.Work.TooShort(),
+    ];
+
+    for (const invalidWork of invalidWorks) {
+      expect(safeWorkToBytes(invalidWork).success).toBe(false);
+    }
+  });
+
+  test("rejects byte arrays with incorrect length", () => {
+    expect(safeBytesToWork(new Uint8Array([1, 2])).success).toBe(false);
+  });
+});
