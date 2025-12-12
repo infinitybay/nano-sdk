@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("successors RPC integration", () => {
   test("returns block successors", async () => {
-    const result = await Nano.RPC.Safe.successors(
+    const result = await Nano.RPC.successors(
       rpcUrl,
       {
         action: "successors",

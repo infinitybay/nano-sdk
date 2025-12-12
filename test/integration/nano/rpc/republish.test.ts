@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("republish RPC integration", () => {
   test("republishes a block", async () => {
-    const result = await Nano.RPC.Safe.republish(
+    const result = await Nano.RPC.republish(
       rpcUrl,
       {
         action: "republish",

@@ -2,7 +2,8 @@ import { AccountString } from "../types/account";
 import { RawAmountString } from "../types/amount";
 import { HashString } from "../types/hash";
 import { LinkString } from "../types/link";
-import { Result } from "../types/result";
+import { NonThrowing } from "../types/non-throwing";
+import { Throwing } from "../types/throwing";
 import { hashBlock } from "./hash-block";
 
 type BlockInput = {
@@ -13,25 +14,36 @@ type BlockInput = {
   link: LinkString;
 };
 
-type VerifyHashInput = {
+type VerifyHashParams = {
   hash: HashString;
   block: BlockInput;
-};
+} & (Throwing | NonThrowing);
 
-export function verifyHash(input: VerifyHashInput): boolean {
-  const validatedHash = HashString().safeParse(input.hash);
+function verifyHashThrowing(params: VerifyHashParams & Throwing): boolean {
+  const validatedHash = HashString().safeParse(params.hash);
   if (!validatedHash.success) {
     throw new Error("Invalid hash value.");
   }
 
-  const blockHash = hashBlock(input.block);
+  const blockHash = hashBlock({ ...params.block, throwOnError: true });
   return validatedHash.data === blockHash;
 }
 
-export function safeVerifyHash(input: VerifyHashInput): Result<boolean> {
+function verifyHashNonThrowing(params: VerifyHashParams & NonThrowing): boolean {
   try {
-    return { success: true, data: verifyHash(input) };
-  } catch (err) {
-    return { success: false, error: err instanceof Error ? err : new Error("Unexpected error.") };
+    return verifyHashThrowing({ ...params, throwOnError: true });
+  } catch (_e) {
+    return false;
+  }
+}
+
+export function verifyHash(params: VerifyHashParams & NonThrowing): boolean;
+export function verifyHash(params: VerifyHashParams & Throwing): boolean;
+export function verifyHash(params: VerifyHashParams): boolean;
+export function verifyHash(params: VerifyHashParams) {
+  if (params.throwOnError === true) {
+    return verifyHashThrowing({ ...params, throwOnError: true });
+  } else {
+    return verifyHashNonThrowing({ ...params, throwOnError: false });
   }
 }

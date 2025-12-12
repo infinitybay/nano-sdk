@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("blocks RPC integration", () => {
   test("returns blocks as strings", async () => {
-    const result = await Nano.RPC.Safe.blocks(
+    const result = await Nano.RPC.blocks(
       rpcUrl,
       {
         action: "blocks",
@@ -20,7 +20,7 @@ describe("blocks RPC integration", () => {
   });
 
   test("returns blocks as JSON objects", async () => {
-    const result = await Nano.RPC.Safe.blocks(
+    const result = await Nano.RPC.blocks(
       rpcUrl,
       {
         action: "blocks",

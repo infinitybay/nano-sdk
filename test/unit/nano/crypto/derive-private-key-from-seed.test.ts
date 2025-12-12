@@ -1,7 +1,4 @@
-import {
-  derivePrivateKeyFromSeed,
-  safeDerivePrivateKeyFromSeed,
-} from "../../../../src/nano/crypto/derive-private-key-from-seed";
+import { derivePrivateKeyFromSeed } from "../../../../src/nano/crypto/derive-private-key-from-seed";
 import { TestData } from "../../test-data";
 
 describe("derivePrivateKeyFromSeed function", () => {
@@ -20,7 +17,9 @@ describe("derivePrivateKeyFromSeed function", () => {
       TestData.Valid.PrivateKey4(),
     ];
     for (let i = 0; i < validSeeds.length; i++) {
-      expect(derivePrivateKeyFromSeed(validSeeds[i], validSeedIndices[i])).toBe(expectedPrivateKeys[i]);
+      expect(
+        derivePrivateKeyFromSeed({ seed: validSeeds[i], seedIndex: validSeedIndices[i], throwOnError: true })
+      ).toBe(expectedPrivateKeys[i]);
     }
   });
 
@@ -31,7 +30,7 @@ describe("derivePrivateKeyFromSeed function", () => {
       TestData.Invalid.Seed.TooShort(),
     ];
     for (const invalidSeed of invalidSeeds) {
-      expect(safeDerivePrivateKeyFromSeed(invalidSeed, 0).success).toBe(false);
+      expect(derivePrivateKeyFromSeed({ seed: invalidSeed, seedIndex: 0 }).success).toBe(false);
     }
   });
 });

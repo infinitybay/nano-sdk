@@ -7,7 +7,7 @@ xdescribe("populate_backlog RPC integration", () => {
   xtest("disabled", async () => {});
 
   xtest("populates backlog", async () => {
-    const result = await Nano.RPC.Safe.populate_backlog(
+    const result = await Nano.RPC.populate_backlog(
       rpcUrl,
       {
         action: "populate_backlog",

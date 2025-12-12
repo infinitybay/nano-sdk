@@ -1,4 +1,4 @@
-import { bytesToHex, hexToBytes, safeHexToBytes } from "../../../../../src/nano/crypto/conversion/hex-converter";
+import { bytesToHex, hexToBytes } from "../../../../../src/nano/crypto/conversion/hex-converter";
 import { TestData } from "../../../test-data";
 
 describe("Hex conversion utilities", () => {
@@ -12,8 +12,8 @@ describe("Hex conversion utilities", () => {
     ];
 
     for (const validHex of validHexs) {
-      const hexBytes = hexToBytes(validHex);
-      const hex = bytesToHex(hexBytes);
+      const hexBytes = hexToBytes({ hex: validHex, throwOnError: true });
+      const hex = bytesToHex({ bytes: hexBytes, throwOnError: true });
       expect(hex.toUpperCase()).toBe(validHex.toUpperCase());
     }
   });
@@ -22,7 +22,7 @@ describe("Hex conversion utilities", () => {
     const invalidHexs = [TestData.Invalid.Hash.InvalidCharacters(), "ZZZ"];
 
     for (const invalidHex of invalidHexs) {
-      expect(safeHexToBytes(invalidHex).success).toBe(false);
+      expect(hexToBytes({ hex: invalidHex }).success).toBe(false);
     }
   });
 });

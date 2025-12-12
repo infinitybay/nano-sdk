@@ -8,7 +8,7 @@ xdescribe("work_generate RPC integration", () => {
   xtest("disabled", async () => {});
 
   xtest("generates work for hash", async () => {
-    const result = await Nano.RPC.Safe.work_generate(
+    const result = await Nano.RPC.work_generate(
       rpcUrl,
       {
         action: "work_generate",

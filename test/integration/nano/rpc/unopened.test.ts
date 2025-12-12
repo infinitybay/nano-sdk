@@ -8,7 +8,7 @@ xdescribe("unopened RPC integration", () => {
   xtest("disabled", async () => {});
 
   xtest("returns unopened accounts", async () => {
-    const result = await Nano.RPC.Safe.unopened(
+    const result = await Nano.RPC.unopened(
       rpcUrl,
       {
         action: "unopened",
@@ -21,7 +21,7 @@ xdescribe("unopened RPC integration", () => {
   });
 
   xtest("returns unopened accounts above threshold", async () => {
-    const result = await Nano.RPC.Safe.unopened(
+    const result = await Nano.RPC.unopened(
       rpcUrl,
       {
         action: "unopened",

@@ -1,4 +1,4 @@
-import { hashBlock, safeHashBlock } from "../../../../src/nano/crypto/hash-block";
+import { hashBlock } from "../../../../src/nano/crypto/hash-block";
 import { TestData } from "../../test-data";
 
 describe("hashBlock function", () => {
@@ -10,7 +10,7 @@ describe("hashBlock function", () => {
       { hash: TestData.Valid.Hash4(), block: TestData.Valid.StateBlock4() },
     ];
     for (let i = 0; i < data.length; i++) {
-      expect(hashBlock(data[i].block).toUpperCase()).toBe(data[i].hash.toUpperCase());
+      expect(hashBlock({ ...data[i].block, throwOnError: true }).toUpperCase()).toBe(data[i].hash.toUpperCase());
     }
   });
 
@@ -28,7 +28,7 @@ describe("hashBlock function", () => {
     invalidBlocks[3].balance = TestData.Invalid.RawAmount.InvalidCharacters();
     invalidBlocks[4].link = TestData.Invalid.Link.TooLong();
     for (let i = 0; i < invalidBlocks.length; i++) {
-      expect(safeHashBlock(invalidBlocks[i]).success).toBe(false);
+      expect(hashBlock(invalidBlocks[i]).success).toBe(false);
     }
   });
 });

@@ -4,7 +4,7 @@ import { TestData } from "../../test-data";
 
 describe("account_balance RPC integration", () => {
   test("returns balances for an account", async () => {
-    const result = await Nano.RPC.Safe.account_balance(
+    const result = await Nano.RPC.account_balance(
       rpcUrl,
       {
         action: "account_balance",

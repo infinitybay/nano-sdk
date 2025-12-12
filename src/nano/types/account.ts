@@ -1,7 +1,7 @@
 import { blake2b } from "blakejs";
 import { z } from "zod";
 
-import { safeDecodeBase32 } from "../crypto/conversion/base32-converter";
+import { decodeBase32 } from "../crypto/conversion/base32-converter";
 
 const defaultAccountPrefix = "nano_";
 const encodedPublicKeyLength = 52;
@@ -19,15 +19,18 @@ export const AccountStringSuperRefine = (val: string, ctx: z.RefinementCtx, expe
       return;
     }
 
-    const checksumBytesResult = safeDecodeBase32(val.substring(val.length - encodedChecksumLength));
+    const checksumBytesResult = decodeBase32({ encoded: val.substring(val.length - encodedChecksumLength) });
     if (!checksumBytesResult.success) {
       ctx.addIssue({ code: "custom", message: "Invalid format" });
       return;
     }
 
-    const publicKeyBytesResult = safeDecodeBase32(
-      val.substring(val.length - encodedPublicKeyLength - encodedChecksumLength, val.length - encodedChecksumLength)
-    );
+    const publicKeyBytesResult = decodeBase32({
+      encoded: val.substring(
+        val.length - encodedPublicKeyLength - encodedChecksumLength,
+        val.length - encodedChecksumLength
+      ),
+    });
     if (!publicKeyBytesResult.success) {
       ctx.addIssue({ code: "custom", message: "Invalid format" });
       return;

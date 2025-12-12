@@ -1,9 +1,4 @@
-import {
-  bytesToSignature,
-  safeBytesToSignature,
-  safeSignatureToBytes,
-  signatureToBytes,
-} from "../../../../../src/nano/crypto/conversion/signature-converter";
+import { bytesToSignature, signatureToBytes } from "../../../../../src/nano/crypto/conversion/signature-converter";
 import { TestData } from "../../../test-data";
 
 describe("Signature conversion utilities", () => {
@@ -16,8 +11,8 @@ describe("Signature conversion utilities", () => {
     ];
 
     for (const validSignature of validSignatures) {
-      const signatureBytes = signatureToBytes(validSignature);
-      const signature = bytesToSignature(signatureBytes);
+      const signatureBytes = signatureToBytes({ signature: validSignature, throwOnError: true });
+      const signature = bytesToSignature({ signatureBytes, throwOnError: true });
       expect(signature.toUpperCase()).toBe(validSignature.toUpperCase());
     }
   });
@@ -30,11 +25,11 @@ describe("Signature conversion utilities", () => {
     ];
 
     for (const invalidSignature of invalidSignatures) {
-      expect(safeSignatureToBytes(invalidSignature).success).toBe(false);
+      expect(signatureToBytes({ signature: invalidSignature }).success).toBe(false);
     }
   });
 
   test("rejects byte arrays with incorrect length", () => {
-    expect(safeBytesToSignature(new Uint8Array([1, 2])).success).toBe(false);
+    expect(bytesToSignature({ signatureBytes: new Uint8Array([1, 2]) }).success).toBe(false);
   });
 });

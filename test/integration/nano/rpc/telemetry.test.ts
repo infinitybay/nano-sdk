@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("telemetry RPC integration", () => {
   test("returns telemetry metrics", async () => {
-    const result = await Nano.RPC.Safe.telemetry(
+    const result = await Nano.RPC.telemetry(
       rpcUrl,
       {
         action: "telemetry",
@@ -17,7 +17,7 @@ describe("telemetry RPC integration", () => {
   });
 
   test("returns telemetry metrics from all peers", async () => {
-    const result = await Nano.RPC.Safe.telemetry(
+    const result = await Nano.RPC.telemetry(
       rpcUrl,
       {
         action: "telemetry",
@@ -31,7 +31,7 @@ describe("telemetry RPC integration", () => {
   });
 
   test("returns telemetry metrics from a specific peer", async () => {
-    const result1 = await Nano.RPC.Safe.telemetry(
+    const result1 = await Nano.RPC.telemetry(
       rpcUrl,
       {
         action: "telemetry",
@@ -43,7 +43,7 @@ describe("telemetry RPC integration", () => {
     assert(result1.data.metrics);
     expect(result1.data.metrics.length).toBeGreaterThan(0);
 
-    const result2 = await Nano.RPC.Safe.telemetry(
+    const result2 = await Nano.RPC.telemetry(
       rpcUrl,
       {
         action: "telemetry",

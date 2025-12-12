@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("process RPC integration", () => {
   test("processes a block asynchronously", async () => {
-    const result = await Nano.RPC.Safe.process(
+    const result = await Nano.RPC.process(
       rpcUrl,
       {
         action: "process",

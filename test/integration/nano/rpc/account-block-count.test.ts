@@ -4,7 +4,7 @@ import { TestData } from "../../test-data";
 
 describe("account_block_count RPC integration", () => {
   test("returns the number of blocks for an account", async () => {
-    const result = await Nano.RPC.Safe.account_block_count(
+    const result = await Nano.RPC.account_block_count(
       rpcUrl,
       {
         action: "account_block_count",

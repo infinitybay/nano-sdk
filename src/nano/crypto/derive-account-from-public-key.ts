@@ -1,26 +1,31 @@
 import { blake2b } from "blakejs";
 
 import { AccountPrefix, AccountString } from "../types/account";
+import { NonThrowing } from "../types/non-throwing";
 import { PublicKeyString } from "../types/public-key";
 import { Result } from "../types/result";
+import { Throwing } from "../types/throwing";
 import { encodeBase32 } from "./conversion/base32-converter";
 import { publicKeyToBytes } from "./conversion/public-key-converter";
 
-export function deriveAccountFromPublicKey(
-  publicKey: PublicKeyString,
-  accountPrefix: AccountPrefix = "nano_"
-): AccountString {
-  const validatedPublicKey = PublicKeyString().safeParse(publicKey);
+type DeriveAccountFromPublicKeyParams = {
+  publicKey: PublicKeyString;
+  accountPrefix?: AccountPrefix;
+} & (Throwing | NonThrowing);
+
+function deriveAccountFromPublicKeyThrowing(params: DeriveAccountFromPublicKeyParams & Throwing): AccountString {
+  const validatedPublicKey = PublicKeyString().safeParse(params.publicKey);
   if (!validatedPublicKey.success) {
     throw new Error("Invalid public key value.");
   }
 
+  const accountPrefix = params.accountPrefix ?? "nano_";
   const validatedAccountPrefix = AccountPrefix({ prefix: accountPrefix }).safeParse(accountPrefix);
   if (!validatedAccountPrefix.success) {
     throw new Error("Invalid account prefix value.");
   }
 
-  const publicKeyBytes = publicKeyToBytes(validatedPublicKey.data);
+  const publicKeyBytes = publicKeyToBytes({ publicKey: validatedPublicKey.data, throwOnError: true });
 
   let checksumBytes: Uint8Array;
   try {
@@ -29,8 +34,8 @@ export function deriveAccountFromPublicKey(
     throw new Error("Failed to determine checksum bytes.");
   }
 
-  const encodedPublicKey = encodeBase32(publicKeyBytes);
-  const encodedChecksum = encodeBase32(checksumBytes);
+  const encodedPublicKey = encodeBase32({ bytes: publicKeyBytes, throwOnError: true });
+  const encodedChecksum = encodeBase32({ bytes: checksumBytes, throwOnError: true });
 
   const accountResult = AccountString().safeParse(validatedAccountPrefix.data + encodedPublicKey + encodedChecksum);
   if (!accountResult.success) {
@@ -40,13 +45,33 @@ export function deriveAccountFromPublicKey(
   return accountResult.data;
 }
 
-export function safeDeriveAccountFromPublicKey(
-  publicKey: PublicKeyString,
-  accountPrefix: AccountPrefix = "nano_"
+function deriveAccountFromPublicKeyNonThrowing(
+  params: DeriveAccountFromPublicKeyParams & NonThrowing
 ): Result<AccountString> {
   try {
-    return { success: true, data: deriveAccountFromPublicKey(publicKey, accountPrefix) };
-  } catch (err) {
-    return { success: false, error: err instanceof Error ? err : new Error("Unexpected error.") };
+    return {
+      success: true,
+      data: deriveAccountFromPublicKeyThrowing({ ...params, throwOnError: true }),
+    };
+  } catch (e) {
+    return {
+      success: false,
+      error: e instanceof Error ? e : new Error("Unexpected error."),
+    };
+  }
+}
+
+export function deriveAccountFromPublicKey(
+  params: DeriveAccountFromPublicKeyParams & NonThrowing
+): Result<AccountString>;
+export function deriveAccountFromPublicKey(params: DeriveAccountFromPublicKeyParams & Throwing): AccountString;
+export function deriveAccountFromPublicKey(
+  params: DeriveAccountFromPublicKeyParams
+): AccountString | Result<AccountString>;
+export function deriveAccountFromPublicKey(params: DeriveAccountFromPublicKeyParams) {
+  if (params.throwOnError === true) {
+    return deriveAccountFromPublicKeyThrowing({ ...params, throwOnError: true });
+  } else {
+    return deriveAccountFromPublicKeyNonThrowing({ ...params, throwOnError: false });
   }
 }

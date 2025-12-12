@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("account_representative RPC integration", () => {
   test("returns representative for account", async () => {
-    const result = await Nano.RPC.Safe.account_representative(
+    const result = await Nano.RPC.account_representative(
       rpcUrl,
       {
         action: "account_representative",

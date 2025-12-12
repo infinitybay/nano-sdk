@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("deterministic_key RPC integration", () => {
   test("derives deterministic key", async () => {
-    const result = await Nano.RPC.Safe.deterministic_key(
+    const result = await Nano.RPC.deterministic_key(
       rpcUrl,
       {
         action: "deterministic_key",

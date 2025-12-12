@@ -1,26 +1,53 @@
 import { HashString } from "../../types/hash";
+import { NonThrowing } from "../../types/non-throwing";
 import { Result } from "../../types/result";
+import { Throwing } from "../../types/throwing";
 import { bytesToHex, hexToBytes } from "./hex-converter";
 
-export function hashToBytes(hash: HashString): Uint8Array {
-  const validatedHash = HashString().safeParse(hash);
+type HashToBytesParams = {
+  hash: HashString;
+} & (Throwing | NonThrowing);
+
+function hashToBytesThrowing(params: HashToBytesParams & Throwing): Uint8Array {
+  const validatedHash = HashString().safeParse(params.hash);
   if (!validatedHash.success) {
     throw new Error("Invalid hash value.");
   }
 
-  return hexToBytes(validatedHash.data);
+  return hexToBytes({ hex: validatedHash.data, throwOnError: true });
 }
 
-export function safeHashToBytes(hash: HashString): Result<Uint8Array> {
+function hashToBytesNonThrowing(params: HashToBytesParams & NonThrowing): Result<Uint8Array> {
   try {
-    return { success: true, data: hashToBytes(hash) };
-  } catch (err) {
-    return { success: false, error: err instanceof Error ? err : new Error("Unexpected error.") };
+    return {
+      success: true,
+      data: hashToBytesThrowing({ ...params, throwOnError: true }),
+    };
+  } catch (e) {
+    return {
+      success: false,
+      error: e instanceof Error ? e : new Error("Unexpected error."),
+    };
   }
 }
 
-export function bytesToHash(hashBytes: Uint8Array): HashString {
-  const hexResult = bytesToHex(hashBytes);
+export function hashToBytes(params: HashToBytesParams & NonThrowing): Result<Uint8Array>;
+export function hashToBytes(params: HashToBytesParams & Throwing): Uint8Array;
+export function hashToBytes(params: HashToBytesParams): Uint8Array | Result<Uint8Array>;
+export function hashToBytes(params: HashToBytesParams) {
+  if (params.throwOnError === true) {
+    return hashToBytesThrowing({ ...params, throwOnError: true });
+  } else {
+    return hashToBytesNonThrowing({ ...params, throwOnError: false });
+  }
+}
+
+type BytesToHashParams = {
+  hashBytes: Uint8Array;
+} & (Throwing | NonThrowing);
+
+function bytesToHashThrowing(params: BytesToHashParams & Throwing): HashString {
+  const hexResult = bytesToHex({ bytes: params.hashBytes, throwOnError: true });
   const validatedHash = HashString().safeParse(hexResult);
   if (!validatedHash.success) {
     throw new Error("Invalid hash byte array.");
@@ -29,10 +56,27 @@ export function bytesToHash(hashBytes: Uint8Array): HashString {
   return validatedHash.data;
 }
 
-export function safeBytesToHash(hashBytes: Uint8Array): Result<HashString> {
+function bytesToHashNonThrowing(params: BytesToHashParams & NonThrowing): Result<HashString> {
   try {
-    return { success: true, data: bytesToHash(hashBytes) };
-  } catch (err) {
-    return { success: false, error: err instanceof Error ? err : new Error("Unexpected error.") };
+    return {
+      success: true,
+      data: bytesToHashThrowing({ ...params, throwOnError: true }),
+    };
+  } catch (e) {
+    return {
+      success: false,
+      error: e instanceof Error ? e : new Error("Unexpected error."),
+    };
+  }
+}
+
+export function bytesToHash(params: BytesToHashParams & NonThrowing): Result<HashString>;
+export function bytesToHash(params: BytesToHashParams & Throwing): HashString;
+export function bytesToHash(params: BytesToHashParams): HashString | Result<HashString>;
+export function bytesToHash(params: BytesToHashParams) {
+  if (params.throwOnError === true) {
+    return bytesToHashThrowing({ ...params, throwOnError: true });
+  } else {
+    return bytesToHashNonThrowing({ ...params, throwOnError: false });
   }
 }

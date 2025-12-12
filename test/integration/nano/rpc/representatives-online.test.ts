@@ -4,7 +4,7 @@ import { rpcRequestConfig, rpcUrl } from "../../config";
 
 describe("representatives_online RPC integration", () => {
   test("returns online representatives", async () => {
-    const result = await Nano.RPC.Safe.representatives_online(
+    const result = await Nano.RPC.representatives_online(
       rpcUrl,
       {
         action: "representatives_online",
@@ -17,7 +17,7 @@ describe("representatives_online RPC integration", () => {
   });
 
   test("returns online representatives with weight", async () => {
-    const result = await Nano.RPC.Safe.representatives_online(
+    const result = await Nano.RPC.representatives_online(
       rpcUrl,
       {
         action: "representatives_online",

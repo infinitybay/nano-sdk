@@ -1,9 +1,4 @@
-import {
-  bytesToPublicKey,
-  publicKeyToBytes,
-  safeBytesToPublicKey,
-  safePublicKeyToBytes,
-} from "../../../../../src/nano/crypto/conversion/public-key-converter";
+import { bytesToPublicKey, publicKeyToBytes } from "../../../../../src/nano/crypto/conversion/public-key-converter";
 import { TestData } from "../../../test-data";
 
 describe("Public key conversion utilities", () => {
@@ -16,8 +11,8 @@ describe("Public key conversion utilities", () => {
     ];
 
     for (const validPublicKey of validPublicKeys) {
-      const publicKeyBytes = publicKeyToBytes(validPublicKey);
-      const publicKey = bytesToPublicKey(publicKeyBytes);
+      const publicKeyBytes = publicKeyToBytes({ publicKey: validPublicKey, throwOnError: true });
+      const publicKey = bytesToPublicKey({ publicKeyBytes, throwOnError: true });
       expect(publicKey.toUpperCase()).toBe(validPublicKey.toUpperCase());
     }
   });
@@ -30,11 +25,11 @@ describe("Public key conversion utilities", () => {
     ];
 
     for (const invalidPublicKey of invalidPublicKeys) {
-      expect(safePublicKeyToBytes(invalidPublicKey).success).toBe(false);
+      expect(publicKeyToBytes({ publicKey: invalidPublicKey }).success).toBe(false);
     }
   });
 
   test("rejects byte arrays with incorrect length", () => {
-    expect(safeBytesToPublicKey(new Uint8Array([1, 2])).success).toBe(false);
+    expect(bytesToPublicKey({ publicKeyBytes: new Uint8Array([1, 2]) }).success).toBe(false);
   });
 });

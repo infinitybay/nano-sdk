@@ -6,7 +6,7 @@ import { TestData } from "../../test-data";
 
 describe("blocks_info RPC integration", () => {
   test("returns block info with defaults", async () => {
-    const result = await Nano.RPC.Safe.blocks_info(
+    const result = await Nano.RPC.blocks_info(
       rpcUrl,
       {
         action: "blocks_info",
@@ -22,7 +22,7 @@ describe("blocks_info RPC integration", () => {
   });
 
   test("returns block info including linked accounts", async () => {
-    const result = await Nano.RPC.Safe.blocks_info(
+    const result = await Nano.RPC.blocks_info(
       rpcUrl,
       {
         action: "blocks_info",
@@ -39,7 +39,7 @@ describe("blocks_info RPC integration", () => {
   });
 
   test("returns block info including not found entries", async () => {
-    const result = await Nano.RPC.Safe.blocks_info(
+    const result = await Nano.RPC.blocks_info(
       rpcUrl,
       {
         action: "blocks_info",
@@ -58,7 +58,7 @@ describe("blocks_info RPC integration", () => {
   });
 
   test("returns block info as JSON blocks", async () => {
-    const result = await Nano.RPC.Safe.blocks_info(
+    const result = await Nano.RPC.blocks_info(
       rpcUrl,
       {
         action: "blocks_info",
@@ -77,7 +77,7 @@ describe("blocks_info RPC integration", () => {
   });
 
   test("returns block info including receivable state", async () => {
-    const result = await Nano.RPC.Safe.blocks_info(
+    const result = await Nano.RPC.blocks_info(
       rpcUrl,
       {
         action: "blocks_info",
@@ -94,7 +94,7 @@ describe("blocks_info RPC integration", () => {
   });
 
   test("returns block info including receive hash", async () => {
-    const result = await Nano.RPC.Safe.blocks_info(
+    const result = await Nano.RPC.blocks_info(
       rpcUrl,
       {
         action: "blocks_info",
@@ -111,7 +111,7 @@ describe("blocks_info RPC integration", () => {
   });
 
   test("returns block info including source", async () => {
-    const result = await Nano.RPC.Safe.blocks_info(
+    const result = await Nano.RPC.blocks_info(
       rpcUrl,
       {
         action: "blocks_info",

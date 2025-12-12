@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("block_info RPC integration", () => {
   test("returns block info with defaults", async () => {
-    const result = await Nano.RPC.Safe.block_info(
+    const result = await Nano.RPC.block_info(
       rpcUrl,
       {
         action: "block_info",
@@ -19,7 +19,7 @@ describe("block_info RPC integration", () => {
   });
 
   test("returns block info including linked account", async () => {
-    const result = await Nano.RPC.Safe.block_info(
+    const result = await Nano.RPC.block_info(
       rpcUrl,
       {
         action: "block_info",
@@ -35,7 +35,7 @@ describe("block_info RPC integration", () => {
   });
 
   test("returns block info as JSON block", async () => {
-    const result = await Nano.RPC.Safe.block_info(
+    const result = await Nano.RPC.block_info(
       rpcUrl,
       {
         action: "block_info",
@@ -51,7 +51,7 @@ describe("block_info RPC integration", () => {
   });
 
   test("returns JSON block info including linked account", async () => {
-    const result = await Nano.RPC.Safe.block_info(
+    const result = await Nano.RPC.block_info(
       rpcUrl,
       {
         action: "block_info",

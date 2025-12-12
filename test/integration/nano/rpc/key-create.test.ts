@@ -4,7 +4,7 @@ import { rpcRequestConfig, rpcUrl } from "../../config";
 
 describe("key_create RPC integration", () => {
   test("creates a new key pair", async () => {
-    const result = await Nano.RPC.Safe.key_create(
+    const result = await Nano.RPC.key_create(
       rpcUrl,
       {
         action: "key_create",
@@ -12,7 +12,11 @@ describe("key_create RPC integration", () => {
       rpcRequestConfig
     );
     assert(result.success);
-    expect(result.data.public).toBe(Nano.Crypto.derivePublicKeyFromPrivateKey(result.data.private));
-    expect(result.data.account).toBe(Nano.Crypto.deriveAccountFromPublicKey(result.data.public));
+    expect(result.data.public).toBe(
+      Nano.Crypto.derivePublicKeyFromPrivateKey({ privateKey: result.data.private, throwOnError: true })
+    );
+    expect(result.data.account).toBe(
+      Nano.Crypto.deriveAccountFromPublicKey({ publicKey: result.data.public, throwOnError: true })
+    );
   });
 });

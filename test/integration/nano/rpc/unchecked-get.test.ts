@@ -4,7 +4,7 @@ import { rpcRequestConfig, rpcUrl } from "../../config";
 
 describe("unchecked_get RPC integration", () => {
   test("gets unchecked block", async () => {
-    const result1 = await Nano.RPC.Safe.unchecked(
+    const result1 = await Nano.RPC.unchecked(
       rpcUrl,
       {
         action: "unchecked",
@@ -16,7 +16,7 @@ describe("unchecked_get RPC integration", () => {
     if (result1.data.blocks && Object.keys(result1.data.blocks).length > 0) {
       const hash = Object.keys(result1.data.blocks)[0];
       const block = JSON.parse(result1.data.blocks[hash]);
-      const result2 = await Nano.RPC.Safe.unchecked_get(
+      const result2 = await Nano.RPC.unchecked_get(
         rpcUrl,
         {
           action: "unchecked_get",
@@ -30,7 +30,7 @@ describe("unchecked_get RPC integration", () => {
   });
 
   test("gets unchecked block as JSON", async () => {
-    const result1 = await Nano.RPC.Safe.unchecked(
+    const result1 = await Nano.RPC.unchecked(
       rpcUrl,
       {
         action: "unchecked",
@@ -43,7 +43,7 @@ describe("unchecked_get RPC integration", () => {
     if (result1.data.blocks && Object.keys(result1.data.blocks).length > 0) {
       const hash = Object.keys(result1.data.blocks)[0];
       const block = result1.data.blocks[hash];
-      const result2 = await Nano.RPC.Safe.unchecked_get(
+      const result2 = await Nano.RPC.unchecked_get(
         rpcUrl,
         {
           action: "unchecked_get",

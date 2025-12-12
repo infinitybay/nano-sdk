@@ -36,8 +36,8 @@
     "prepare": "npm run build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "jest --runInBand --config jest.unit.config.ts",
-    "test:integration": "jest --runInBand --config jest.integration.config.ts"
+    "test:integration": "jest --runInBand --config jest.integration.config.ts",
+    "test:unit": "jest --runInBand --config jest.unit.config.ts"
   },
   "dependencies": {
     "bignumber.js": "^9.3.1",

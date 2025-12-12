@@ -4,7 +4,7 @@ import { rpcRequestConfig, rpcUrl } from "../../config";
 
 describe("representatives RPC integration", () => {
   test("returns representatives", async () => {
-    const result = await Nano.RPC.Safe.representatives(
+    const result = await Nano.RPC.representatives(
       rpcUrl,
       {
         action: "representatives",

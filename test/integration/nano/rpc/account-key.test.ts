@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("account_key RPC integration", () => {
   test("returns public key for account", async () => {
-    const result = await Nano.RPC.Safe.account_key(
+    const result = await Nano.RPC.account_key(
       rpcUrl,
       {
         action: "account_key",

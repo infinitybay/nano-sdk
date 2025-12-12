@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("block_confirm RPC integration", () => {
   test("requests block confirmation", async () => {
-    const result = await Nano.RPC.Safe.block_confirm(
+    const result = await Nano.RPC.block_confirm(
       rpcUrl,
       {
         action: "block_confirm",

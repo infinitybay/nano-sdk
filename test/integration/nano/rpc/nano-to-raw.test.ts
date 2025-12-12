@@ -4,7 +4,7 @@ import { rpcRequestConfig, rpcUrl } from "../../config";
 
 describe("nano_to_raw RPC integration", () => {
   test("converts Nano amount to raw", async () => {
-    const result = await Nano.RPC.Safe.nano_to_raw(
+    const result = await Nano.RPC.nano_to_raw(
       rpcUrl,
       {
         action: "nano_to_raw",

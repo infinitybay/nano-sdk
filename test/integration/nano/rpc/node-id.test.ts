@@ -7,7 +7,7 @@ xdescribe("node_id RPC integration", () => {
   xtest("disabled", async () => {});
 
   xtest("returns node identifier", async () => {
-    const result = await Nano.RPC.Safe.node_id(
+    const result = await Nano.RPC.node_id(
       rpcUrl,
       {
         action: "node_id",

@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("block_hash RPC integration", () => {
   test("calculates hash for JSON block input", async () => {
-    const result = await Nano.RPC.Safe.block_hash(
+    const result = await Nano.RPC.block_hash(
       rpcUrl,
       {
         action: "block_hash",
@@ -19,7 +19,7 @@ describe("block_hash RPC integration", () => {
   });
 
   test("calculates hash for block string input", async () => {
-    const result = await Nano.RPC.Safe.block_hash(
+    const result = await Nano.RPC.block_hash(
       rpcUrl,
       {
         action: "block_hash",

@@ -1,22 +1,23 @@
 import { HashString } from "../types/hash";
 import { Nacl } from "../types/nacl";
+import { NonThrowing } from "../types/non-throwing";
 import { PublicKeyString } from "../types/public-key";
-import { Result } from "../types/result";
 import { SignatureString } from "../types/signature";
+import { Throwing } from "../types/throwing";
 import { hashToBytes } from "./conversion/hash-converter";
 import { publicKeyToBytes } from "./conversion/public-key-converter";
 import { signatureToBytes } from "./conversion/signature-converter";
 
-type VerifySignatureInput = {
+type VerifySignatureParams = {
   hash: HashString;
   publicKey: PublicKeyString;
   signature: SignatureString;
-};
+} & (Throwing | NonThrowing);
 
-export function verifySignature(input: VerifySignatureInput): boolean {
-  const hashBytes = hashToBytes(input.hash);
-  const publicKeyBytes = publicKeyToBytes(input.publicKey);
-  const signatureBytes = signatureToBytes(input.signature);
+function verifySignatureThrowing(params: VerifySignatureParams & Throwing): boolean {
+  const hashBytes = hashToBytes({ hash: params.hash, throwOnError: true });
+  const publicKeyBytes = publicKeyToBytes({ publicKey: params.publicKey, throwOnError: true });
+  const signatureBytes = signatureToBytes({ signature: params.signature, throwOnError: true });
 
   try {
     return Nacl.verifyDetached(hashBytes, signatureBytes, publicKeyBytes);
@@ -25,10 +26,21 @@ export function verifySignature(input: VerifySignatureInput): boolean {
   }
 }
 
-export function safeVerifySignature(input: VerifySignatureInput): Result<boolean> {
+function verifySignatureNonThrowing(params: VerifySignatureParams & NonThrowing): boolean {
   try {
-    return { success: true, data: verifySignature(input) };
-  } catch (err) {
-    return { success: false, error: err instanceof Error ? err : new Error("Unexpected error.") };
+    return verifySignatureThrowing({ ...params, throwOnError: true });
+  } catch (_e) {
+    return false;
+  }
+}
+
+export function verifySignature(params: VerifySignatureParams & NonThrowing): boolean;
+export function verifySignature(params: VerifySignatureParams & Throwing): boolean;
+export function verifySignature(params: VerifySignatureParams): boolean;
+export function verifySignature(params: VerifySignatureParams) {
+  if (params.throwOnError === true) {
+    return verifySignatureThrowing({ ...params, throwOnError: true });
+  } else {
+    return verifySignatureNonThrowing({ ...params, throwOnError: false });
   }
 }

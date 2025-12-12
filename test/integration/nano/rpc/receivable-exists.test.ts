@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("receivable_exists RPC integration", () => {
   test("checks if receivable exists", async () => {
-    const result = await Nano.RPC.Safe.receivable_exists(
+    const result = await Nano.RPC.receivable_exists(
       rpcUrl,
       {
         action: "receivable_exists",

@@ -4,7 +4,7 @@ import { rpcRequestConfig, rpcUrl } from "../../config";
 
 describe("stats RPC integration", () => {
   test("returns counter stats", async () => {
-    const result = await Nano.RPC.Safe.stats(
+    const result = await Nano.RPC.stats(
       rpcUrl,
       {
         action: "stats",
@@ -16,7 +16,7 @@ describe("stats RPC integration", () => {
   });
 
   test("returns sample stats", async () => {
-    const result = await Nano.RPC.Safe.stats(
+    const result = await Nano.RPC.stats(
       rpcUrl,
       {
         action: "stats",
@@ -29,7 +29,7 @@ describe("stats RPC integration", () => {
 
   // Requires enable_control to be enabled
   /*test("returns object stats", async () => {
-    const result = await Nano.RPC.Safe.stats(
+    const result = await Nano.RPC.stats(
       rpcUrl,
       {
         action: "stats",
@@ -41,7 +41,7 @@ describe("stats RPC integration", () => {
   });*/
 
   test("returns database stats", async () => {
-    const result = await Nano.RPC.Safe.stats(
+    const result = await Nano.RPC.stats(
       rpcUrl,
       {
         action: "stats",

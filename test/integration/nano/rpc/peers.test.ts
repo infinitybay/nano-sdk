@@ -4,7 +4,7 @@ import { rpcRequestConfig, rpcUrl } from "../../config";
 
 describe("peers RPC integration", () => {
   test("returns peers", async () => {
-    const result = await Nano.RPC.Safe.peers(
+    const result = await Nano.RPC.peers(
       rpcUrl,
       {
         action: "peers",
@@ -17,7 +17,7 @@ describe("peers RPC integration", () => {
   });
 
   test("returns peer details", async () => {
-    const result = await Nano.RPC.Safe.peers(
+    const result = await Nano.RPC.peers(
       rpcUrl,
       {
         action: "peers",

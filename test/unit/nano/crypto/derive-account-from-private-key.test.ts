@@ -1,7 +1,4 @@
-import {
-  deriveAccountFromPrivateKey,
-  safeDeriveAccountFromPrivateKey,
-} from "../../../../src/nano/crypto/derive-account-from-private-key";
+import { deriveAccountFromPrivateKey } from "../../../../src/nano/crypto/derive-account-from-private-key";
 import { TestData } from "../../test-data";
 
 describe("deriveAccountFromPrivateKey function", () => {
@@ -19,7 +16,9 @@ describe("deriveAccountFromPrivateKey function", () => {
       TestData.Valid.Account4(),
     ];
     for (let i = 0; i < validPrivateKeys.length; i++) {
-      expect(deriveAccountFromPrivateKey(validPrivateKeys[i])).toBe(expectedAccounts[i]);
+      expect(deriveAccountFromPrivateKey({ privateKey: validPrivateKeys[i], throwOnError: true })).toBe(
+        expectedAccounts[i]
+      );
     }
   });
 
@@ -30,7 +29,7 @@ describe("deriveAccountFromPrivateKey function", () => {
       TestData.Invalid.PrivateKey.TooShort(),
     ];
     for (const invalidPrivateKey of invalidPrivateKeys) {
-      expect(safeDeriveAccountFromPrivateKey(invalidPrivateKey).success).toBe(false);
+      expect(deriveAccountFromPrivateKey({ privateKey: invalidPrivateKey }).success).toBe(false);
     }
   });
 });

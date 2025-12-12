@@ -4,7 +4,7 @@ import { rpcRequestConfig, rpcUrl } from "../../config";
 
 describe("block_count RPC integration", () => {
   test("returns block count", async () => {
-    const result = await Nano.RPC.Safe.block_count(
+    const result = await Nano.RPC.block_count(
       rpcUrl,
       {
         action: "block_count",

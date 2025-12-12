@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("account_info RPC integration", () => {
   test("returns account info with defaults", async () => {
-    const result = await Nano.RPC.Safe.account_info(
+    const result = await Nano.RPC.account_info(
       rpcUrl,
       {
         action: "account_info",
@@ -17,7 +17,7 @@ describe("account_info RPC integration", () => {
   });
 
   test("returns account info including representative", async () => {
-    const result = await Nano.RPC.Safe.account_info(
+    const result = await Nano.RPC.account_info(
       rpcUrl,
       {
         action: "account_info",
@@ -32,7 +32,7 @@ describe("account_info RPC integration", () => {
   });
 
   test("returns account info including weight", async () => {
-    const result = await Nano.RPC.Safe.account_info(
+    const result = await Nano.RPC.account_info(
       rpcUrl,
       {
         action: "account_info",
@@ -46,7 +46,7 @@ describe("account_info RPC integration", () => {
   });
 
   test("returns account info including receivable", async () => {
-    const result = await Nano.RPC.Safe.account_info(
+    const result = await Nano.RPC.account_info(
       rpcUrl,
       {
         action: "account_info",
@@ -60,7 +60,7 @@ describe("account_info RPC integration", () => {
   });
 
   test("returns account info including confirmed balances", async () => {
-    const result = await Nano.RPC.Safe.account_info(
+    const result = await Nano.RPC.account_info(
       rpcUrl,
       {
         action: "account_info",

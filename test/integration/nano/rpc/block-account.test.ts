@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("block_account RPC integration", () => {
   test("returns account for block hash", async () => {
-    const result = await Nano.RPC.Safe.block_account(
+    const result = await Nano.RPC.block_account(
       rpcUrl,
       {
         action: "block_account",

@@ -3,7 +3,7 @@ import { PublicKeyString } from "../../../../src/nano/types";
 
 describe("generatePublicKey function", () => {
   test("returns a valid public key", () => {
-    const publicKeyResult = PublicKeyString().safeParse(generatePublicKey());
+    const publicKeyResult = PublicKeyString().safeParse(generatePublicKey({ throwOnError: true }));
     expect(publicKeyResult.success).toBe(true);
   });
 });

@@ -8,7 +8,7 @@ xdescribe("delegators_count RPC integration", () => {
   xtest("disabled", async () => {});
 
   xtest("returns delegators count for account", async () => {
-    const result = await Nano.RPC.Safe.delegators_count(
+    const result = await Nano.RPC.delegators_count(
       rpcUrl,
       {
         action: "delegators_count",

@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("frontiers RPC integration", () => {
   test("returns frontiers for an account", async () => {
-    const result = await Nano.RPC.Safe.frontiers(
+    const result = await Nano.RPC.frontiers(
       rpcUrl,
       {
         action: "frontiers",

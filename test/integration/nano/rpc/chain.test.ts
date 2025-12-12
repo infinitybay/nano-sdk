@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("chain RPC integration", () => {
   test("returns a block chain from starting hash", async () => {
-    const result = await Nano.RPC.Safe.chain(
+    const result = await Nano.RPC.chain(
       rpcUrl,
       {
         action: "chain",
@@ -21,7 +21,7 @@ describe("chain RPC integration", () => {
   });
 
   test("returns a block chain from starting hash reverse", async () => {
-    const result = await Nano.RPC.Safe.chain(
+    const result = await Nano.RPC.chain(
       rpcUrl,
       {
         action: "chain",

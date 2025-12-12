@@ -1,9 +1,4 @@
-import {
-  bytesToHash,
-  hashToBytes,
-  safeBytesToHash,
-  safeHashToBytes,
-} from "../../../../../src/nano/crypto/conversion/hash-converter";
+import { bytesToHash, hashToBytes } from "../../../../../src/nano/crypto/conversion/hash-converter";
 import { TestData } from "../../../test-data";
 
 describe("Hash conversion utilities", () => {
@@ -11,8 +6,8 @@ describe("Hash conversion utilities", () => {
     const validHashs = [TestData.Valid.Hash1(), TestData.Valid.Hash2(), TestData.Valid.Hash3(), TestData.Valid.Hash4()];
 
     for (const validHash of validHashs) {
-      const hashBytes = hashToBytes(validHash);
-      const hash = bytesToHash(hashBytes);
+      const hashBytes = hashToBytes({ hash: validHash, throwOnError: true });
+      const hash = bytesToHash({ hashBytes, throwOnError: true });
       expect(hash).toBe(validHash);
     }
   });
@@ -25,11 +20,11 @@ describe("Hash conversion utilities", () => {
     ];
 
     for (const invalidHash of invalidHashs) {
-      expect(safeHashToBytes(invalidHash).success).toBe(false);
+      expect(hashToBytes({ hash: invalidHash }).success).toBe(false);
     }
   });
 
   test("rejects byte arrays with incorrect length", () => {
-    expect(safeBytesToHash(new Uint8Array([1, 2])).success).toBe(false);
+    expect(bytesToHash({ hashBytes: new Uint8Array([1, 2]) }).success).toBe(false);
   });
 });

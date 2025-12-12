@@ -4,7 +4,7 @@ import { rpcRequestConfig, rpcUrl } from "../../config";
 
 describe("frontier_count RPC integration", () => {
   test("returns frontier count", async () => {
-    const result = await Nano.RPC.Safe.frontier_count(
+    const result = await Nano.RPC.frontier_count(
       rpcUrl,
       {
         action: "frontier_count",

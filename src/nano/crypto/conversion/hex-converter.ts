@@ -1,9 +1,15 @@
 import { ByteArray } from "../../types/byte-array";
 import { HexString } from "../../types/hex";
+import { NonThrowing } from "../../types/non-throwing";
 import { Result } from "../../types/result";
+import { Throwing } from "../../types/throwing";
 
-export function hexToBytes(hex: string): Uint8Array {
-  const validatedHex = HexString().safeParse(hex);
+type HexToBytesParams = {
+  hex: string;
+} & (Throwing | NonThrowing);
+
+function hexToBytesThrowing(params: HexToBytesParams & Throwing): Uint8Array {
+  const validatedHex = HexString().safeParse(params.hex);
   if (!validatedHex.success) {
     throw new Error("Invalid hex string.");
   }
@@ -21,16 +27,37 @@ export function hexToBytes(hex: string): Uint8Array {
   return new Uint8Array(byteValues);
 }
 
-export function safeHexToBytes(hex: string): Result<Uint8Array> {
+function hexToBytesNonThrowing(params: HexToBytesParams & NonThrowing): Result<Uint8Array> {
   try {
-    return { success: true, data: hexToBytes(hex) };
-  } catch (err) {
-    return { success: false, error: err instanceof Error ? err : new Error("Unexpected error.") };
+    return {
+      success: true,
+      data: hexToBytesThrowing({ ...params, throwOnError: true }),
+    };
+  } catch (e) {
+    return {
+      success: false,
+      error: e instanceof Error ? e : new Error("Unexpected error."),
+    };
   }
 }
 
-export function bytesToHex(bytes: Uint8Array): HexString {
-  const validatedBytes = ByteArray().safeParse(bytes);
+export function hexToBytes(params: HexToBytesParams & NonThrowing): Result<Uint8Array>;
+export function hexToBytes(params: HexToBytesParams & Throwing): Uint8Array;
+export function hexToBytes(params: HexToBytesParams): Uint8Array | Result<Uint8Array>;
+export function hexToBytes(params: HexToBytesParams) {
+  if (params.throwOnError === true) {
+    return hexToBytesThrowing({ ...params, throwOnError: true });
+  } else {
+    return hexToBytesNonThrowing({ ...params, throwOnError: false });
+  }
+}
+
+type BytesToHexParams = {
+  bytes: Uint8Array;
+} & (Throwing | NonThrowing);
+
+function bytesToHexThrowing(params: BytesToHexParams & Throwing): HexString {
+  const validatedBytes = ByteArray().safeParse(params.bytes);
   if (!validatedBytes.success) {
     throw new Error("Invalid bytes value.");
   }
@@ -50,10 +77,27 @@ export function bytesToHex(bytes: Uint8Array): HexString {
   return hexResult.data;
 }
 
-export function safeBytesToHex(bytes: Uint8Array): Result<HexString> {
+function bytesToHexNonThrowing(params: BytesToHexParams & NonThrowing): Result<HexString> {
   try {
-    return { success: true, data: bytesToHex(bytes) };
-  } catch (err) {
-    return { success: false, error: err instanceof Error ? err : new Error("Unexpected error.") };
+    return {
+      success: true,
+      data: bytesToHexThrowing({ ...params, throwOnError: true }),
+    };
+  } catch (e) {
+    return {
+      success: false,
+      error: e instanceof Error ? e : new Error("Unexpected error."),
+    };
+  }
+}
+
+export function bytesToHex(params: BytesToHexParams & NonThrowing): Result<HexString>;
+export function bytesToHex(params: BytesToHexParams & Throwing): HexString;
+export function bytesToHex(params: BytesToHexParams): HexString | Result<HexString>;
+export function bytesToHex(params: BytesToHexParams) {
+  if (params.throwOnError === true) {
+    return bytesToHexThrowing({ ...params, throwOnError: true });
+  } else {
+    return bytesToHexNonThrowing({ ...params, throwOnError: false });
   }
 }

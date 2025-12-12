@@ -1,8 +1,4 @@
-import {
-  decodeBase32,
-  encodeBase32,
-  safeDecodeBase32,
-} from "../../../../../src/nano/crypto/conversion/base32-converter";
+import { decodeBase32, encodeBase32 } from "../../../../../src/nano/crypto/conversion/base32-converter";
 import { TestData } from "../../../test-data";
 
 const encodedPublicKeyLength = 52;
@@ -21,13 +17,13 @@ describe("Base32 conversion utilities", () => {
       const publicKeyStartIndex = validAccount.length - encodedPublicKeyLength - encodedChecksumLength;
       const publicKeyEndIndex = validAccount.length - encodedChecksumLength;
       const encodedPublicKey = validAccount.substring(publicKeyStartIndex, publicKeyEndIndex);
-      const decodedPublicKey = decodeBase32(encodedPublicKey);
-      const encodedPublicKey2 = encodeBase32(decodedPublicKey);
+      const decodedPublicKey = decodeBase32({ encoded: encodedPublicKey, throwOnError: true });
+      const encodedPublicKey2 = encodeBase32({ bytes: decodedPublicKey, throwOnError: true });
       expect(encodedPublicKey2).toBe(encodedPublicKey);
     }
   });
 
   test("rejects base32 strings with invalid characters", () => {
-    expect(safeDecodeBase32("invalid*").success).toBe(false);
+    expect(decodeBase32({ encoded: "invalid*" }).success).toBe(false);
   });
 });

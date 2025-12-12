@@ -8,7 +8,7 @@ xdescribe("work_cancel RPC integration", () => {
   xtest("disabled", async () => {});
 
   xtest("cancels work generation", async () => {
-    const result = await Nano.RPC.Safe.work_cancel(
+    const result = await Nano.RPC.work_cancel(
       rpcUrl,
       {
         action: "work_cancel",

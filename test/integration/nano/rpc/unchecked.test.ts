@@ -4,7 +4,7 @@ import { rpcRequestConfig, rpcUrl } from "../../config";
 
 describe("unchecked RPC integration", () => {
   test("returns unchecked blocks", async () => {
-    const result = await Nano.RPC.Safe.unchecked(
+    const result = await Nano.RPC.unchecked(
       rpcUrl,
       {
         action: "unchecked",
@@ -16,7 +16,7 @@ describe("unchecked RPC integration", () => {
   });
 
   test("returns unchecked blocks as JSON", async () => {
-    const result = await Nano.RPC.Safe.unchecked(
+    const result = await Nano.RPC.unchecked(
       rpcUrl,
       {
         action: "unchecked",

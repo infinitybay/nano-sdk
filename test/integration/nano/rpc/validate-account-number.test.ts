@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("validate_account_number RPC integration", () => {
   test("validates account", async () => {
-    const result = await Nano.RPC.Safe.validate_account_number(
+    const result = await Nano.RPC.validate_account_number(
       rpcUrl,
       {
         action: "validate_account_number",
@@ -18,7 +18,7 @@ describe("validate_account_number RPC integration", () => {
   });
 
   test("validates invalid account", async () => {
-    const result = await Nano.RPC.Safe.validate_account_number(
+    const result = await Nano.RPC.validate_account_number(
       rpcUrl,
       {
         action: "validate_account_number",

@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("account_history RPC integration", () => {
   test("returns account history with default options", async () => {
-    const result = await Nano.RPC.Safe.account_history(
+    const result = await Nano.RPC.account_history(
       rpcUrl,
       {
         action: "account_history",
@@ -22,7 +22,7 @@ describe("account_history RPC integration", () => {
   });
 
   test("returns account history including linked accounts", async () => {
-    const result = await Nano.RPC.Safe.account_history(
+    const result = await Nano.RPC.account_history(
       rpcUrl,
       {
         action: "account_history",
@@ -41,7 +41,7 @@ describe("account_history RPC integration", () => {
   });
 
   test("returns raw account history entries", async () => {
-    const result = await Nano.RPC.Safe.account_history(
+    const result = await Nano.RPC.account_history(
       rpcUrl,
       {
         action: "account_history",
@@ -59,7 +59,7 @@ describe("account_history RPC integration", () => {
   });
 
   test("returns account history in reverse order", async () => {
-    const result = await Nano.RPC.Safe.account_history(
+    const result = await Nano.RPC.account_history(
       rpcUrl,
       {
         action: "account_history",

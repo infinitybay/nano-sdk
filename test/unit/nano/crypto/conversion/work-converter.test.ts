@@ -1,9 +1,4 @@
-import {
-  bytesToWork,
-  safeBytesToWork,
-  safeWorkToBytes,
-  workToBytes,
-} from "../../../../../src/nano/crypto/conversion/work-converter";
+import { bytesToWork, workToBytes } from "../../../../../src/nano/crypto/conversion/work-converter";
 import { TestData } from "../../../test-data";
 
 describe("Work conversion utilities", () => {
@@ -16,8 +11,8 @@ describe("Work conversion utilities", () => {
     ];
 
     for (const validWork of validWorks) {
-      const workBytes = workToBytes(validWork);
-      const work = bytesToWork(workBytes);
+      const workBytes = workToBytes({ work: validWork, throwOnError: true });
+      const work = bytesToWork({ workBytes, throwOnError: true });
       expect(work.toUpperCase()).toBe(validWork.toUpperCase());
     }
   });
@@ -30,11 +25,11 @@ describe("Work conversion utilities", () => {
     ];
 
     for (const invalidWork of invalidWorks) {
-      expect(safeWorkToBytes(invalidWork).success).toBe(false);
+      expect(workToBytes({ work: invalidWork }).success).toBe(false);
     }
   });
 
   test("rejects byte arrays with incorrect length", () => {
-    expect(safeBytesToWork(new Uint8Array([1, 2])).success).toBe(false);
+    expect(bytesToWork({ workBytes: new Uint8Array([1, 2]) }).success).toBe(false);
   });
 });

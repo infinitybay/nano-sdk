@@ -4,7 +4,7 @@ import { rpcRequestConfig, rpcUrl } from "../../config";
 
 describe("version RPC integration", () => {
   test("returns node version", async () => {
-    const result = await Nano.RPC.Safe.version(
+    const result = await Nano.RPC.version(
       rpcUrl,
       {
         action: "version",

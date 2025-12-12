@@ -1,19 +1,40 @@
+import { NonThrowing } from "../types/non-throwing";
 import { PrivateKeyString } from "../types/private-key";
 import { Result } from "../types/result";
+import { Throwing } from "../types/throwing";
 import { generateSeed } from "./generate-seed";
 
-export function generatePrivateKey(): PrivateKeyString {
-  const privateKeyResult = PrivateKeyString().safeParse(generateSeed());
+type GeneratePrivateKeyParams = {} & (Throwing | NonThrowing);
+
+function generatePrivateKeyThrowing(_params: GeneratePrivateKeyParams & Throwing): PrivateKeyString {
+  const privateKeyResult = PrivateKeyString().safeParse(generateSeed({ throwOnError: true }));
   if (!privateKeyResult.success) {
     throw new Error("Generated private key is invalid.");
   }
   return privateKeyResult.data;
 }
 
-export function safeGeneratePrivateKey(): Result<PrivateKeyString> {
+function generatePrivateKeyNonThrowing(params: GeneratePrivateKeyParams & NonThrowing): Result<PrivateKeyString> {
   try {
-    return { success: true, data: generatePrivateKey() };
-  } catch (err) {
-    return { success: false, error: err instanceof Error ? err : new Error("Unexpected error.") };
+    return {
+      success: true,
+      data: generatePrivateKeyThrowing({ ...params, throwOnError: true }),
+    };
+  } catch (e) {
+    return {
+      success: false,
+      error: e instanceof Error ? e : new Error("Unexpected error."),
+    };
+  }
+}
+
+export function generatePrivateKey(params: GeneratePrivateKeyParams & NonThrowing): Result<PrivateKeyString>;
+export function generatePrivateKey(params: GeneratePrivateKeyParams & Throwing): PrivateKeyString;
+export function generatePrivateKey(params: GeneratePrivateKeyParams): PrivateKeyString | Result<PrivateKeyString>;
+export function generatePrivateKey(params: GeneratePrivateKeyParams = { throwOnError: false }) {
+  if (params.throwOnError === true) {
+    return generatePrivateKeyThrowing({ ...params, throwOnError: true });
+  } else {
+    return generatePrivateKeyNonThrowing({ ...params, throwOnError: false });
   }
 }

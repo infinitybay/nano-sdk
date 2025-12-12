@@ -1,7 +1,4 @@
-import {
-  derivePublicKeyFromAccount,
-  safeDerivePublicKeyFromAccount,
-} from "../../../../src/nano/crypto/derive-public-key-from-account";
+import { derivePublicKeyFromAccount } from "../../../../src/nano/crypto/derive-public-key-from-account";
 import { TestData } from "../../test-data";
 
 describe("derivePublicKeyFromAccount function", () => {
@@ -19,7 +16,7 @@ describe("derivePublicKeyFromAccount function", () => {
       TestData.Valid.PublicKey4(),
     ];
     for (let i = 0; i < validAccounts.length; i++) {
-      expect(derivePublicKeyFromAccount(validAccounts[i])).toBe(expectedPublicKeys[i]);
+      expect(derivePublicKeyFromAccount({ account: validAccounts[i], throwOnError: true })).toBe(expectedPublicKeys[i]);
     }
   });
 
@@ -33,7 +30,7 @@ describe("derivePublicKeyFromAccount function", () => {
       TestData.Invalid.Account.TooShort(),
     ];
     for (const invalidAccount of invalidAccounts) {
-      expect(safeDerivePublicKeyFromAccount(invalidAccount).success).toBe(false);
+      expect(derivePublicKeyFromAccount({ account: invalidAccount }).success).toBe(false);
     }
   });
 });

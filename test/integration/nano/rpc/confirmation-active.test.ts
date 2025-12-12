@@ -4,7 +4,7 @@ import { rpcRequestConfig, rpcUrl } from "../../config";
 
 describe("confirmation_active RPC integration", () => {
   test("lists active confirmations", async () => {
-    const result = await Nano.RPC.Safe.confirmation_active(
+    const result = await Nano.RPC.confirmation_active(
       rpcUrl,
       {
         action: "confirmation_active",

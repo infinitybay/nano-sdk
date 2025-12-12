@@ -7,7 +7,7 @@ xdescribe("unchecked_clear RPC integration", () => {
   xtest("disabled", async () => {});
 
   xtest("clears unchecked blocks", async () => {
-    const result = await Nano.RPC.Safe.unchecked_clear(
+    const result = await Nano.RPC.unchecked_clear(
       rpcUrl,
       {
         action: "unchecked_clear",

@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("receivable RPC integration", () => {
   test("returns receivable blocks", async () => {
-    const result = await Nano.RPC.Safe.receivable(
+    const result = await Nano.RPC.receivable(
       rpcUrl,
       {
         action: "receivable",
@@ -20,7 +20,7 @@ describe("receivable RPC integration", () => {
   });
 
   test("returns receivable blocks with source accounts", async () => {
-    const result = await Nano.RPC.Safe.receivable(
+    const result = await Nano.RPC.receivable(
       rpcUrl,
       {
         action: "receivable",
@@ -38,7 +38,7 @@ describe("receivable RPC integration", () => {
   });
 
   test("returns receivable blocks filtered by threshold", async () => {
-    const result = await Nano.RPC.Safe.receivable(
+    const result = await Nano.RPC.receivable(
       rpcUrl,
       {
         action: "receivable",
@@ -55,7 +55,7 @@ describe("receivable RPC integration", () => {
   });
 
   test("returns receivable blocks requiring minimum version", async () => {
-    const result = await Nano.RPC.Safe.receivable(
+    const result = await Nano.RPC.receivable(
       rpcUrl,
       {
         action: "receivable",

@@ -3,7 +3,7 @@ import { SeedString } from "../../../../src/nano/types";
 
 describe("generateSeed function", () => {
   test("returns a valid seed", () => {
-    const seedResult = SeedString().safeParse(generateSeed());
+    const seedResult = SeedString().safeParse(generateSeed({ throwOnError: true }));
     expect(seedResult.success).toBe(true);
   });
 });

@@ -8,7 +8,7 @@ xdescribe("delegators RPC integration", () => {
   xtest("disabled", async () => {});
 
   xtest("returns delegators for account", async () => {
-    const result = await Nano.RPC.Safe.delegators(
+    const result = await Nano.RPC.delegators(
       rpcUrl,
       {
         action: "delegators",
@@ -20,7 +20,7 @@ xdescribe("delegators RPC integration", () => {
   });
 
   xtest("returns delegators over threshold", async () => {
-    const result = await Nano.RPC.Safe.delegators(
+    const result = await Nano.RPC.delegators(
       rpcUrl,
       {
         action: "delegators",

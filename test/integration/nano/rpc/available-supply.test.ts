@@ -4,7 +4,7 @@ import { rpcRequestConfig, rpcUrl } from "../../config";
 
 describe("available_supply RPC integration", () => {
   test("returns available supply", async () => {
-    const result = await Nano.RPC.Safe.available_supply(
+    const result = await Nano.RPC.available_supply(
       rpcUrl,
       {
         action: "available_supply",

@@ -5,7 +5,7 @@ import { rpcRequestConfig, rpcUrl } from "../../config";
 
 describe("stats_clear RPC integration", () => {
   test("clears node stats", async () => {
-    const result = await Nano.RPC.Safe.stats_clear(
+    const result = await Nano.RPC.stats_clear(
       rpcUrl,
       {
         action: "stats_clear",

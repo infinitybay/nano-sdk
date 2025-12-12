@@ -1,9 +1,4 @@
-import {
-  bytesToSeed,
-  safeBytesToSeed,
-  safeSeedToBytes,
-  seedToBytes,
-} from "../../../../../src/nano/crypto/conversion/seed-converter";
+import { bytesToSeed, seedToBytes } from "../../../../../src/nano/crypto/conversion/seed-converter";
 import { TestData } from "../../../test-data";
 
 describe("Seed conversion utilities", () => {
@@ -16,8 +11,8 @@ describe("Seed conversion utilities", () => {
     ];
 
     for (const validSeed of validSeeds) {
-      const seedBytes = seedToBytes(validSeed);
-      const seed = bytesToSeed(seedBytes);
+      const seedBytes = seedToBytes({ seed: validSeed, throwOnError: true });
+      const seed = bytesToSeed({ seedBytes, throwOnError: true });
       expect(seed.toUpperCase()).toBe(validSeed.toUpperCase());
     }
   });
@@ -30,11 +25,11 @@ describe("Seed conversion utilities", () => {
     ];
 
     for (const invalidSeed of invalidSeeds) {
-      expect(safeSeedToBytes(invalidSeed).success).toBe(false);
+      expect(seedToBytes({ seed: invalidSeed }).success).toBe(false);
     }
   });
 
   test("rejects byte arrays with incorrect length", () => {
-    expect(safeBytesToSeed(new Uint8Array([1, 2])).success).toBe(false);
+    expect(bytesToSeed({ seedBytes: new Uint8Array([1, 2]) }).success).toBe(false);
   });
 });

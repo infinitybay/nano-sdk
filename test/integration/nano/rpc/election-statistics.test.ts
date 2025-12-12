@@ -4,7 +4,7 @@ import { rpcRequestConfig, rpcUrl } from "../../config";
 
 describe("election_statistics RPC integration", () => {
   test("returns election statistics", async () => {
-    const result = await Nano.RPC.Safe.election_statistics(
+    const result = await Nano.RPC.election_statistics(
       rpcUrl,
       {
         action: "election_statistics",

@@ -2,28 +2,29 @@ import { blake2bFinal, blake2bInit, blake2bUpdate } from "blakejs";
 
 import { Amount } from "../types/amount";
 import { HashString } from "../types/hash";
-import { Result } from "../types/result";
+import { NonThrowing } from "../types/non-throwing";
+import { Throwing } from "../types/throwing";
 import { WorkString } from "../types/work";
 import { WorkDifficultyString } from "../types/work-difficulty";
 import { hashToBytes } from "./conversion/hash-converter";
 import { bytesToHex } from "./conversion/hex-converter";
 import { workToBytes } from "./conversion/work-converter";
 
-type VerifyWorkInput = {
+type VerifyWorkParams = {
   hash: HashString;
   work: WorkString;
   threshold: string;
-};
+} & (Throwing | NonThrowing);
 
-export function verifyWork(input: VerifyWorkInput): boolean {
-  const hashBytes = hashToBytes(input.hash);
-  const workBytes = workToBytes(input.work);
+function verifyWorkThrowing(params: VerifyWorkParams & Throwing): boolean {
+  const hashBytes = hashToBytes({ hash: params.hash, throwOnError: true });
+  const workBytes = workToBytes({ work: params.work, throwOnError: true });
 
-  if (!WorkDifficultyString().safeParse(input.threshold).success) {
+  if (!WorkDifficultyString().safeParse(params.threshold).success) {
     throw new Error("Invalid work threshold.");
   }
 
-  const thresholdResult = Amount.safeParse(`0x${input.threshold}`);
+  const thresholdResult = Amount.safeParse(`0x${params.threshold}`);
   if (!thresholdResult.success) {
     throw new Error("Invalid work threshold.");
   }
@@ -34,7 +35,7 @@ export function verifyWork(input: VerifyWorkInput): boolean {
     blake2bUpdate(context, hashBytes);
     const output = blake2bFinal(context).reverse();
 
-    const outputHex = bytesToHex(output);
+    const outputHex = bytesToHex({ bytes: output, throwOnError: true });
     const outputAmountResult = Amount.safeParse(`0x${outputHex}`);
     if (!outputAmountResult.success) {
       throw new Error("Failed to parse work value.");
@@ -46,10 +47,21 @@ export function verifyWork(input: VerifyWorkInput): boolean {
   }
 }
 
-export function safeVerifyWork(input: VerifyWorkInput): Result<boolean> {
+function verifyWorkNonThrowing(params: VerifyWorkParams & NonThrowing): boolean {
   try {
-    return { success: true, data: verifyWork(input) };
-  } catch (err) {
-    return { success: false, error: err instanceof Error ? err : new Error("Unexpected error.") };
+    return verifyWorkThrowing({ ...params, throwOnError: true });
+  } catch (_e) {
+    return false;
+  }
+}
+
+export function verifyWork(params: VerifyWorkParams & NonThrowing): boolean;
+export function verifyWork(params: VerifyWorkParams & Throwing): boolean;
+export function verifyWork(params: VerifyWorkParams): boolean;
+export function verifyWork(params: VerifyWorkParams) {
+  if (params.throwOnError === true) {
+    return verifyWorkThrowing({ ...params, throwOnError: true });
+  } else {
+    return verifyWorkNonThrowing({ ...params, throwOnError: false });
   }
 }

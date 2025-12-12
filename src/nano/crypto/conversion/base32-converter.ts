@@ -1,9 +1,15 @@
+import { NonThrowing } from "../../types/non-throwing";
 import { Result } from "../../types/result";
+import { Throwing } from "../../types/throwing";
 
 const alphabet = "13456789abcdefghijkmnopqrstuwxyz";
 
-export function encodeBase32(bytes: Uint8Array): string {
-  const inputLength = bytes.length;
+type EncodeBase32Params = {
+  bytes: Uint8Array;
+} & (Throwing | NonThrowing);
+
+function encodeBase32Throwing(params: EncodeBase32Params & Throwing): string {
+  const inputLength = params.bytes.length;
   const totalBits = inputLength * 8;
   const remainingBits = totalBits % 5;
   const paddingBits = remainingBits === 0 ? 0 : 5 - remainingBits;
@@ -13,7 +19,7 @@ export function encodeBase32(bytes: Uint8Array): string {
   let bufferBits = 0;
 
   for (let index = 0; index < inputLength; index++) {
-    buffer = (buffer << 8) | bytes[index];
+    buffer = (buffer << 8) | params.bytes[index];
     bufferBits += 8;
 
     while (bufferBits >= 5) {
@@ -29,16 +35,37 @@ export function encodeBase32(bytes: Uint8Array): string {
   return encoded;
 }
 
-export function safeEncodeBase32(bytes: Uint8Array): Result<string> {
+function encodeBase32NonThrowing(params: EncodeBase32Params & NonThrowing): Result<string> {
   try {
-    return { success: true, data: encodeBase32(bytes) };
-  } catch (err) {
-    return { success: false, error: err instanceof Error ? err : new Error("Unexpected error.") };
+    return {
+      success: true,
+      data: encodeBase32Throwing({ ...params, throwOnError: true }),
+    };
+  } catch (e) {
+    return {
+      success: false,
+      error: e instanceof Error ? e : new Error("Unexpected error."),
+    };
   }
 }
 
-export function decodeBase32(encoded: string): Uint8Array {
-  const inputLength = encoded.length;
+export function encodeBase32(params: EncodeBase32Params & NonThrowing): Result<string>;
+export function encodeBase32(params: EncodeBase32Params & Throwing): string;
+export function encodeBase32(params: EncodeBase32Params): string | Result<string>;
+export function encodeBase32(params: EncodeBase32Params) {
+  if (params.throwOnError === true) {
+    return encodeBase32Throwing({ ...params, throwOnError: true });
+  } else {
+    return encodeBase32NonThrowing({ ...params, throwOnError: false });
+  }
+}
+
+type DecodeBase32Params = {
+  encoded: string;
+} & (Throwing | NonThrowing);
+
+function decodeBase32Throwing(params: DecodeBase32Params & Throwing): Uint8Array {
+  const inputLength = params.encoded.length;
   const remainingBits = (inputLength * 5) % 8;
   const paddingBits = remainingBits === 0 ? 0 : 8 - remainingBits;
 
@@ -49,9 +76,9 @@ export function decodeBase32(encoded: string): Uint8Array {
   let decodedBytes = new Uint8Array(Math.ceil((inputLength * 5) / 8));
 
   for (let position = 0; position < inputLength; position++) {
-    const alphabetIndex = alphabet.indexOf(encoded[position]);
+    const alphabetIndex = alphabet.indexOf(params.encoded[position]);
     if (alphabetIndex === -1) {
-      throw new Error(`Found invalid character: ${encoded[position]}!`);
+      throw new Error(`Found invalid character: ${params.encoded[position]}!`);
     }
 
     buffer = (buffer << 5) | alphabetIndex;
@@ -74,10 +101,27 @@ export function decodeBase32(encoded: string): Uint8Array {
   return decodedBytes;
 }
 
-export function safeDecodeBase32(encoded: string): Result<Uint8Array> {
+function decodeBase32NonThrowing(params: DecodeBase32Params & NonThrowing): Result<Uint8Array> {
   try {
-    return { success: true, data: decodeBase32(encoded) };
-  } catch (err) {
-    return { success: false, error: err instanceof Error ? err : new Error("Unexpected error.") };
+    return {
+      success: true,
+      data: decodeBase32Throwing({ ...params, throwOnError: true }),
+    };
+  } catch (e) {
+    return {
+      success: false,
+      error: e instanceof Error ? e : new Error("Unexpected error."),
+    };
+  }
+}
+
+export function decodeBase32(params: DecodeBase32Params & NonThrowing): Result<Uint8Array>;
+export function decodeBase32(params: DecodeBase32Params & Throwing): Uint8Array;
+export function decodeBase32(params: DecodeBase32Params): Uint8Array | Result<Uint8Array>;
+export function decodeBase32(params: DecodeBase32Params) {
+  if (params.throwOnError === true) {
+    return decodeBase32Throwing({ ...params, throwOnError: true });
+  } else {
+    return decodeBase32NonThrowing({ ...params, throwOnError: false });
   }
 }

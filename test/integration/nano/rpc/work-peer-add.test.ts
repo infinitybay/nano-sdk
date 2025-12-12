@@ -7,7 +7,7 @@ xdescribe("work_peer_add RPC integration", () => {
   xtest("disabled", async () => {});
 
   xtest("adds a work peer", async () => {
-    const result = await Nano.RPC.Safe.work_peer_add(
+    const result = await Nano.RPC.work_peer_add(
       rpcUrl,
       {
         action: "work_peer_add",

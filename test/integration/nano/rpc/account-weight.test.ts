@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("account_weight RPC integration", () => {
   test("returns voting weight for account", async () => {
-    const result = await Nano.RPC.Safe.account_weight(
+    const result = await Nano.RPC.account_weight(
       rpcUrl,
       {
         action: "account_weight",

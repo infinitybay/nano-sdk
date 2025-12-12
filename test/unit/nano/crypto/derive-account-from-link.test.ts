@@ -1,4 +1,4 @@
-import { deriveAccountFromLink, safeDeriveAccountFromLink } from "../../../../src/nano/crypto/derive-account-from-link";
+import { deriveAccountFromLink } from "../../../../src/nano/crypto/derive-account-from-link";
 import { TestData } from "../../test-data";
 
 describe("deriveAccountFromLink function", () => {
@@ -11,7 +11,7 @@ describe("deriveAccountFromLink function", () => {
       TestData.Valid.LinkAsAccount4(),
     ];
     for (let i = 0; i < validLinks.length; i++) {
-      expect(deriveAccountFromLink(validLinks[i])).toBe(expectedLinkAsAccounts[i]);
+      expect(deriveAccountFromLink({ link: validLinks[i], throwOnError: true })).toBe(expectedLinkAsAccounts[i]);
     }
   });
 
@@ -22,7 +22,7 @@ describe("deriveAccountFromLink function", () => {
       TestData.Invalid.Link.TooShort(),
     ];
     for (const invalidLink of invalidLinks) {
-      expect(safeDeriveAccountFromLink(invalidLink).success).toBe(false);
+      expect(deriveAccountFromLink({ link: invalidLink }).success).toBe(false);
     }
   });
 });

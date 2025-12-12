@@ -4,4 +4,5 @@ export const rpcUrl = process.env.NANO_RPC_URL ?? process.env.npm_package_config
 
 export const rpcRequestConfig = {
   timeoutInMs: 2000,
-};
+  throwOnError: false,
+} as const;

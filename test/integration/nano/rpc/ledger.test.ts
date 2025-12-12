@@ -8,7 +8,7 @@ xdescribe("ledger RPC integration", () => {
   xtest("disabled", async () => {});
 
   xtest("returns ledger entries with defaults", async () => {
-    const result = await Nano.RPC.Safe.ledger(
+    const result = await Nano.RPC.ledger(
       rpcUrl,
       {
         action: "ledger",
@@ -22,7 +22,7 @@ xdescribe("ledger RPC integration", () => {
   });
 
   xtest("returns ledger entries including representatives", async () => {
-    const result = await Nano.RPC.Safe.ledger(
+    const result = await Nano.RPC.ledger(
       rpcUrl,
       {
         action: "ledger",
@@ -39,7 +39,7 @@ xdescribe("ledger RPC integration", () => {
   });
 
   xtest("returns ledger entries including weights", async () => {
-    const result = await Nano.RPC.Safe.ledger(
+    const result = await Nano.RPC.ledger(
       rpcUrl,
       {
         action: "ledger",
@@ -55,7 +55,7 @@ xdescribe("ledger RPC integration", () => {
   });
 
   xtest("returns ledger entries including receivable amounts", async () => {
-    const result = await Nano.RPC.Safe.ledger(
+    const result = await Nano.RPC.ledger(
       rpcUrl,
       {
         action: "ledger",

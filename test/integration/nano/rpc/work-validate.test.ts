@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("work_validate RPC integration", () => {
   test("validates work value", async () => {
-    const result = await Nano.RPC.Safe.work_validate(
+    const result = await Nano.RPC.work_validate(
       rpcUrl,
       {
         action: "work_validate",

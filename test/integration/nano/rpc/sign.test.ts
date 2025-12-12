@@ -6,7 +6,7 @@ import { TestData } from "../../test-data";
 
 describe("sign RPC integration", () => {
   test("signs a JSON state block and returns signature with block", async () => {
-    const result = await Nano.RPC.Safe.sign(
+    const result = await Nano.RPC.sign(
       rpcUrl,
       {
         action: "sign",
@@ -22,13 +22,14 @@ describe("sign RPC integration", () => {
         hash: TestData.StateBlockHash(),
         publicKey: TestData.KeySet().PublicKey(),
         signature: result.data.signature,
+        throwOnError: true,
       })
     ).toBe(true);
   });
 
   // Disabled, because signing by block hash could be disabled
   xtest("signs using a hash reference without returning block contents", async () => {
-    const result = await Nano.RPC.Safe.sign(
+    const result = await Nano.RPC.sign(
       rpcUrl,
       {
         action: "sign",
@@ -44,6 +45,7 @@ describe("sign RPC integration", () => {
         hash: TestData.StateBlockHash(),
         publicKey: TestData.KeySet().PublicKey(),
         signature: result.data.signature,
+        throwOnError: true,
       })
     ).toBe(true);
   });

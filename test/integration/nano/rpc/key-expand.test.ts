@@ -5,7 +5,7 @@ import { TestData } from "../../test-data";
 
 describe("key_expand RPC integration", () => {
   test("expands a private key", async () => {
-    const result = await Nano.RPC.Safe.key_expand(
+    const result = await Nano.RPC.key_expand(
       rpcUrl,
       {
         action: "key_expand",

@@ -7,7 +7,7 @@ xdescribe("stop RPC integration", () => {
   xtest("disabled", async () => {});
 
   xtest("stops the node", async () => {
-    const result = await Nano.RPC.Safe.stop(
+    const result = await Nano.RPC.stop(
       rpcUrl,
       {
         action: "stop",
