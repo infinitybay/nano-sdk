@@ -4,7 +4,7 @@ export {
   AccountPrefix as AddressPrefix,
   AccountString as AddressString,
 } from "./account";
-export { Amount, AmountString, AmountUnit, NanoAmountString, RawAmountString } from "./amount";
+export { NanoAmountString, NanoAmountStrings, RawAmountString, RawAmountStrings } from "./amount";
 export { BooleanString } from "./boolean";
 export { EndpointString } from "./endpoint";
 export { HashString, HashStrings } from "./hash";

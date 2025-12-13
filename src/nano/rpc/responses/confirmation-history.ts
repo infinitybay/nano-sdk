@@ -2,7 +2,7 @@ import "../../../zod-extensions";
 
 import { z } from "zod";
 
-import { AmountString } from "../../types/amount";
+import { RawAmountString } from "../../types/amount";
 import { HashString } from "../../types/hash";
 import { NumberString } from "../../types/number";
 import { TimestampString } from "../../types/timestamp";
@@ -19,8 +19,8 @@ export function ConfirmationHistoryResponse() {
         hash: HashString(),
         duration: TimestampString(),
         time: TimestampString(),
-        tally: AmountString(),
-        final: AmountString(),
+        tally: RawAmountString(),
+        final: RawAmountString(),
         blocks: UIntString().transformToUInt(),
         voters: UIntString().transformToUInt(),
         request_count: UIntString().transformToUInt(),

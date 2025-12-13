@@ -1,7 +1,7 @@
 import { blake2bFinal, blake2bInit, blake2bUpdate } from "blakejs";
 
 import { AccountString } from "../types/account";
-import { Amount, AmountUnit, RawAmountString } from "../types/amount";
+import { RawAmountString } from "../types/amount";
 import { HashString } from "../types/hash";
 import { HexString } from "../types/hex";
 import { LinkString } from "../types/link";
@@ -44,11 +44,6 @@ function hashBlockThrowing(params: HashBlockParams & Throwing): HashString {
     throw new Error("Invalid balance value.");
   }
 
-  const balanceResult = Amount.safeParse(validatedBalance.data, AmountUnit.Raw);
-  if (!balanceResult.success) {
-    throw new Error("Invalid balance value.");
-  }
-
   const validatedLink = LinkString().safeParse(params.link);
   if (!validatedLink.success) {
     throw new Error("Invalid link value.");
@@ -58,7 +53,7 @@ function hashBlockThrowing(params: HashBlockParams & Throwing): HashString {
   const previousBytes = hashToBytes({ hash: validatedPrevious.data, throwOnError: true });
   const representativeBytes = accountToBytes({ account: validatedRepresentative.data, throwOnError: true });
 
-  const balanceHexResult = HexString().safeParse(balanceResult.data.getInternalValue().toString(16).padStart(32, "0"));
+  const balanceHexResult = HexString().safeParse(BigInt(validatedBalance.data).toString(16).padStart(32, "0"));
   if (!balanceHexResult.success) {
     throw new Error("Failed to convert balance into hex value.");
   }

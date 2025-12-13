@@ -1,6 +1,5 @@
 import { blake2bFinal, blake2bInit, blake2bUpdate } from "blakejs";
 
-import { Amount } from "../types/amount";
 import { HashString } from "../types/hash";
 import { NonThrowing } from "../types/non-throwing";
 import { Throwing } from "../types/throwing";
@@ -24,24 +23,13 @@ function verifyWorkThrowing(params: VerifyWorkParams & Throwing): boolean {
     throw new Error("Invalid work threshold.");
   }
 
-  const thresholdResult = Amount.safeParse(`0x${params.threshold}`);
-  if (!thresholdResult.success) {
-    throw new Error("Invalid work threshold.");
-  }
-
   try {
     const context = blake2bInit(8);
     blake2bUpdate(context, workBytes.reverse());
     blake2bUpdate(context, hashBytes);
-    const output = blake2bFinal(context).reverse();
-
-    const outputHex = bytesToHex({ bytes: output, throwOnError: true });
-    const outputAmountResult = Amount.safeParse(`0x${outputHex}`);
-    if (!outputAmountResult.success) {
-      throw new Error("Failed to parse work value.");
-    }
-
-    return outputAmountResult.data.isGreaterThanOrEqualTo(thresholdResult.data);
+    const outputBytes = blake2bFinal(context).reverse();
+    const outputHex = bytesToHex({ bytes: outputBytes, throwOnError: true });
+    return BigInt(`0x${outputHex}`) >= BigInt(`0x${params.threshold}`);
   } catch (_err) {
     throw new Error("Failed to verify work.");
   }
