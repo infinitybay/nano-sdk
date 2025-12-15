@@ -1,5 +1,3 @@
-import "../../../zod-extensions";
-
 import { z } from "zod";
 
 import { NumberString } from "../../types/number";
@@ -11,7 +9,7 @@ export function WorkValidateResponse() {
     valid_all: z.literal("1").or(z.literal("0")),
     valid_receive: z.literal("1").or(z.literal("0")),
     difficulty: WorkDifficultyString(),
-    multiplier: NumberString().transformToNumber(),
+    multiplier: NumberString(),
   });
 }
 

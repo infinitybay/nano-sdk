@@ -1,5 +1,3 @@
-import "../../../zod-extensions";
-
 import { z } from "zod";
 
 import { BooleanString } from "../../types/boolean";
@@ -11,14 +9,14 @@ const TxnStackFrame = () =>
     name: z.string(),
     address: z.string(),
     source_file: z.string(),
-    source_line: UIntString().transformToUInt(),
+    source_line: UIntString(),
   });
 
 const TxnTrackingEntry = () =>
   z.object({
     thread: z.string(),
     time_held_open: TimestampString(),
-    write: BooleanString().transformToBoolean(),
+    write: BooleanString(),
     stacktrace: z.array(TxnStackFrame()),
   });
 

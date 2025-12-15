@@ -12,6 +12,6 @@ describe("frontier_count RPC integration", () => {
       rpcRequestConfig
     );
     assert(result.success);
-    expect(result.data.count).toBeGreaterThan(0);
+    expect(Number(result.data.count)).toBeGreaterThan(0);
   });
 });

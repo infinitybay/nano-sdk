@@ -7,6 +7,6 @@ describe("AccountBlockCountResponse schema", () => {
       block_count: "5",
     });
     assert(result.success);
-    expect(result.data.block_count).toBe(5);
+    expect(result.data.block_count).toBe("5");
   });
 });

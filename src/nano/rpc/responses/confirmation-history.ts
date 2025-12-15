@@ -1,5 +1,3 @@
-import "../../../zod-extensions";
-
 import { z } from "zod";
 
 import { RawAmountString } from "../../types/amount";
@@ -11,8 +9,8 @@ import { UIntString } from "../../types/uint";
 export function ConfirmationHistoryResponse() {
   return z.object({
     confirmation_stats: z.object({
-      count: UIntString().transformToUInt(),
-      average: NumberString().transformToNumber().optional(),
+      count: UIntString(),
+      average: NumberString().optional(),
     }),
     confirmations: z
       .object({
@@ -21,9 +19,9 @@ export function ConfirmationHistoryResponse() {
         time: TimestampString(),
         tally: RawAmountString(),
         final: RawAmountString(),
-        blocks: UIntString().transformToUInt(),
-        voters: UIntString().transformToUInt(),
-        request_count: UIntString().transformToUInt(),
+        blocks: UIntString(),
+        voters: UIntString(),
+        request_count: UIntString(),
       })
       .array()
       .or(z.literal("")),

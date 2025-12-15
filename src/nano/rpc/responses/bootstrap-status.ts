@@ -1,5 +1,3 @@
-import "../../../zod-extensions";
-
 import { z } from "zod";
 
 import { UIntString } from "../../types/uint";
@@ -18,14 +16,14 @@ const BootstrapAttempt = () =>
     z.object({
       id: z.string(),
       mode: z.literal("legacy"),
-      started: BooleanString().transformToBoolean(),
+      started: BooleanString(),
       pulling: z.string(),
       total_blocks: z.string(),
       requeued_pulls: z.string(),
       frontier_pulls: z.string(),
-      frontiers_received: BooleanString().transformToBoolean(),
-      frontiers_confirmed: BooleanString().transformToBoolean(),
-      frontiers_confirmation_pending: BooleanString().transformToBoolean(),
+      frontiers_received: BooleanString(),
+      frontiers_confirmed: BooleanString(),
+      frontiers_confirmation_pending: BooleanString(),
       frontiers_age: z.string(),
       last_account: AccountString(),
       duration: z.string(),
@@ -33,7 +31,7 @@ const BootstrapAttempt = () =>
     z.object({
       id: z.string(),
       mode: z.literal("lazy"),
-      started: BooleanString().transformToBoolean(),
+      started: BooleanString(),
       pulling: z.string(),
       total_blocks: z.string(),
       requeued_pulls: z.string(),
@@ -59,8 +57,8 @@ export function BootstrapStatusResponse() {
       attempts: z.array(BootstrapAttempt()),
     }),*/
     z.object({
-      priorities: UIntString().transformToUInt(),
-      blocking: UIntString().transformToUInt(),
+      priorities: UIntString(),
+      blocking: UIntString(),
     }),
   ]);
 }

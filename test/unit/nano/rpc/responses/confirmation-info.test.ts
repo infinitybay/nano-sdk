@@ -22,8 +22,8 @@ describe("ConfirmationInfoResponse schema", () => {
       },
     });
     assert(result.success);
-    expect(result.data.announcements).toBe(1);
-    expect(result.data.voters).toBe(1);
+    expect(result.data.announcements).toBe("1");
+    expect(result.data.voters).toBe("1");
   });
 
   test("parses confirmation info response with string block", () => {
@@ -46,8 +46,8 @@ describe("ConfirmationInfoResponse schema", () => {
       },
     });
     assert(result.success);
-    expect(result.data.announcements).toBe(1);
-    expect(result.data.voters).toBe(1);
+    expect(result.data.announcements).toBe("1");
+    expect(result.data.voters).toBe("1");
   });
 
   test("parses confirmation info response with contents, json block and representatives", () => {
@@ -76,8 +76,8 @@ describe("ConfirmationInfoResponse schema", () => {
       },
     });
     assert(result.success);
-    expect(result.data.announcements).toBe(1);
-    expect(result.data.voters).toBe(1);
+    expect(result.data.announcements).toBe("1");
+    expect(result.data.voters).toBe("1");
   });
 
   test("rejects confirmation info response with invalid block hash", () => {

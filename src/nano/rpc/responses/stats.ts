@@ -1,5 +1,3 @@
-import "../../../zod-extensions";
-
 import { z } from "zod";
 
 import { TimestampString } from "../../types/timestamp";
@@ -53,12 +51,12 @@ export const StatsObjects = () =>
 export type StatsDatabase = z.infer<ReturnType<typeof StatsDatabase>>;
 export const StatsDatabase = () =>
   z.object({
-    branch_pages: UIntString().transformToUInt(),
-    depth: UIntString().transformToUInt(),
-    entries: UIntString().transformToUInt(),
-    leaf_pages: UIntString().transformToUInt(),
-    overflow_pages: UIntString().transformToUInt(),
-    page_size: UIntString().transformToUInt(),
+    branch_pages: UIntString(),
+    depth: UIntString(),
+    entries: UIntString(),
+    leaf_pages: UIntString(),
+    overflow_pages: UIntString(),
+    page_size: UIntString(),
   });
 
 type StatsType = "counters" | "samples" | "objects" | "database";

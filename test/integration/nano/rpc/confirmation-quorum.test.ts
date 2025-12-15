@@ -12,7 +12,7 @@ describe("confirmation_quorum RPC integration", () => {
       rpcRequestConfig
     );
     assert(result.success);
-    expect(result.data.online_weight_quorum_percent).toBe(67);
+    expect(Number(result.data.online_weight_quorum_percent)).toBe(67);
   });
 
   test("returns quorum information with peer details", async () => {

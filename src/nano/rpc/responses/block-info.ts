@@ -1,5 +1,3 @@
-import "../../../zod-extensions";
-
 import { z } from "zod";
 
 import { Block } from "../../blocks/block";
@@ -20,10 +18,10 @@ const BlockInfoBase = () =>
     block_account: AccountString(),
     amount: RawAmountString().optional(),
     balance: RawAmountString(),
-    height: HeightString().transformToUInt(),
+    height: HeightString(),
     local_timestamp: TimestampString(),
     successor: HashString(),
-    confirmed: BooleanString().transformToBoolean(),
+    confirmed: BooleanString(),
     subtype: SubtypeString().optional(),
   });
 
