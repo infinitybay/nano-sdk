@@ -25,11 +25,11 @@ describe("Private key conversion utilities", () => {
     ];
 
     for (const invalidPrivateKey of invalidPrivateKeys) {
-      expect(privateKeyToBytes({ privateKey: invalidPrivateKey }).success).toBe(false);
+      expect(privateKeyToBytes({ privateKey: invalidPrivateKey, throwOnError: false }).success).toBe(false);
     }
   });
 
   test("rejects byte arrays with incorrect length", () => {
-    expect(bytesToPrivateKey({ privateKeyBytes: new Uint8Array([1, 2]) }).success).toBe(false);
+    expect(bytesToPrivateKey({ privateKeyBytes: new Uint8Array([1, 2]), throwOnError: false }).success).toBe(false);
   });
 });

@@ -25,11 +25,11 @@ describe("Work conversion utilities", () => {
     ];
 
     for (const invalidWork of invalidWorks) {
-      expect(workToBytes({ work: invalidWork }).success).toBe(false);
+      expect(workToBytes({ work: invalidWork, throwOnError: false }).success).toBe(false);
     }
   });
 
   test("rejects byte arrays with incorrect length", () => {
-    expect(bytesToWork({ workBytes: new Uint8Array([1, 2]) }).success).toBe(false);
+    expect(bytesToWork({ workBytes: new Uint8Array([1, 2]), throwOnError: false }).success).toBe(false);
   });
 });

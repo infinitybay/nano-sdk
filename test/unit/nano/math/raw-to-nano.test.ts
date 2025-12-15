@@ -18,7 +18,7 @@ describe("rawToNano", () => {
 
   test("returns success result in non-throwing mode", () => {
     const rawOneNano = RAW_SCALE.toString();
-    const result = rawToNano({ raw: rawOneNano });
+    const result = rawToNano({ raw: rawOneNano, throwOnError: false });
     assert(result.success);
     expect(result.data).toBe(`1.${"0".repeat(30)}`);
   });
@@ -41,7 +41,7 @@ describe("rawToNano", () => {
   });
 
   test("returns failure result for invalid raw input without throwing", () => {
-    const result = rawToNano({ raw: "-1" });
+    const result = rawToNano({ raw: "-1", throwOnError: false });
     expect(result.success).toBe(false);
   });
 
@@ -56,7 +56,7 @@ describe("rawToNano", () => {
   });
 
   test("returns failure result for invalid decimal precision without throwing", () => {
-    const result = rawToNano({ raw: RawAmountStrings.zero(), decimalPlaces: 31 });
+    const result = rawToNano({ raw: RawAmountStrings.zero(), decimalPlaces: 31, throwOnError: false });
     expect(result.success).toBe(false);
   });
 });

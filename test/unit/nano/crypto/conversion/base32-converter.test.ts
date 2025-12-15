@@ -24,6 +24,6 @@ describe("Base32 conversion utilities", () => {
   });
 
   test("rejects base32 strings with invalid characters", () => {
-    expect(decodeBase32({ encoded: "invalid*" }).success).toBe(false);
+    expect(decodeBase32({ encoded: "invalid*", throwOnError: false }).success).toBe(false);
   });
 });

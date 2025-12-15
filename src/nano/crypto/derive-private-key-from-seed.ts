@@ -73,9 +73,9 @@ export function derivePrivateKeyFromSeed(
   params: DerivePrivateKeyFromSeedParams
 ): PrivateKeyString | Result<PrivateKeyString>;
 export function derivePrivateKeyFromSeed(params: DerivePrivateKeyFromSeedParams) {
-  if (params.throwOnError === true) {
-    return derivePrivateKeyFromSeedThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return derivePrivateKeyFromSeedNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return derivePrivateKeyFromSeedThrowing({ ...params, throwOnError: true });
   }
 }

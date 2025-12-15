@@ -1,6 +1,6 @@
 import { post } from "../http/post";
 import { PostResult } from "../http/post-result";
-import { RequestConfig, SafeRequestConfig, ThrowingRequestConfig } from "../http/request-config";
+import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { RepresentativesOnlineRequest } from "../requests/representatives-online";
 import { RepresentativesOnlineResponse } from "../responses/representatives-online";
 import { BoolFlag } from "./conditional-types/bool-flag";
@@ -13,7 +13,7 @@ type ResponseType<T extends RepresentativesOnlineRequest> = RepresentativesOnlin
 export function representatives_online<const T extends RepresentativesOnlineRequest>(
   url: string,
   request: T,
-  config?: SafeRequestConfig
+  config?: NonThrowingRequestConfig
 ): Promise<PostResult<ResponseType<T>>>;
 
 export function representatives_online<const T extends RepresentativesOnlineRequest>(
@@ -29,7 +29,7 @@ export function representatives_online<const T extends RepresentativesOnlineRequ
 ): Promise<ResponseType<T>> | Promise<PostResult<ResponseType<T>>>;
 
 export function representatives_online(url: string, request: RepresentativesOnlineRequest, config?: RequestConfig) {
-  if (config?.throwOnError === true) {
+  if (config?.throwOnError === false) {
     return post(
       url,
       request,
@@ -37,7 +37,7 @@ export function representatives_online(url: string, request: RepresentativesOnli
       RepresentativesOnlineResponse({
         weight: request.weight === true,
       }),
-      config as ThrowingRequestConfig
+      config as NonThrowingRequestConfig
     );
   } else {
     return post(
@@ -47,7 +47,7 @@ export function representatives_online(url: string, request: RepresentativesOnli
       RepresentativesOnlineResponse({
         weight: request.weight === true,
       }),
-      config as SafeRequestConfig
+      config as ThrowingRequestConfig
     );
   }
 }

@@ -1,6 +1,6 @@
 import { post } from "../http/post";
 import { PostResult } from "../http/post-result";
-import { RequestConfig, SafeRequestConfig, ThrowingRequestConfig } from "../http/request-config";
+import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { ConfirmationQuorumRequest } from "../requests/confirmation-quorum";
 import { ConfirmationQuorumResponse } from "../responses/confirmation-quorum";
 import { BoolFlag } from "./conditional-types/bool-flag";
@@ -13,7 +13,7 @@ type ResponseType<T extends ConfirmationQuorumRequest> = ConfirmationQuorumRespo
 export function confirmation_quorum<const T extends ConfirmationQuorumRequest>(
   url: string,
   request: T,
-  config?: SafeRequestConfig
+  config?: NonThrowingRequestConfig
 ): Promise<PostResult<ResponseType<T>>>;
 
 export function confirmation_quorum<const T extends ConfirmationQuorumRequest>(
@@ -29,7 +29,7 @@ export function confirmation_quorum<const T extends ConfirmationQuorumRequest>(
 ): Promise<ResponseType<T>> | Promise<PostResult<ResponseType<T>>>;
 
 export function confirmation_quorum(url: string, request: ConfirmationQuorumRequest, config?: RequestConfig) {
-  if (config?.throwOnError === true) {
+  if (config?.throwOnError === false) {
     return post(
       url,
       request,
@@ -37,7 +37,7 @@ export function confirmation_quorum(url: string, request: ConfirmationQuorumRequ
       ConfirmationQuorumResponse({
         peer_details: request.peer_details === true,
       }),
-      config as ThrowingRequestConfig
+      config as NonThrowingRequestConfig
     );
   } else {
     return post(
@@ -47,7 +47,7 @@ export function confirmation_quorum(url: string, request: ConfirmationQuorumRequ
       ConfirmationQuorumResponse({
         peer_details: request.peer_details === true,
       }),
-      config as SafeRequestConfig
+      config as ThrowingRequestConfig
     );
   }
 }

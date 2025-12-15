@@ -29,7 +29,7 @@ describe("derivePublicKeyFromPrivateKey function", () => {
       TestData.Invalid.PrivateKey.TooShort(),
     ];
     for (const invalidPrivateKey of invalidPrivateKeys) {
-      expect(derivePublicKeyFromPrivateKey({ privateKey: invalidPrivateKey }).success).toBe(false);
+      expect(derivePublicKeyFromPrivateKey({ privateKey: invalidPrivateKey, throwOnError: false }).success).toBe(false);
     }
   });
 });

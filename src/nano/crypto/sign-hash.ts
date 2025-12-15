@@ -44,9 +44,9 @@ export function signHash(params: SignHashParams & NonThrowing): Result<Signature
 export function signHash(params: SignHashParams & Throwing): SignatureString;
 export function signHash(params: SignHashParams): SignatureString | Result<SignatureString>;
 export function signHash(params: SignHashParams) {
-  if (params.throwOnError === true) {
-    return signHashThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return signHashNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return signHashThrowing({ ...params, throwOnError: true });
   }
 }

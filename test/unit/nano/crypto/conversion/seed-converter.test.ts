@@ -25,11 +25,11 @@ describe("Seed conversion utilities", () => {
     ];
 
     for (const invalidSeed of invalidSeeds) {
-      expect(seedToBytes({ seed: invalidSeed }).success).toBe(false);
+      expect(seedToBytes({ seed: invalidSeed, throwOnError: false }).success).toBe(false);
     }
   });
 
   test("rejects byte arrays with incorrect length", () => {
-    expect(bytesToSeed({ seedBytes: new Uint8Array([1, 2]) }).success).toBe(false);
+    expect(bytesToSeed({ seedBytes: new Uint8Array([1, 2]), throwOnError: false }).success).toBe(false);
   });
 });

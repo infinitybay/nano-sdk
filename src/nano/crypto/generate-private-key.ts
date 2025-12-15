@@ -31,10 +31,10 @@ function generatePrivateKeyNonThrowing(params: GeneratePrivateKeyParams & NonThr
 export function generatePrivateKey(params: GeneratePrivateKeyParams & NonThrowing): Result<PrivateKeyString>;
 export function generatePrivateKey(params: GeneratePrivateKeyParams & Throwing): PrivateKeyString;
 export function generatePrivateKey(params: GeneratePrivateKeyParams): PrivateKeyString | Result<PrivateKeyString>;
-export function generatePrivateKey(params: GeneratePrivateKeyParams = { throwOnError: false }) {
-  if (params.throwOnError === true) {
-    return generatePrivateKeyThrowing({ ...params, throwOnError: true });
-  } else {
+export function generatePrivateKey(params: GeneratePrivateKeyParams = {}) {
+  if (params.throwOnError === false) {
     return generatePrivateKeyNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return generatePrivateKeyThrowing({ ...params, throwOnError: true });
   }
 }

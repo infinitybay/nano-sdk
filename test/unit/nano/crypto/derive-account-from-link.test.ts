@@ -22,7 +22,7 @@ describe("deriveAccountFromLink function", () => {
       TestData.Invalid.Link.TooShort(),
     ];
     for (const invalidLink of invalidLinks) {
-      expect(deriveAccountFromLink({ link: invalidLink }).success).toBe(false);
+      expect(deriveAccountFromLink({ link: invalidLink, throwOnError: false }).success).toBe(false);
     }
   });
 });

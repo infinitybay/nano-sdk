@@ -29,7 +29,7 @@ describe("deriveAccountFromPublicKey function", () => {
       TestData.Invalid.PublicKey.TooShort(),
     ];
     for (const invalidPublicKey of invalidPublicKeys) {
-      expect(deriveAccountFromPublicKey({ publicKey: invalidPublicKey }).success).toBe(false);
+      expect(deriveAccountFromPublicKey({ publicKey: invalidPublicKey, throwOnError: false }).success).toBe(false);
     }
   });
 });

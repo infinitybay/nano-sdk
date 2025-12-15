@@ -35,10 +35,10 @@ export function publicKeyToBytes(params: PublicKeyToBytesParams & NonThrowing): 
 export function publicKeyToBytes(params: PublicKeyToBytesParams & Throwing): Uint8Array;
 export function publicKeyToBytes(params: PublicKeyToBytesParams): Uint8Array | Result<Uint8Array>;
 export function publicKeyToBytes(params: PublicKeyToBytesParams) {
-  if (params.throwOnError === true) {
-    return publicKeyToBytesThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return publicKeyToBytesNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return publicKeyToBytesThrowing({ ...params, throwOnError: true });
   }
 }
 
@@ -74,9 +74,9 @@ export function bytesToPublicKey(params: BytesToPublicKeyParams & NonThrowing): 
 export function bytesToPublicKey(params: BytesToPublicKeyParams & Throwing): PublicKeyString;
 export function bytesToPublicKey(params: BytesToPublicKeyParams): PublicKeyString | Result<PublicKeyString>;
 export function bytesToPublicKey(params: BytesToPublicKeyParams) {
-  if (params.throwOnError === true) {
-    return bytesToPublicKeyThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return bytesToPublicKeyNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return bytesToPublicKeyThrowing({ ...params, throwOnError: true });
   }
 }

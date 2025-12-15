@@ -1,6 +1,6 @@
 import { post } from "../http/post";
 import { PostResult } from "../http/post-result";
-import { RequestConfig, SafeRequestConfig, ThrowingRequestConfig } from "../http/request-config";
+import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { StatsRequest } from "../requests/stats";
 import { StatsResponse } from "../responses/stats";
 
@@ -11,7 +11,7 @@ type ResponseType<T extends StatsRequest> = StatsResponse<{
 export function stats<const T extends StatsRequest>(
   url: string,
   request: T,
-  config?: SafeRequestConfig
+  config?: NonThrowingRequestConfig
 ): Promise<PostResult<ResponseType<T>>>;
 
 export function stats<const T extends StatsRequest>(
@@ -27,7 +27,7 @@ export function stats<const T extends StatsRequest>(
 ): Promise<ResponseType<T>> | Promise<PostResult<ResponseType<T>>>;
 
 export function stats(url: string, request: StatsRequest, config?: RequestConfig) {
-  if (config?.throwOnError === true) {
+  if (config?.throwOnError === false) {
     return post(
       url,
       request,
@@ -35,7 +35,7 @@ export function stats(url: string, request: StatsRequest, config?: RequestConfig
       StatsResponse({
         type: request.type,
       }),
-      config as ThrowingRequestConfig
+      config as NonThrowingRequestConfig
     );
   } else {
     return post(
@@ -45,7 +45,7 @@ export function stats(url: string, request: StatsRequest, config?: RequestConfig
       StatsResponse({
         type: request.type,
       }),
-      config as SafeRequestConfig
+      config as ThrowingRequestConfig
     );
   }
 }

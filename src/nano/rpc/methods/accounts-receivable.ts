@@ -1,6 +1,6 @@
 import { post } from "../http/post";
 import { PostResult } from "../http/post-result";
-import { RequestConfig, SafeRequestConfig, ThrowingRequestConfig } from "../http/request-config";
+import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { AccountsReceivableRequest } from "../requests/accounts-receivable";
 import { AccountsReceivableResponse } from "../responses/accounts-receivable";
 import { BoolFlag } from "./conditional-types/bool-flag";
@@ -15,7 +15,7 @@ type ResponseType<T extends AccountsReceivableRequest> = AccountsReceivableRespo
 export function accounts_receivable<const T extends AccountsReceivableRequest>(
   url: string,
   request: T,
-  config?: SafeRequestConfig
+  config?: NonThrowingRequestConfig
 ): Promise<PostResult<ResponseType<T>>>;
 
 export function accounts_receivable<const T extends AccountsReceivableRequest>(
@@ -31,7 +31,7 @@ export function accounts_receivable<const T extends AccountsReceivableRequest>(
 ): Promise<ResponseType<T>> | Promise<PostResult<ResponseType<T>>>;
 
 export function accounts_receivable(url: string, request: AccountsReceivableRequest, config?: RequestConfig) {
-  if (config?.throwOnError === true) {
+  if (config?.throwOnError === false) {
     return post(
       url,
       request,
@@ -40,7 +40,7 @@ export function accounts_receivable(url: string, request: AccountsReceivableRequ
         source: request.source === true,
         threshold: request.threshold !== undefined && request.threshold !== "" && request.threshold !== "0",
       }),
-      config as ThrowingRequestConfig
+      config as NonThrowingRequestConfig
     );
   } else {
     return post(
@@ -51,7 +51,7 @@ export function accounts_receivable(url: string, request: AccountsReceivableRequ
         source: request.source === true,
         threshold: request.threshold !== undefined && request.threshold !== "" && request.threshold !== "0",
       }),
-      config as SafeRequestConfig
+      config as ThrowingRequestConfig
     );
   }
 }

@@ -122,9 +122,9 @@ export function formatRaw(params: FormatRawParams & NonThrowing): Result<string>
 export function formatRaw(params: FormatRawParams & Throwing): string;
 export function formatRaw(params: FormatRawParams): string | Result<string>;
 export function formatRaw(params: FormatRawParams) {
-  if (params.throwOnError === true) {
-    return formatRawThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return formatRawNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return formatRawThrowing({ ...params, throwOnError: true });
   }
 }

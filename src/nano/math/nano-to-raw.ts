@@ -43,9 +43,9 @@ export function nanoToRaw(params: NanoToRawParams & NonThrowing): Result<RawAmou
 export function nanoToRaw(params: NanoToRawParams & Throwing): RawAmountString;
 export function nanoToRaw(params: NanoToRawParams): RawAmountString | Result<RawAmountString>;
 export function nanoToRaw(params: NanoToRawParams) {
-  if (params.throwOnError === true) {
-    return nanoToRawThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return nanoToRawNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return nanoToRawThrowing({ ...params, throwOnError: true });
   }
 }

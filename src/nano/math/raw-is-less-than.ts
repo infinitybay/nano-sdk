@@ -27,9 +27,9 @@ export function rawIsLessThan(params: RawIsLessThanParams & NonThrowing): Predic
 export function rawIsLessThan(params: RawIsLessThanParams & Throwing): boolean;
 export function rawIsLessThan(params: RawIsLessThanParams): PredicateResult<"checked", "less"> | boolean;
 export function rawIsLessThan(params: RawIsLessThanParams) {
-  if (params.throwOnError === true) {
-    return rawIsLessThanThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return rawIsLessThanNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return rawIsLessThanThrowing({ ...params, throwOnError: true });
   }
 }

@@ -1,6 +1,6 @@
 import { post } from "../http/post";
 import { PostResult } from "../http/post-result";
-import { RequestConfig, SafeRequestConfig, ThrowingRequestConfig } from "../http/request-config";
+import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { AccountHistoryRequest } from "../requests/account-history";
 import { AccountHistoryResponse } from "../responses/account-history";
 import { BoolFlag } from "./conditional-types/bool-flag";
@@ -15,7 +15,7 @@ type ResponseType<T extends AccountHistoryRequest> = AccountHistoryResponse<{
 export function account_history<const T extends AccountHistoryRequest>(
   url: string,
   request: T,
-  config?: SafeRequestConfig
+  config?: NonThrowingRequestConfig
 ): Promise<PostResult<ResponseType<T>>>;
 
 export function account_history<const T extends AccountHistoryRequest>(
@@ -31,7 +31,7 @@ export function account_history<const T extends AccountHistoryRequest>(
 ): Promise<ResponseType<T>> | Promise<PostResult<ResponseType<T>>>;
 
 export function account_history(url: string, request: AccountHistoryRequest, config?: RequestConfig) {
-  if (config?.throwOnError === true) {
+  if (config?.throwOnError === false) {
     return post(
       url,
       request,
@@ -41,7 +41,7 @@ export function account_history(url: string, request: AccountHistoryRequest, con
         raw: request.raw === true,
         reverse: request.reverse === true,
       }),
-      config as ThrowingRequestConfig
+      config as NonThrowingRequestConfig
     );
   } else {
     return post(
@@ -53,7 +53,7 @@ export function account_history(url: string, request: AccountHistoryRequest, con
         raw: request.raw === true,
         reverse: request.reverse === true,
       }),
-      config as SafeRequestConfig
+      config as ThrowingRequestConfig
     );
   }
 }

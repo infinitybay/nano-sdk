@@ -38,7 +38,7 @@ describe("signHash function", () => {
       { hash: TestData.Valid.Hash3(), privateKey: TestData.Invalid.PrivateKey.TooShort() },
     ];
     for (let i = 0; i < data.length; i++) {
-      expect(signHash({ hash: data[i].hash, privateKey: data[i].privateKey }).success).toBe(false);
+      expect(signHash({ hash: data[i].hash, privateKey: data[i].privateKey, throwOnError: false }).success).toBe(false);
     }
   });
 });

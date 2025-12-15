@@ -35,10 +35,10 @@ export function signatureToBytes(params: SignatureToBytesParams & NonThrowing): 
 export function signatureToBytes(params: SignatureToBytesParams & Throwing): Uint8Array;
 export function signatureToBytes(params: SignatureToBytesParams): Uint8Array | Result<Uint8Array>;
 export function signatureToBytes(params: SignatureToBytesParams) {
-  if (params.throwOnError === true) {
-    return signatureToBytesThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return signatureToBytesNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return signatureToBytesThrowing({ ...params, throwOnError: true });
   }
 }
 
@@ -74,9 +74,9 @@ export function bytesToSignature(params: BytesToSignatureParams & NonThrowing): 
 export function bytesToSignature(params: BytesToSignatureParams & Throwing): SignatureString;
 export function bytesToSignature(params: BytesToSignatureParams): SignatureString | Result<SignatureString>;
 export function bytesToSignature(params: BytesToSignatureParams) {
-  if (params.throwOnError === true) {
-    return bytesToSignatureThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return bytesToSignatureNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return bytesToSignatureThrowing({ ...params, throwOnError: true });
   }
 }

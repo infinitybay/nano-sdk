@@ -26,21 +26,21 @@ describe("rawIsLessThan", () => {
   });
 
   test("returns predicate results without throwing", () => {
-    const lessResult = rawIsLessThan({ left: "1", right: "2" });
+    const lessResult = rawIsLessThan({ left: "1", right: "2", throwOnError: false });
     assert(lessResult.checked);
     expect(lessResult.less).toBe(true);
 
-    const greaterResult = rawIsLessThan({ left: "5", right: "2" });
+    const greaterResult = rawIsLessThan({ left: "5", right: "2", throwOnError: false });
     assert(greaterResult.checked);
     expect(greaterResult.less).toBe(false);
   });
 
   test("returns predicate error for invalid inputs without throwing", () => {
-    const leftInvalid = rawIsLessThan({ left: "", right: RawAmountStrings.zero() });
+    const leftInvalid = rawIsLessThan({ left: "", right: RawAmountStrings.zero(), throwOnError: false });
     assert(!leftInvalid.checked);
     expect(leftInvalid.error).toBeInstanceOf(Error);
 
-    const rightInvalid = rawIsLessThan({ left: RawAmountStrings.zero(), right: "-3" });
+    const rightInvalid = rawIsLessThan({ left: RawAmountStrings.zero(), right: "-3", throwOnError: false });
     assert(!rightInvalid.checked);
     expect(rightInvalid.error).toBeInstanceOf(Error);
   });

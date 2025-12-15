@@ -9,7 +9,7 @@ describe("rawPlus", () => {
   });
 
   test("returns success result in non-throwing mode", () => {
-    const result = rawPlus({ raw: "5", addend: "4" });
+    const result = rawPlus({ raw: "5", addend: "4", throwOnError: false });
     assert(result.success);
     expect(result.data).toBe("9");
   });
@@ -26,7 +26,7 @@ describe("rawPlus", () => {
   });
 
   test("returns failure result when addition would overflow without throwing", () => {
-    const result = rawPlus({ raw: RawAmountStrings.max(), addend: "1" });
+    const result = rawPlus({ raw: RawAmountStrings.max(), addend: "1", throwOnError: false });
     expect(result.success).toBe(false);
   });
 
@@ -34,7 +34,7 @@ describe("rawPlus", () => {
     expect(() => rawPlus({ raw: "", addend: "1", throwOnError: true })).toThrow("Invalid raw value.");
     expect(() => rawPlus({ raw: "1", addend: "-5", throwOnError: true })).toThrow("Invalid addend value.");
 
-    const result = rawPlus({ raw: "abc", addend: "1" });
+    const result = rawPlus({ raw: "abc", addend: "1", throwOnError: false });
     expect(result.success).toBe(false);
   });
 });

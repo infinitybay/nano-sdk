@@ -53,9 +53,9 @@ export function rawMinus(params: RawMinusParams & NonThrowing): Result<RawAmount
 export function rawMinus(params: RawMinusParams & Throwing): RawAmountString;
 export function rawMinus(params: RawMinusParams): RawAmountString | Result<RawAmountString>;
 export function rawMinus(params: RawMinusParams) {
-  if (params.throwOnError === true) {
-    return rawMinusThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return rawMinusNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return rawMinusThrowing({ ...params, throwOnError: true });
   }
 }

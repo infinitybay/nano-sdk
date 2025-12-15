@@ -43,10 +43,10 @@ export function accountToBytes(params: AccountToBytesParams & NonThrowing): Resu
 export function accountToBytes(params: AccountToBytesParams & Throwing): Uint8Array;
 export function accountToBytes(params: AccountToBytesParams): Uint8Array | Result<Uint8Array>;
 export function accountToBytes(params: AccountToBytesParams) {
-  if (params.throwOnError === true) {
-    return accountToBytesThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return accountToBytesNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return accountToBytesThrowing({ ...params, throwOnError: true });
   }
 }
 
@@ -77,9 +77,9 @@ export function bytesToAccount(params: BytesToAccountParams & NonThrowing): Resu
 export function bytesToAccount(params: BytesToAccountParams & Throwing): AccountString;
 export function bytesToAccount(params: BytesToAccountParams): AccountString | Result<AccountString>;
 export function bytesToAccount(params: BytesToAccountParams) {
-  if (params.throwOnError === true) {
-    return bytesToAccountThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return bytesToAccountNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return bytesToAccountThrowing({ ...params, throwOnError: true });
   }
 }

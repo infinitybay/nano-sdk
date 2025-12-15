@@ -28,7 +28,7 @@ describe("hashBlock function", () => {
     invalidBlocks[3].balance = TestData.Invalid.RawAmount.InvalidCharacters();
     invalidBlocks[4].link = TestData.Invalid.Link.TooLong();
     for (let i = 0; i < invalidBlocks.length; i++) {
-      expect(hashBlock(invalidBlocks[i]).success).toBe(false);
+      expect(hashBlock({ ...invalidBlocks[i], throwOnError: false }).success).toBe(false);
     }
   });
 });

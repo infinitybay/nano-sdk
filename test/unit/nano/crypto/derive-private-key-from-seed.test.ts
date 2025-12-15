@@ -30,7 +30,7 @@ describe("derivePrivateKeyFromSeed function", () => {
       TestData.Invalid.Seed.TooShort(),
     ];
     for (const invalidSeed of invalidSeeds) {
-      expect(derivePrivateKeyFromSeed({ seed: invalidSeed, seedIndex: 0 }).success).toBe(false);
+      expect(derivePrivateKeyFromSeed({ seed: invalidSeed, seedIndex: 0, throwOnError: false }).success).toBe(false);
     }
   });
 });

@@ -10,7 +10,7 @@ describe("nanoToRaw", () => {
   });
 
   test("returns success result in non-throwing mode", () => {
-    const result = nanoToRaw({ nano: "2" });
+    const result = nanoToRaw({ nano: "2", throwOnError: false });
     const expected = (2n * RAW_SCALE).toString();
     assert(result.success);
     expect(result.data).toBe(expected);
@@ -27,9 +27,9 @@ describe("nanoToRaw", () => {
   });
 
   test("returns failure result when validation fails without throwing", () => {
-    expect(nanoToRaw({ nano: "" }).success).toBe(false);
-    expect(nanoToRaw({ nano: " -1" }).success).toBe(false);
-    expect(nanoToRaw({ nano: "0.1234567890123456789012345678901" }).success).toBe(false);
+    expect(nanoToRaw({ nano: "", throwOnError: false }).success).toBe(false);
+    expect(nanoToRaw({ nano: " -1", throwOnError: false }).success).toBe(false);
+    expect(nanoToRaw({ nano: "0.1234567890123456789012345678901", throwOnError: false }).success).toBe(false);
   });
 
   test("throws on invalid nano input when configured to throw", () => {

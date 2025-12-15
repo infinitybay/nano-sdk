@@ -19,21 +19,21 @@ describe("rawIsZero", () => {
   });
 
   test("returns predicate results without throwing", () => {
-    const zeroResult = rawIsZero({ raw: RawAmountStrings.zero() });
+    const zeroResult = rawIsZero({ raw: RawAmountStrings.zero(), throwOnError: false });
     assert(zeroResult.checked);
     expect(zeroResult.zero).toBe(true);
 
-    const nonZeroResult = rawIsZero({ raw: RawAmountStrings.max() });
+    const nonZeroResult = rawIsZero({ raw: RawAmountStrings.max(), throwOnError: false });
     assert(nonZeroResult.checked);
     expect(nonZeroResult.zero).toBe(false);
   });
 
   test("returns predicate error for invalid values without throwing", () => {
-    const emptyResult = rawIsZero({ raw: "" });
+    const emptyResult = rawIsZero({ raw: "", throwOnError: false });
     assert(!emptyResult.checked);
     expect(emptyResult.error).toBeInstanceOf(Error);
 
-    const negativeResult = rawIsZero({ raw: "-1" });
+    const negativeResult = rawIsZero({ raw: "-1", throwOnError: false });
     assert(!negativeResult.checked);
     expect(negativeResult.error).toBeInstanceOf(Error);
   });

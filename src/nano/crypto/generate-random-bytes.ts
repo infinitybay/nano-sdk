@@ -65,9 +65,9 @@ export function generateRandomBytes(params: GenerateRandomBytesParams & NonThrow
 export function generateRandomBytes(params: GenerateRandomBytesParams & Throwing): Uint8Array;
 export function generateRandomBytes(params: GenerateRandomBytesParams): Uint8Array | Result<Uint8Array>;
 export function generateRandomBytes(params: GenerateRandomBytesParams) {
-  if (params.throwOnError === true) {
-    return generateRandomBytesThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return generateRandomBytesNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return generateRandomBytesThrowing({ ...params, throwOnError: true });
   }
 }

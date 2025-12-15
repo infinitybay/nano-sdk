@@ -22,7 +22,7 @@ describe("Hex conversion utilities", () => {
     const invalidHexs = [TestData.Invalid.Hash.InvalidCharacters(), "ZZZ"];
 
     for (const invalidHex of invalidHexs) {
-      expect(hexToBytes({ hex: invalidHex }).success).toBe(false);
+      expect(hexToBytes({ hex: invalidHex, throwOnError: false }).success).toBe(false);
     }
   });
 });

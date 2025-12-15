@@ -11,7 +11,7 @@ describe("verifyHash function", () => {
       { hash: TestData.Valid.Hash4(), block: TestData.Valid.StateBlock4() },
     ];
     for (let i = 0; i < data.length; i++) {
-      const result = verifyHash(data[i]);
+      const result = verifyHash({ ...data[i], throwOnError: false });
       expect(result).toEqual({ checked: true, validHash: true });
     }
   });
@@ -24,7 +24,7 @@ describe("verifyHash function", () => {
       { hash: TestData.Valid.Hash1(), block: TestData.Valid.StateBlock4() },
     ];
     for (let i = 0; i < data.length; i++) {
-      const result = verifyHash(data[i]);
+      const result = verifyHash({ ...data[i], throwOnError: false });
       assert(result.checked);
       expect(result.validHash).toBe(false);
     }

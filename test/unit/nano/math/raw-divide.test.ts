@@ -11,7 +11,7 @@ describe("rawDivide", () => {
   });
 
   test("returns success result in non-throwing mode", () => {
-    const result = rawDivide({ dividend: "20", divisor: "4" });
+    const result = rawDivide({ dividend: "20", divisor: "4", throwOnError: false });
     assert(result.success);
     expect(result.data).toBe("5");
   });
@@ -29,15 +29,15 @@ describe("rawDivide", () => {
   });
 
   test("returns failure result instead of throwing when errors occur without throwOnError", () => {
-    expect(rawDivide({ dividend: "10", divisor: "0" }).success).toBe(false);
-    expect(rawDivide({ dividend: "10", divisor: "3" }).success).toBe(false);
+    expect(rawDivide({ dividend: "10", divisor: "0", throwOnError: false }).success).toBe(false);
+    expect(rawDivide({ dividend: "10", divisor: "3", throwOnError: false }).success).toBe(false);
   });
 
   test("rejects invalid inputs", () => {
     expect(() => rawDivide({ dividend: "", divisor: "1", throwOnError: true })).toThrow("Invalid dividend value.");
     expect(() => rawDivide({ dividend: "1", divisor: "abc", throwOnError: true })).toThrow("Invalid divisor value.");
 
-    const result = rawDivide({ dividend: "abc", divisor: "1" });
+    const result = rawDivide({ dividend: "abc", divisor: "1", throwOnError: false });
     expect(result.success).toBe(false);
   });
 });

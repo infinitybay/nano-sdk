@@ -11,7 +11,7 @@ describe("rawIsEqualTo", () => {
   });
 
   test("returns predicate result when values are equal without throwing", () => {
-    const result = rawIsEqualTo({ left: RawAmountStrings.zero(), right: RawAmountStrings.zero() });
+    const result = rawIsEqualTo({ left: RawAmountStrings.zero(), right: RawAmountStrings.zero(), throwOnError: false });
     expect(result).toEqual({ checked: true, equal: true });
   });
 
@@ -27,11 +27,11 @@ describe("rawIsEqualTo", () => {
   });
 
   test("returns predicate error for invalid inputs without throwing", () => {
-    const leftInvalid = rawIsEqualTo({ left: "", right: RawAmountStrings.zero() });
+    const leftInvalid = rawIsEqualTo({ left: "", right: RawAmountStrings.zero(), throwOnError: false });
     assert(!leftInvalid.checked);
     expect(leftInvalid.error).toBeInstanceOf(Error);
 
-    const rightInvalid = rawIsEqualTo({ left: RawAmountStrings.zero(), right: "-1" });
+    const rightInvalid = rawIsEqualTo({ left: RawAmountStrings.zero(), right: "-1", throwOnError: false });
     assert(!rightInvalid.checked);
     expect(rightInvalid.error).toBeInstanceOf(Error);
   });

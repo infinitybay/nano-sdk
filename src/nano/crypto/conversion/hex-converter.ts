@@ -45,10 +45,10 @@ export function hexToBytes(params: HexToBytesParams & NonThrowing): Result<Uint8
 export function hexToBytes(params: HexToBytesParams & Throwing): Uint8Array;
 export function hexToBytes(params: HexToBytesParams): Uint8Array | Result<Uint8Array>;
 export function hexToBytes(params: HexToBytesParams) {
-  if (params.throwOnError === true) {
-    return hexToBytesThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return hexToBytesNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return hexToBytesThrowing({ ...params, throwOnError: true });
   }
 }
 
@@ -95,9 +95,9 @@ export function bytesToHex(params: BytesToHexParams & NonThrowing): Result<HexSt
 export function bytesToHex(params: BytesToHexParams & Throwing): HexString;
 export function bytesToHex(params: BytesToHexParams): HexString | Result<HexString>;
 export function bytesToHex(params: BytesToHexParams) {
-  if (params.throwOnError === true) {
-    return bytesToHexThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return bytesToHexNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return bytesToHexThrowing({ ...params, throwOnError: true });
   }
 }

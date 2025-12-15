@@ -25,11 +25,11 @@ describe("Signature conversion utilities", () => {
     ];
 
     for (const invalidSignature of invalidSignatures) {
-      expect(signatureToBytes({ signature: invalidSignature }).success).toBe(false);
+      expect(signatureToBytes({ signature: invalidSignature, throwOnError: false }).success).toBe(false);
     }
   });
 
   test("rejects byte arrays with incorrect length", () => {
-    expect(bytesToSignature({ signatureBytes: new Uint8Array([1, 2]) }).success).toBe(false);
+    expect(bytesToSignature({ signatureBytes: new Uint8Array([1, 2]), throwOnError: false }).success).toBe(false);
   });
 });

@@ -28,11 +28,11 @@ describe("Account conversion utilities", () => {
     ];
 
     for (const invalidAccount of invalidAccounts) {
-      expect(accountToBytes({ account: invalidAccount }).success).toBe(false);
+      expect(accountToBytes({ account: invalidAccount, throwOnError: false }).success).toBe(false);
     }
   });
 
   test("rejects byte arrays with incorrect length", () => {
-    expect(bytesToAccount({ publicKeyBytes: new Uint8Array([1, 2]) }).success).toBe(false);
+    expect(bytesToAccount({ publicKeyBytes: new Uint8Array([1, 2]), throwOnError: false }).success).toBe(false);
   });
 });

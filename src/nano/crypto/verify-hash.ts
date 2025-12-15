@@ -48,9 +48,9 @@ export function verifyHash(params: VerifyHashParams & NonThrowing): PredicateRes
 export function verifyHash(params: VerifyHashParams & Throwing): boolean;
 export function verifyHash(params: VerifyHashParams): PredicateResult<"checked", "validHash"> | boolean;
 export function verifyHash(params: VerifyHashParams) {
-  if (params.throwOnError === true) {
-    return verifyHashThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return verifyHashNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return verifyHashThrowing({ ...params, throwOnError: true });
   }
 }

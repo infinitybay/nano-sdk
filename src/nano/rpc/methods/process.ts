@@ -1,6 +1,6 @@
 import { post } from "../http/post";
 import { PostResult } from "../http/post-result";
-import { RequestConfig, SafeRequestConfig, ThrowingRequestConfig } from "../http/request-config";
+import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { ProcessRequest } from "../requests/process";
 import { ProcessResponse } from "../responses/process";
 import { BoolFlag } from "./conditional-types/bool-flag";
@@ -13,7 +13,7 @@ type ResponseType<T extends ProcessRequest> = ProcessResponse<{
 export function process<const T extends ProcessRequest>(
   url: string,
   request: T,
-  config?: SafeRequestConfig
+  config?: NonThrowingRequestConfig
 ): Promise<PostResult<ResponseType<T>>>;
 
 export function process<const T extends ProcessRequest>(
@@ -29,7 +29,7 @@ export function process<const T extends ProcessRequest>(
 ): Promise<ResponseType<T>> | Promise<PostResult<ResponseType<T>>>;
 
 export function process(url: string, request: ProcessRequest, config?: RequestConfig) {
-  if (config?.throwOnError === true) {
+  if (config?.throwOnError === false) {
     return post(
       url,
       request,
@@ -37,7 +37,7 @@ export function process(url: string, request: ProcessRequest, config?: RequestCo
       ProcessResponse({
         async: request.async === true,
       }),
-      config as ThrowingRequestConfig
+      config as NonThrowingRequestConfig
     );
   } else {
     return post(
@@ -47,7 +47,7 @@ export function process(url: string, request: ProcessRequest, config?: RequestCo
       ProcessResponse({
         async: request.async === true,
       }),
-      config as SafeRequestConfig
+      config as ThrowingRequestConfig
     );
   }
 }

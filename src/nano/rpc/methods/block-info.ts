@@ -1,6 +1,6 @@
 import { post } from "../http/post";
 import { PostResult } from "../http/post-result";
-import { RequestConfig, SafeRequestConfig, ThrowingRequestConfig } from "../http/request-config";
+import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { BlockInfoRequest } from "../requests/block-info";
 import { BlockInfoResponse } from "../responses/block-info";
 import { BoolFlag } from "./conditional-types/bool-flag";
@@ -14,7 +14,7 @@ type ResponseType<T extends BlockInfoRequest> = BlockInfoResponse<{
 export function block_info<const T extends BlockInfoRequest>(
   url: string,
   request: T,
-  config?: SafeRequestConfig
+  config?: NonThrowingRequestConfig
 ): Promise<PostResult<ResponseType<T>>>;
 
 export function block_info<const T extends BlockInfoRequest>(
@@ -30,7 +30,7 @@ export function block_info<const T extends BlockInfoRequest>(
 ): Promise<ResponseType<T>> | Promise<PostResult<ResponseType<T>>>;
 
 export function block_info(url: string, request: BlockInfoRequest, config?: RequestConfig) {
-  if (config?.throwOnError === true) {
+  if (config?.throwOnError === false) {
     return post(
       url,
       request,
@@ -39,7 +39,7 @@ export function block_info(url: string, request: BlockInfoRequest, config?: Requ
         include_linked_account: request.include_linked_account === true,
         json_block: request.json_block === true,
       }),
-      config as ThrowingRequestConfig
+      config as NonThrowingRequestConfig
     );
   } else {
     return post(
@@ -50,7 +50,7 @@ export function block_info(url: string, request: BlockInfoRequest, config?: Requ
         include_linked_account: request.include_linked_account === true,
         json_block: request.json_block === true,
       }),
-      config as SafeRequestConfig
+      config as ThrowingRequestConfig
     );
   }
 }

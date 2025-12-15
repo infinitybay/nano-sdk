@@ -20,11 +20,11 @@ describe("Hash conversion utilities", () => {
     ];
 
     for (const invalidHash of invalidHashs) {
-      expect(hashToBytes({ hash: invalidHash }).success).toBe(false);
+      expect(hashToBytes({ hash: invalidHash, throwOnError: false }).success).toBe(false);
     }
   });
 
   test("rejects byte arrays with incorrect length", () => {
-    expect(bytesToHash({ hashBytes: new Uint8Array([1, 2]) }).success).toBe(false);
+    expect(bytesToHash({ hashBytes: new Uint8Array([1, 2]), throwOnError: false }).success).toBe(false);
   });
 });

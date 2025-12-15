@@ -29,9 +29,9 @@ export function rawIsGreaterThan(params: RawIsGreaterThanParams & NonThrowing): 
 export function rawIsGreaterThan(params: RawIsGreaterThanParams & Throwing): boolean;
 export function rawIsGreaterThan(params: RawIsGreaterThanParams): PredicateResult<"checked", "greater"> | boolean;
 export function rawIsGreaterThan(params: RawIsGreaterThanParams) {
-  if (params.throwOnError === true) {
-    return rawIsGreaterThanThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return rawIsGreaterThanNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return rawIsGreaterThanThrowing({ ...params, throwOnError: true });
   }
 }

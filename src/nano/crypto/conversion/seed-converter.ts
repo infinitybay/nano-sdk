@@ -35,10 +35,10 @@ export function seedToBytes(params: SeedToBytesParams & NonThrowing): Result<Uin
 export function seedToBytes(params: SeedToBytesParams & Throwing): Uint8Array;
 export function seedToBytes(params: SeedToBytesParams): Uint8Array | Result<Uint8Array>;
 export function seedToBytes(params: SeedToBytesParams) {
-  if (params.throwOnError === true) {
-    return seedToBytesThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return seedToBytesNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return seedToBytesThrowing({ ...params, throwOnError: true });
   }
 }
 
@@ -74,9 +74,9 @@ export function bytesToSeed(params: BytesToSeedParams & NonThrowing): Result<See
 export function bytesToSeed(params: BytesToSeedParams & Throwing): SeedString;
 export function bytesToSeed(params: BytesToSeedParams): SeedString | Result<SeedString>;
 export function bytesToSeed(params: BytesToSeedParams) {
-  if (params.throwOnError === true) {
-    return bytesToSeedThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return bytesToSeedNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return bytesToSeedThrowing({ ...params, throwOnError: true });
   }
 }

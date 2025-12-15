@@ -11,7 +11,7 @@ describe("verifySignature function", () => {
       { hash: TestData.Valid.Hash4(), publicKey: TestData.Valid.PublicKey4(), signature: TestData.Valid.Signature4() },
     ];
     for (let i = 0; i < data.length; i++) {
-      const result = verifySignature(data[i]);
+      const result = verifySignature({ ...data[i], throwOnError: false });
       expect(result).toEqual({ checked: true, validSignature: true });
     }
   });
@@ -24,7 +24,7 @@ describe("verifySignature function", () => {
       { hash: TestData.Valid.Hash4(), publicKey: TestData.Valid.PublicKey4(), signature: TestData.Valid.Signature1() },
     ];
     for (let i = 0; i < data.length; i++) {
-      const result = verifySignature(data[i]);
+      const result = verifySignature({ ...data[i], throwOnError: false });
       assert(result.checked);
       expect(result.validSignature).toBe(false);
     }

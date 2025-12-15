@@ -1,6 +1,6 @@
 import { post } from "../http/post";
 import { PostResult } from "../http/post-result";
-import { RequestConfig, SafeRequestConfig, ThrowingRequestConfig } from "../http/request-config";
+import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { ConfirmationInfoRequest } from "../requests/confirmation-info";
 import { ConfirmationInfoResponse } from "../responses/confirmation-info";
 import { BoolFlag } from "./conditional-types/bool-flag";
@@ -15,7 +15,7 @@ type ResponseType<T extends ConfirmationInfoRequest> = ConfirmationInfoResponse<
 export function confirmation_info<const T extends ConfirmationInfoRequest>(
   url: string,
   request: T,
-  config?: SafeRequestConfig
+  config?: NonThrowingRequestConfig
 ): Promise<PostResult<ResponseType<T>>>;
 
 export function confirmation_info<const T extends ConfirmationInfoRequest>(
@@ -31,7 +31,7 @@ export function confirmation_info<const T extends ConfirmationInfoRequest>(
 ): Promise<ResponseType<T>> | Promise<PostResult<ResponseType<T>>>;
 
 export function confirmation_info(url: string, request: ConfirmationInfoRequest, config?: RequestConfig) {
-  if (config?.throwOnError === true) {
+  if (config?.throwOnError === false) {
     return post(
       url,
       request,
@@ -41,7 +41,7 @@ export function confirmation_info(url: string, request: ConfirmationInfoRequest,
         json_block: request.json_block === true,
         representatives: request.representatives === true,
       }),
-      config as ThrowingRequestConfig
+      config as NonThrowingRequestConfig
     );
   } else {
     return post(
@@ -53,7 +53,7 @@ export function confirmation_info(url: string, request: ConfirmationInfoRequest,
         json_block: request.json_block === true,
         representatives: request.representatives === true,
       }),
-      config as SafeRequestConfig
+      config as ThrowingRequestConfig
     );
   }
 }

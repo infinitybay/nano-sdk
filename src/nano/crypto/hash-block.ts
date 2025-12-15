@@ -95,9 +95,9 @@ export function hashBlock(params: HashBlockParams & NonThrowing): Result<HashStr
 export function hashBlock(params: HashBlockParams & Throwing): HashString;
 export function hashBlock(params: HashBlockParams): HashString | Result<HashString>;
 export function hashBlock(params: HashBlockParams) {
-  if (params.throwOnError === true) {
-    return hashBlockThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return hashBlockNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return hashBlockThrowing({ ...params, throwOnError: true });
   }
 }

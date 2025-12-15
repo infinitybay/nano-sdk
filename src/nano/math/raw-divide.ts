@@ -59,9 +59,9 @@ export function rawDivide(params: RawDivideParams & NonThrowing): Result<RawAmou
 export function rawDivide(params: RawDivideParams & Throwing): RawAmountString;
 export function rawDivide(params: RawDivideParams): RawAmountString | Result<RawAmountString>;
 export function rawDivide(params: RawDivideParams) {
-  if (params.throwOnError === true) {
-    return rawDivideThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return rawDivideNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return rawDivideThrowing({ ...params, throwOnError: true });
   }
 }

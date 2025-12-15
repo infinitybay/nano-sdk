@@ -39,9 +39,9 @@ export function deriveAccountFromPrivateKey(
   params: DeriveAccountFromPrivateKeyParams
 ): AccountString | Result<AccountString>;
 export function deriveAccountFromPrivateKey(params: DeriveAccountFromPrivateKeyParams) {
-  if (params.throwOnError === true) {
-    return deriveAccountFromPrivateKeyThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return deriveAccountFromPrivateKeyNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return deriveAccountFromPrivateKeyThrowing({ ...params, throwOnError: true });
   }
 }

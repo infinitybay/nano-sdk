@@ -19,7 +19,10 @@ export const AccountStringSuperRefine = (val: string, ctx: z.RefinementCtx, expe
       return;
     }
 
-    const checksumBytesResult = decodeBase32({ encoded: val.substring(val.length - encodedChecksumLength) });
+    const checksumBytesResult = decodeBase32({
+      encoded: val.substring(val.length - encodedChecksumLength),
+      throwOnError: false,
+    });
     if (!checksumBytesResult.success) {
       ctx.addIssue({ code: "custom", message: "Invalid format" });
       return;
@@ -30,6 +33,7 @@ export const AccountStringSuperRefine = (val: string, ctx: z.RefinementCtx, expe
         val.length - encodedPublicKeyLength - encodedChecksumLength,
         val.length - encodedChecksumLength
       ),
+      throwOnError: false,
     });
     if (!publicKeyBytesResult.success) {
       ctx.addIssue({ code: "custom", message: "Invalid format" });

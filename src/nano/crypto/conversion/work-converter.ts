@@ -35,10 +35,10 @@ export function workToBytes(params: WorkToBytesParams & NonThrowing): Result<Uin
 export function workToBytes(params: WorkToBytesParams & Throwing): Uint8Array;
 export function workToBytes(params: WorkToBytesParams): Uint8Array | Result<Uint8Array>;
 export function workToBytes(params: WorkToBytesParams) {
-  if (params.throwOnError === true) {
-    return workToBytesThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return workToBytesNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return workToBytesThrowing({ ...params, throwOnError: true });
   }
 }
 
@@ -74,9 +74,9 @@ export function bytesToWork(params: BytesToWorkParams & NonThrowing): Result<Wor
 export function bytesToWork(params: BytesToWorkParams & Throwing): WorkString;
 export function bytesToWork(params: BytesToWorkParams): WorkString | Result<WorkString>;
 export function bytesToWork(params: BytesToWorkParams) {
-  if (params.throwOnError === true) {
-    return bytesToWorkThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return bytesToWorkNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return bytesToWorkThrowing({ ...params, throwOnError: true });
   }
 }

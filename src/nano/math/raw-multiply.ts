@@ -56,9 +56,9 @@ export function rawMultiply(params: RawMultiplyParams & NonThrowing): Result<Raw
 export function rawMultiply(params: RawMultiplyParams & Throwing): RawAmountString;
 export function rawMultiply(params: RawMultiplyParams): RawAmountString | Result<RawAmountString>;
 export function rawMultiply(params: RawMultiplyParams) {
-  if (params.throwOnError === true) {
-    return rawMultiplyThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return rawMultiplyNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return rawMultiplyThrowing({ ...params, throwOnError: true });
   }
 }

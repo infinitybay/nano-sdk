@@ -1,6 +1,6 @@
 import { post } from "../http/post";
 import { PostResult } from "../http/post-result";
-import { RequestConfig, SafeRequestConfig, ThrowingRequestConfig } from "../http/request-config";
+import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { LedgerRequest } from "../requests/ledger";
 import { LedgerResponse } from "../responses/ledger";
 import { BoolFlag } from "./conditional-types/bool-flag";
@@ -15,7 +15,7 @@ type ResponseType<T extends LedgerRequest> = LedgerResponse<{
 export function ledger<const T extends LedgerRequest>(
   url: string,
   request: T,
-  config?: SafeRequestConfig
+  config?: NonThrowingRequestConfig
 ): Promise<PostResult<ResponseType<T>>>;
 
 export function ledger<const T extends LedgerRequest>(
@@ -31,7 +31,7 @@ export function ledger<const T extends LedgerRequest>(
 ): Promise<ResponseType<T>> | Promise<PostResult<ResponseType<T>>>;
 
 export function ledger(url: string, request: LedgerRequest, config?: RequestConfig) {
-  if (config?.throwOnError === true) {
+  if (config?.throwOnError === false) {
     return post(
       url,
       request,
@@ -41,7 +41,7 @@ export function ledger(url: string, request: LedgerRequest, config?: RequestConf
         representative: request.representative === true,
         weight: request.weight === true,
       }),
-      config as ThrowingRequestConfig
+      config as NonThrowingRequestConfig
     );
   } else {
     return post(
@@ -53,7 +53,7 @@ export function ledger(url: string, request: LedgerRequest, config?: RequestConf
         representative: request.representative === true,
         weight: request.weight === true,
       }),
-      config as SafeRequestConfig
+      config as ThrowingRequestConfig
     );
   }
 }

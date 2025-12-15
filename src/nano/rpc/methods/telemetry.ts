@@ -1,6 +1,6 @@
 import { post } from "../http/post";
 import { PostResult } from "../http/post-result";
-import { RequestConfig, SafeRequestConfig, ThrowingRequestConfig } from "../http/request-config";
+import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { TelemetryRequest } from "../requests/telemetry";
 import { TelemetryResponse } from "../responses/telemetry";
 import { BoolFlag } from "./conditional-types/bool-flag";
@@ -17,7 +17,7 @@ type ResponseType<T extends TelemetryRequest> = TelemetryResponse<{
 export function telemetry<const T extends TelemetryRequest>(
   url: string,
   request: T,
-  config?: SafeRequestConfig
+  config?: NonThrowingRequestConfig
 ): Promise<PostResult<ResponseType<T>>>;
 
 export function telemetry<const T extends TelemetryRequest>(
@@ -33,7 +33,7 @@ export function telemetry<const T extends TelemetryRequest>(
 ): Promise<ResponseType<T>> | Promise<PostResult<ResponseType<T>>>;
 
 export function telemetry(url: string, request: TelemetryRequest, config?: RequestConfig) {
-  if (config?.throwOnError === true) {
+  if (config?.throwOnError === false) {
     return post(
       url,
       request,
@@ -43,7 +43,7 @@ export function telemetry(url: string, request: TelemetryRequest, config?: Reque
         port: request.port !== undefined,
         raw: request.raw === true,
       }),
-      config as ThrowingRequestConfig
+      config as NonThrowingRequestConfig
     );
   } else {
     return post(
@@ -55,7 +55,7 @@ export function telemetry(url: string, request: TelemetryRequest, config?: Reque
         port: request.port !== undefined,
         raw: request.raw === true,
       }),
-      config as SafeRequestConfig
+      config as ThrowingRequestConfig
     );
   }
 }

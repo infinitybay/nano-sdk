@@ -27,9 +27,9 @@ export function rawIsEqualTo(params: RawIsEqualToParams & NonThrowing): Predicat
 export function rawIsEqualTo(params: RawIsEqualToParams & Throwing): boolean;
 export function rawIsEqualTo(params: RawIsEqualToParams): PredicateResult<"checked", "equal"> | boolean;
 export function rawIsEqualTo(params: RawIsEqualToParams) {
-  if (params.throwOnError === true) {
-    return rawIsEqualToThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return rawIsEqualToNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return rawIsEqualToThrowing({ ...params, throwOnError: true });
   }
 }

@@ -49,9 +49,9 @@ export function verifySignature(
 export function verifySignature(params: VerifySignatureParams & Throwing): boolean;
 export function verifySignature(params: VerifySignatureParams): PredicateResult<"checked", "validSignature"> | boolean;
 export function verifySignature(params: VerifySignatureParams) {
-  if (params.throwOnError === true) {
-    return verifySignatureThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return verifySignatureNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return verifySignatureThrowing({ ...params, throwOnError: true });
   }
 }

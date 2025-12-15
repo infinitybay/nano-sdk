@@ -29,10 +29,10 @@ function generateSeedNonThrowing(params: GenerateSeedParams & NonThrowing): Resu
 export function generateSeed(params: GenerateSeedParams & NonThrowing): Result<SeedString>;
 export function generateSeed(params: GenerateSeedParams & Throwing): SeedString;
 export function generateSeed(params: GenerateSeedParams): SeedString | Result<SeedString>;
-export function generateSeed(params: GenerateSeedParams = { throwOnError: false }) {
-  if (params.throwOnError === true) {
-    return generateSeedThrowing({ ...params, throwOnError: true });
-  } else {
+export function generateSeed(params: GenerateSeedParams = {}) {
+  if (params.throwOnError === false) {
     return generateSeedNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return generateSeedThrowing({ ...params, throwOnError: true });
   }
 }

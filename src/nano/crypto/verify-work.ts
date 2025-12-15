@@ -54,9 +54,9 @@ export function verifyWork(params: VerifyWorkParams & NonThrowing): PredicateRes
 export function verifyWork(params: VerifyWorkParams & Throwing): boolean;
 export function verifyWork(params: VerifyWorkParams): PredicateResult<"checked", "validWork"> | boolean;
 export function verifyWork(params: VerifyWorkParams) {
-  if (params.throwOnError === true) {
-    return verifyWorkThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return verifyWorkNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return verifyWorkThrowing({ ...params, throwOnError: true });
   }
 }

@@ -1,6 +1,6 @@
 import { post } from "../http/post";
 import { PostResult } from "../http/post-result";
-import { RequestConfig, SafeRequestConfig, ThrowingRequestConfig } from "../http/request-config";
+import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { PeersRequest } from "../requests/peers";
 import { PeersResponse } from "../responses/peers";
 import { BoolFlag } from "./conditional-types/bool-flag";
@@ -13,7 +13,7 @@ type ResponseType<T extends PeersRequest> = PeersResponse<{
 export function peers<const T extends PeersRequest>(
   url: string,
   request: T,
-  config?: SafeRequestConfig
+  config?: NonThrowingRequestConfig
 ): Promise<PostResult<ResponseType<T>>>;
 
 export function peers<const T extends PeersRequest>(
@@ -29,7 +29,7 @@ export function peers<const T extends PeersRequest>(
 ): Promise<ResponseType<T>> | Promise<PostResult<ResponseType<T>>>;
 
 export function peers(url: string, request: PeersRequest, config?: RequestConfig) {
-  if (config?.throwOnError === true) {
+  if (config?.throwOnError === false) {
     return post(
       url,
       request,
@@ -37,7 +37,7 @@ export function peers(url: string, request: PeersRequest, config?: RequestConfig
       PeersResponse({
         peer_details: request.peer_details === true,
       }),
-      config as ThrowingRequestConfig
+      config as NonThrowingRequestConfig
     );
   } else {
     return post(
@@ -47,7 +47,7 @@ export function peers(url: string, request: PeersRequest, config?: RequestConfig
       PeersResponse({
         peer_details: request.peer_details === true,
       }),
-      config as SafeRequestConfig
+      config as ThrowingRequestConfig
     );
   }
 }

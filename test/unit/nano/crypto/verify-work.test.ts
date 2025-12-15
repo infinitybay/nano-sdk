@@ -11,7 +11,7 @@ describe("verifyWork function", () => {
       { hash: TestData.Valid.Hash4(), work: TestData.Valid.Work4(), threshold: TestData.Valid.WorkDifficulty4() },
     ];
     for (let i = 0; i < data.length; i++) {
-      const result = verifyWork(data[i]);
+      const result = verifyWork({ ...data[i], throwOnError: false });
       expect(result).toEqual({ checked: true, validWork: true });
     }
   });
@@ -24,7 +24,7 @@ describe("verifyWork function", () => {
       { hash: TestData.Valid.Hash4(), work: TestData.Valid.Work1(), threshold: TestData.Valid.WorkDifficulty4() },
     ];
     for (let i = 0; i < data.length; i++) {
-      const result = verifyWork(data[i]);
+      const result = verifyWork({ ...data[i], throwOnError: false });
       assert(result.checked);
       expect(result.validWork).toBe(false);
     }
@@ -38,7 +38,7 @@ describe("verifyWork function", () => {
       { hash: TestData.Valid.Hash4(), work: TestData.Valid.Work4(), threshold: "ffffffffff000000" },
     ];
     for (let i = 0; i < data.length; i++) {
-      const result = verifyWork(data[i]);
+      const result = verifyWork({ ...data[i], throwOnError: false });
       assert(result.checked);
       expect(result.validWork).toBe(false);
     }

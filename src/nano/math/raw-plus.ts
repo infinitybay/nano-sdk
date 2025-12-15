@@ -53,9 +53,9 @@ export function rawPlus(params: RawPlusParams & NonThrowing): Result<RawAmountSt
 export function rawPlus(params: RawPlusParams & Throwing): RawAmountString;
 export function rawPlus(params: RawPlusParams): RawAmountString | Result<RawAmountString>;
 export function rawPlus(params: RawPlusParams) {
-  if (params.throwOnError === true) {
-    return rawPlusThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return rawPlusNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return rawPlusThrowing({ ...params, throwOnError: true });
   }
 }

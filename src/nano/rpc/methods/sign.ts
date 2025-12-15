@@ -1,6 +1,6 @@
 import { post } from "../http/post";
 import { PostResult } from "../http/post-result";
-import { RequestConfig, SafeRequestConfig, ThrowingRequestConfig } from "../http/request-config";
+import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { SignRequest } from "../requests/sign";
 import { SignResponse } from "../responses/sign";
 import { NotUndefinedFlag } from "./conditional-types/not-undefined-flag";
@@ -13,7 +13,7 @@ type ResponseType<T extends SignRequest> = SignResponse<{
 export function sign<const T extends SignRequest>(
   url: string,
   request: T,
-  config?: SafeRequestConfig
+  config?: NonThrowingRequestConfig
 ): Promise<PostResult<ResponseType<T>>>;
 
 export function sign<const T extends SignRequest>(
@@ -29,7 +29,7 @@ export function sign<const T extends SignRequest>(
 ): Promise<ResponseType<T>> | Promise<PostResult<ResponseType<T>>>;
 
 export function sign(url: string, request: SignRequest, config?: RequestConfig) {
-  if (config?.throwOnError === true) {
+  if (config?.throwOnError === false) {
     return post(
       url,
       request,
@@ -37,7 +37,7 @@ export function sign(url: string, request: SignRequest, config?: RequestConfig) 
       SignResponse({
         block: request.block !== undefined,
       }),
-      config as ThrowingRequestConfig
+      config as NonThrowingRequestConfig
     );
   } else {
     return post(
@@ -47,7 +47,7 @@ export function sign(url: string, request: SignRequest, config?: RequestConfig) 
       SignResponse({
         block: request.block !== undefined,
       }),
-      config as SafeRequestConfig
+      config as ThrowingRequestConfig
     );
   }
 }

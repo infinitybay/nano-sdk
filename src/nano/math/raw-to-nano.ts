@@ -37,9 +37,9 @@ export function rawToNano(params: RawToNanoParams & NonThrowing): Result<NanoAmo
 export function rawToNano(params: RawToNanoParams & Throwing): NanoAmountString;
 export function rawToNano(params: RawToNanoParams): NanoAmountString | Result<NanoAmountString>;
 export function rawToNano(params: RawToNanoParams) {
-  if (params.throwOnError === true) {
-    return rawToNanoThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return rawToNanoNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return rawToNanoThrowing({ ...params, throwOnError: true });
   }
 }

@@ -33,9 +33,9 @@ export function rawIsZero(params: RawIsZeroParams & NonThrowing): PredicateResul
 export function rawIsZero(params: RawIsZeroParams & Throwing): boolean;
 export function rawIsZero(params: RawIsZeroParams): PredicateResult<"checked", "zero"> | boolean;
 export function rawIsZero(params: RawIsZeroParams) {
-  if (params.throwOnError === true) {
-    return rawIsZeroThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return rawIsZeroNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return rawIsZeroThrowing({ ...params, throwOnError: true });
   }
 }

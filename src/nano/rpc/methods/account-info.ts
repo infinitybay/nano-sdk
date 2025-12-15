@@ -1,6 +1,6 @@
 import { post } from "../http/post";
 import { PostResult } from "../http/post-result";
-import { RequestConfig, SafeRequestConfig, ThrowingRequestConfig } from "../http/request-config";
+import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { AccountInfoRequest } from "../requests/account-info";
 import { AccountInfoResponse } from "../responses/account-info";
 import { BoolFlag } from "./conditional-types/bool-flag";
@@ -16,7 +16,7 @@ type ResponseType<T extends AccountInfoRequest> = AccountInfoResponse<{
 export function account_info<const T extends AccountInfoRequest>(
   url: string,
   request: T,
-  config?: SafeRequestConfig
+  config?: NonThrowingRequestConfig
 ): Promise<PostResult<ResponseType<T>>>;
 
 export function account_info<const T extends AccountInfoRequest>(
@@ -32,7 +32,7 @@ export function account_info<const T extends AccountInfoRequest>(
 ): Promise<ResponseType<T>> | Promise<PostResult<ResponseType<T>>>;
 
 export function account_info(url: string, request: AccountInfoRequest, config?: RequestConfig) {
-  if (config?.throwOnError === true) {
+  if (config?.throwOnError === false) {
     return post(
       url,
       request,
@@ -43,7 +43,7 @@ export function account_info(url: string, request: AccountInfoRequest, config?: 
         receivable: request.receivable === true,
         include_confirmed: request.include_confirmed === true,
       }),
-      config as ThrowingRequestConfig
+      config as NonThrowingRequestConfig
     );
   } else {
     return post(
@@ -56,7 +56,7 @@ export function account_info(url: string, request: AccountInfoRequest, config?: 
         receivable: request.receivable === true,
         include_confirmed: request.include_confirmed === true,
       }),
-      config as SafeRequestConfig
+      config as ThrowingRequestConfig
     );
   }
 }

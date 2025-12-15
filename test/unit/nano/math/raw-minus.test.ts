@@ -9,7 +9,7 @@ describe("rawMinus", () => {
   });
 
   test("returns success result in non-throwing mode", () => {
-    const result = rawMinus({ raw: "5", subtrahend: "2" });
+    const result = rawMinus({ raw: "5", subtrahend: "2", throwOnError: false });
     assert(result.success);
     expect(result.data).toBe("3");
   });
@@ -21,7 +21,7 @@ describe("rawMinus", () => {
   });
 
   test("returns failure result when subtraction would underflow without throwing", () => {
-    const result = rawMinus({ raw: RawAmountStrings.min(), subtrahend: "1" });
+    const result = rawMinus({ raw: RawAmountStrings.min(), subtrahend: "1", throwOnError: false });
     expect(result.success).toBe(false);
   });
 
@@ -29,7 +29,7 @@ describe("rawMinus", () => {
     expect(() => rawMinus({ raw: "", subtrahend: "1", throwOnError: true })).toThrow("Invalid raw value.");
     expect(() => rawMinus({ raw: "1", subtrahend: "-5", throwOnError: true })).toThrow("Invalid subtrahend value.");
 
-    const result = rawMinus({ raw: "abc", subtrahend: "1" });
+    const result = rawMinus({ raw: "abc", subtrahend: "1", throwOnError: false });
     expect(result.success).toBe(false);
   });
 });

@@ -37,9 +37,9 @@ export function deriveAccountFromLink(params: DeriveAccountFromLinkParams & NonT
 export function deriveAccountFromLink(params: DeriveAccountFromLinkParams & Throwing): AccountString;
 export function deriveAccountFromLink(params: DeriveAccountFromLinkParams): AccountString | Result<AccountString>;
 export function deriveAccountFromLink(params: DeriveAccountFromLinkParams) {
-  if (params.throwOnError === true) {
-    return deriveAccountFromLinkThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return deriveAccountFromLinkNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return deriveAccountFromLinkThrowing({ ...params, throwOnError: true });
   }
 }

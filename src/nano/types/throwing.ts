@@ -1,3 +1,3 @@
 export type Throwing = {
-  throwOnError: true;
+  throwOnError?: true | undefined;
 };

@@ -9,7 +9,7 @@ describe("formatRaw", () => {
   });
 
   test("returns results in non-throwing mode", () => {
-    const result = formatRaw({ raw: "2000", groupingSize: 3, groupingSeparator: "," });
+    const result = formatRaw({ raw: "2000", groupingSize: 3, groupingSeparator: ",", throwOnError: false });
     assert(result.success);
     expect(result.data).toBe("2,000");
   });
@@ -55,7 +55,7 @@ describe("formatRaw", () => {
     expect(() =>
       formatRaw({ raw: RawAmountStrings.zero(), unit: "nano", decimalPlaces: 31, throwOnError: true })
     ).toThrow("Invalid decimal places value.");
-    const result = formatRaw({ raw: RawAmountStrings.zero(), unit: "nano", decimalPlaces: 31 });
+    const result = formatRaw({ raw: RawAmountStrings.zero(), unit: "nano", decimalPlaces: 31, throwOnError: false });
     expect(result.success).toBe(false);
   });
 
@@ -77,7 +77,7 @@ describe("formatRaw", () => {
 
   test("returns failure result when validation fails without throwing", () => {
     const invalidRaw = "-10";
-    const result = formatRaw({ raw: invalidRaw });
+    const result = formatRaw({ raw: invalidRaw, throwOnError: false });
     expect(result.success).toBe(false);
   });
 });

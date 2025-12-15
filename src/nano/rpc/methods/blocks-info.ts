@@ -1,6 +1,6 @@
 import { post } from "../http/post";
 import { PostResult } from "../http/post-result";
-import { RequestConfig, SafeRequestConfig, ThrowingRequestConfig } from "../http/request-config";
+import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { BlocksInfoRequest } from "../requests/blocks-info";
 import { BlocksInfoResponse } from "../responses/blocks-info";
 import { BoolFlag } from "./conditional-types/bool-flag";
@@ -18,7 +18,7 @@ type ResponseType<T extends BlocksInfoRequest> = BlocksInfoResponse<{
 export function blocks_info<const T extends BlocksInfoRequest>(
   url: string,
   request: T,
-  config?: SafeRequestConfig
+  config?: NonThrowingRequestConfig
 ): Promise<PostResult<ResponseType<T>>>;
 
 export function blocks_info<const T extends BlocksInfoRequest>(
@@ -34,7 +34,7 @@ export function blocks_info<const T extends BlocksInfoRequest>(
 ): Promise<ResponseType<T>> | Promise<PostResult<ResponseType<T>>>;
 
 export function blocks_info(url: string, request: BlocksInfoRequest, config?: RequestConfig) {
-  if (config?.throwOnError === true) {
+  if (config?.throwOnError === false) {
     return post(
       url,
       request,
@@ -47,7 +47,7 @@ export function blocks_info(url: string, request: BlocksInfoRequest, config?: Re
         receive_hash: request.receive_hash === true,
         source: request.source === true,
       }),
-      config as ThrowingRequestConfig
+      config as NonThrowingRequestConfig
     );
   } else {
     return post(
@@ -62,7 +62,7 @@ export function blocks_info(url: string, request: BlocksInfoRequest, config?: Re
         receive_hash: request.receive_hash === true,
         source: request.source === true,
       }),
-      config as SafeRequestConfig
+      config as ThrowingRequestConfig
     );
   }
 }

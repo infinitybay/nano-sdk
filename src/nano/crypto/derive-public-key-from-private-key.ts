@@ -52,9 +52,9 @@ export function derivePublicKeyFromPrivateKey(
   params: DerivePublicKeyFromPrivateKeyParams
 ): PublicKeyString | Result<PublicKeyString>;
 export function derivePublicKeyFromPrivateKey(params: DerivePublicKeyFromPrivateKeyParams) {
-  if (params.throwOnError === true) {
-    return derivePublicKeyFromPrivateKeyThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return derivePublicKeyFromPrivateKeyNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return derivePublicKeyFromPrivateKeyThrowing({ ...params, throwOnError: true });
   }
 }

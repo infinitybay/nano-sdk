@@ -33,9 +33,9 @@ export function rawIsLessThanOrEqualTo(
   params: RawIsLessThanOrEqualToParams
 ): PredicateResult<"checked", "lessOrEqual"> | boolean;
 export function rawIsLessThanOrEqualTo(params: RawIsLessThanOrEqualToParams) {
-  if (params.throwOnError === true) {
-    return rawIsLessThanOrEqualToThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return rawIsLessThanOrEqualToNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return rawIsLessThanOrEqualToThrowing({ ...params, throwOnError: true });
   }
 }

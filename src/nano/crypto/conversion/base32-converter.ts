@@ -53,10 +53,10 @@ export function encodeBase32(params: EncodeBase32Params & NonThrowing): Result<s
 export function encodeBase32(params: EncodeBase32Params & Throwing): string;
 export function encodeBase32(params: EncodeBase32Params): string | Result<string>;
 export function encodeBase32(params: EncodeBase32Params) {
-  if (params.throwOnError === true) {
-    return encodeBase32Throwing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return encodeBase32NonThrowing({ ...params, throwOnError: false });
+  } else {
+    return encodeBase32Throwing({ ...params, throwOnError: true });
   }
 }
 
@@ -119,9 +119,9 @@ export function decodeBase32(params: DecodeBase32Params & NonThrowing): Result<U
 export function decodeBase32(params: DecodeBase32Params & Throwing): Uint8Array;
 export function decodeBase32(params: DecodeBase32Params): Uint8Array | Result<Uint8Array>;
 export function decodeBase32(params: DecodeBase32Params) {
-  if (params.throwOnError === true) {
-    return decodeBase32Throwing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return decodeBase32NonThrowing({ ...params, throwOnError: false });
+  } else {
+    return decodeBase32Throwing({ ...params, throwOnError: true });
   }
 }

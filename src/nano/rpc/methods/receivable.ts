@@ -1,6 +1,6 @@
 import { post } from "../http/post";
 import { PostResult } from "../http/post-result";
-import { RequestConfig, SafeRequestConfig, ThrowingRequestConfig } from "../http/request-config";
+import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { ReceivableRequest } from "../requests/receivable";
 import { ReceivableResponse } from "../responses/receivable";
 import { BoolFlag } from "./conditional-types/bool-flag";
@@ -16,7 +16,7 @@ type ResponseType<T extends ReceivableRequest> = ReceivableResponse<{
 export function receivable<const T extends ReceivableRequest>(
   url: string,
   request: T,
-  config?: SafeRequestConfig
+  config?: NonThrowingRequestConfig
 ): Promise<PostResult<ResponseType<T>>>;
 
 export function receivable<const T extends ReceivableRequest>(
@@ -32,7 +32,7 @@ export function receivable<const T extends ReceivableRequest>(
 ): Promise<ResponseType<T>> | Promise<PostResult<ResponseType<T>>>;
 
 export function receivable(url: string, request: ReceivableRequest, config?: RequestConfig) {
-  if (config?.throwOnError === true) {
+  if (config?.throwOnError === false) {
     return post(
       url,
       request,
@@ -42,7 +42,7 @@ export function receivable(url: string, request: ReceivableRequest, config?: Req
         source: request.source === true,
         threshold: request.threshold !== undefined && request.threshold !== "" && request.threshold !== "0",
       }),
-      config as ThrowingRequestConfig
+      config as NonThrowingRequestConfig
     );
   } else {
     return post(
@@ -54,7 +54,7 @@ export function receivable(url: string, request: ReceivableRequest, config?: Req
         source: request.source === true,
         threshold: request.threshold !== undefined && request.threshold !== "" && request.threshold !== "0",
       }),
-      config as SafeRequestConfig
+      config as ThrowingRequestConfig
     );
   }
 }

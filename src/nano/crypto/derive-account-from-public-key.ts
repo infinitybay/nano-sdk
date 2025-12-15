@@ -69,9 +69,9 @@ export function deriveAccountFromPublicKey(
   params: DeriveAccountFromPublicKeyParams
 ): AccountString | Result<AccountString>;
 export function deriveAccountFromPublicKey(params: DeriveAccountFromPublicKeyParams) {
-  if (params.throwOnError === true) {
-    return deriveAccountFromPublicKeyThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return deriveAccountFromPublicKeyNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return deriveAccountFromPublicKeyThrowing({ ...params, throwOnError: true });
   }
 }

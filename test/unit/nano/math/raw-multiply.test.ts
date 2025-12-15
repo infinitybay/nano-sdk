@@ -9,7 +9,7 @@ describe("rawMultiply", () => {
   });
 
   test("returns success result in non-throwing mode", () => {
-    const result = rawMultiply({ raw: "3", multiplier: "3" });
+    const result = rawMultiply({ raw: "3", multiplier: "3", throwOnError: false });
     assert(result.success);
     expect(result.data).toBe("9");
   });
@@ -26,7 +26,7 @@ describe("rawMultiply", () => {
   });
 
   test("returns failure result when multiplication would overflow without throwing", () => {
-    const result = rawMultiply({ raw: RawAmountStrings.max(), multiplier: "2" });
+    const result = rawMultiply({ raw: RawAmountStrings.max(), multiplier: "2", throwOnError: false });
     expect(result.success).toBe(false);
   });
 
@@ -34,7 +34,7 @@ describe("rawMultiply", () => {
     expect(() => rawMultiply({ raw: "", multiplier: "1", throwOnError: true })).toThrow("Invalid raw value.");
     expect(() => rawMultiply({ raw: "1", multiplier: "-1", throwOnError: true })).toThrow("Invalid multiplier value.");
 
-    const result = rawMultiply({ raw: "abc", multiplier: "1" });
+    const result = rawMultiply({ raw: "abc", multiplier: "1", throwOnError: false });
     expect(result.success).toBe(false);
   });
 });

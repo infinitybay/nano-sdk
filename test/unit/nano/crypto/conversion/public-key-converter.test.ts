@@ -25,11 +25,11 @@ describe("Public key conversion utilities", () => {
     ];
 
     for (const invalidPublicKey of invalidPublicKeys) {
-      expect(publicKeyToBytes({ publicKey: invalidPublicKey }).success).toBe(false);
+      expect(publicKeyToBytes({ publicKey: invalidPublicKey, throwOnError: false }).success).toBe(false);
     }
   });
 
   test("rejects byte arrays with incorrect length", () => {
-    expect(bytesToPublicKey({ publicKeyBytes: new Uint8Array([1, 2]) }).success).toBe(false);
+    expect(bytesToPublicKey({ publicKeyBytes: new Uint8Array([1, 2]), throwOnError: false }).success).toBe(false);
   });
 });

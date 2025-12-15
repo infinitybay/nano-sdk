@@ -7,5 +7,5 @@ export interface RequestConfig {
   throwOnError?: boolean;
 }
 
-export type SafeRequestConfig = RequestConfig & { throwOnError?: false | undefined };
-export type ThrowingRequestConfig = RequestConfig & { throwOnError: true };
+export type NonThrowingRequestConfig = RequestConfig & { throwOnError: false };
+export type ThrowingRequestConfig = RequestConfig & { throwOnError?: true | undefined };

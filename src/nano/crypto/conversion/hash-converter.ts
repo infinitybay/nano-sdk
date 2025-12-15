@@ -35,10 +35,10 @@ export function hashToBytes(params: HashToBytesParams & NonThrowing): Result<Uin
 export function hashToBytes(params: HashToBytesParams & Throwing): Uint8Array;
 export function hashToBytes(params: HashToBytesParams): Uint8Array | Result<Uint8Array>;
 export function hashToBytes(params: HashToBytesParams) {
-  if (params.throwOnError === true) {
-    return hashToBytesThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return hashToBytesNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return hashToBytesThrowing({ ...params, throwOnError: true });
   }
 }
 
@@ -74,9 +74,9 @@ export function bytesToHash(params: BytesToHashParams & NonThrowing): Result<Has
 export function bytesToHash(params: BytesToHashParams & Throwing): HashString;
 export function bytesToHash(params: BytesToHashParams): HashString | Result<HashString>;
 export function bytesToHash(params: BytesToHashParams) {
-  if (params.throwOnError === true) {
-    return bytesToHashThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return bytesToHashNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return bytesToHashThrowing({ ...params, throwOnError: true });
   }
 }

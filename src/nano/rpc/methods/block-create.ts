@@ -1,6 +1,6 @@
 import { post } from "../http/post";
 import { PostResult } from "../http/post-result";
-import { RequestConfig, SafeRequestConfig, ThrowingRequestConfig } from "../http/request-config";
+import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { BlockCreateRequest } from "../requests/block-create";
 import { BlockCreateResponse } from "../responses/block-create";
 import { BoolFlag } from "./conditional-types/bool-flag";
@@ -13,7 +13,7 @@ type ResponseType<T extends BlockCreateRequest> = BlockCreateResponse<{
 export function block_create<const T extends BlockCreateRequest>(
   url: string,
   request: T,
-  config?: SafeRequestConfig
+  config?: NonThrowingRequestConfig
 ): Promise<PostResult<ResponseType<T>>>;
 
 export function block_create<const T extends BlockCreateRequest>(
@@ -29,7 +29,7 @@ export function block_create<const T extends BlockCreateRequest>(
 ): Promise<ResponseType<T>> | Promise<PostResult<ResponseType<T>>>;
 
 export function block_create(url: string, request: BlockCreateRequest, config?: RequestConfig) {
-  if (config?.throwOnError === true) {
+  if (config?.throwOnError === false) {
     return post(
       url,
       request,
@@ -37,7 +37,7 @@ export function block_create(url: string, request: BlockCreateRequest, config?: 
       BlockCreateResponse({
         json_block: request.json_block === true,
       }),
-      config as ThrowingRequestConfig
+      config as NonThrowingRequestConfig
     );
   } else {
     return post(
@@ -47,7 +47,7 @@ export function block_create(url: string, request: BlockCreateRequest, config?: 
       BlockCreateResponse({
         json_block: request.json_block === true,
       }),
-      config as SafeRequestConfig
+      config as ThrowingRequestConfig
     );
   }
 }

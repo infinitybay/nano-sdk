@@ -35,10 +35,10 @@ export function privateKeyToBytes(params: PrivateKeyToBytesParams & NonThrowing)
 export function privateKeyToBytes(params: PrivateKeyToBytesParams & Throwing): Uint8Array;
 export function privateKeyToBytes(params: PrivateKeyToBytesParams): Uint8Array | Result<Uint8Array>;
 export function privateKeyToBytes(params: PrivateKeyToBytesParams) {
-  if (params.throwOnError === true) {
-    return privateKeyToBytesThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return privateKeyToBytesNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return privateKeyToBytesThrowing({ ...params, throwOnError: true });
   }
 }
 
@@ -74,9 +74,9 @@ export function bytesToPrivateKey(params: BytesToPrivateKeyParams & NonThrowing)
 export function bytesToPrivateKey(params: BytesToPrivateKeyParams & Throwing): PrivateKeyString;
 export function bytesToPrivateKey(params: BytesToPrivateKeyParams): PrivateKeyString | Result<PrivateKeyString>;
 export function bytesToPrivateKey(params: BytesToPrivateKeyParams) {
-  if (params.throwOnError === true) {
-    return bytesToPrivateKeyThrowing({ ...params, throwOnError: true });
-  } else {
+  if (params.throwOnError === false) {
     return bytesToPrivateKeyNonThrowing({ ...params, throwOnError: false });
+  } else {
+    return bytesToPrivateKeyThrowing({ ...params, throwOnError: true });
   }
 }
