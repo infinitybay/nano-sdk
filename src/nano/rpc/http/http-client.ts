@@ -1,13 +1,13 @@
 import { RequestConfig } from "./request-config";
 
-export interface SuccessfulHttpResponse {
+export interface HttpResponseSuccess {
   success: true;
   data?: unknown;
   status?: number;
   statusText?: string;
 }
 
-export interface UnsuccessfulHttpResponse {
+export interface HttpResponseError {
   success: false;
   error: {
     message: string;
@@ -16,8 +16,10 @@ export interface UnsuccessfulHttpResponse {
   statusText?: string;
 }
 
+export type HttpResponse = HttpResponseSuccess | HttpResponseError;
+
 export interface HttpClient {
-  post(url: string, body: unknown, config?: RequestConfig): Promise<SuccessfulHttpResponse | UnsuccessfulHttpResponse>;
+  post(url: string, body: unknown, config?: RequestConfig): Promise<HttpResponse>;
 }
 
 // Credits: https://github.com/rashidshamloo/multi-signal
@@ -108,7 +110,6 @@ export const defaultHttpClient: HttpClient = {
         success: false,
         error: {
           message: err instanceof Error ? err.message : "Unknown fetch error",
-          stack: err instanceof Error ? err.stack : undefined,
         },
       };
     }
