@@ -1,8 +1,10 @@
 import { z } from "zod";
 
+import { BinaryBooleanString } from "../../types/binary-boolean-string";
+
 export function ValidateAccountNumberResponse() {
   return z.object({
-    valid: z.literal("1").or(z.literal("0")),
+    valid: BinaryBooleanString(),
   });
 }
 

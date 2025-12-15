@@ -1,8 +1,10 @@
 import z from "zod";
 
+import { BinaryBooleanString } from "../../types/binary-boolean-string";
+
 export function ReceivableExistsResponse() {
   return z.object({
-    exists: z.union([z.literal("0"), z.literal("1")]),
+    exists: BinaryBooleanString(),
   });
 }
 

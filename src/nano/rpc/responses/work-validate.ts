@@ -1,13 +1,14 @@
 import { z } from "zod";
 
+import { BinaryBooleanString } from "../../types";
 import { NumberString } from "../../types/number";
 import { WorkDifficultyString } from "../../types/work-difficulty";
 
 export function WorkValidateResponse() {
   return z.object({
-    valid: z.literal("1").or(z.literal("0")).optional(),
-    valid_all: z.literal("1").or(z.literal("0")),
-    valid_receive: z.literal("1").or(z.literal("0")),
+    valid: BinaryBooleanString().optional(),
+    valid_all: BinaryBooleanString(),
+    valid_receive: BinaryBooleanString(),
     difficulty: WorkDifficultyString(),
     multiplier: NumberString(),
   });

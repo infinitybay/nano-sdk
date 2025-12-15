@@ -1,8 +1,10 @@
 import { z } from "zod";
 
+import { BinaryBooleanString } from "../../types/binary-boolean-string";
+
 export function EpochUpgradeResponse() {
   return z.object({
-    started: z.literal("1").or(z.literal("0")),
+    started: BinaryBooleanString(),
   });
 }
 

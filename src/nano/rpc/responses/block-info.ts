@@ -3,6 +3,7 @@ import { z } from "zod";
 import { Block } from "../../blocks/block";
 import { AccountString } from "../../types/account";
 import { RawAmountString } from "../../types/amount";
+import { BinaryBooleanString } from "../../types/binary-boolean-string";
 import { BooleanString } from "../../types/boolean";
 import { BooleanDistribution } from "../../types/boolean-distribution";
 import { BooleanOption } from "../../types/boolean-option";
@@ -41,7 +42,7 @@ export type BlockInfoBaseZodType<T extends UppercaseKeys<BlockInfoOptions>> = z.
       {}
     > &
     BooleanOption<T["JSON_BLOCK"], { contents: ReturnType<typeof Block> }, { contents: z.ZodString }> &
-    BooleanOption<T["RECEIVABLE"], { receivable: z.ZodUnion<[z.ZodLiteral<"0">, z.ZodLiteral<"1">]> }, {}> &
+    BooleanOption<T["RECEIVABLE"], { receivable: ReturnType<typeof BinaryBooleanString> }, {}> &
     BooleanOption<
       T["RECEIVE_HASH"],
       { receive_hash: z.ZodUnion<[ReturnType<typeof HashString>, z.ZodLiteral<"0">]> },
@@ -162,7 +163,7 @@ export function BlockInfo(options: BlockInfoOptions): unknown {
   return BlockInfoBase()
     .extend(options.include_linked_account ? { linked_account: AccountString().or(z.literal("0")) } : {})
     .extend(options.json_block ? { contents: Block() } : { contents: z.string() })
-    .extend(options.receivable ? { receivable: z.literal("0").or(z.literal("1")) } : {})
+    .extend(options.receivable ? { receivable: BinaryBooleanString() } : {})
     .extend(options.receive_hash ? { receive_hash: HashString().or(z.literal("0")) } : {})
     .extend(options.source ? { source_account: AccountString().or(z.literal("0")) } : {});
 }
