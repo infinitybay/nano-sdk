@@ -11,15 +11,19 @@ import { HashString } from "../../types/hash";
 import { HeightString } from "../../types/height";
 import { SubtypeString } from "../../types/subtype";
 import { TimestampString } from "../../types/timestamp";
+import { UIntString } from "../../types/uint";
 
 export type ConfirmationResponseBlockContent = z.infer<ReturnType<typeof ConfirmationResponseBlockContent>>;
 export const ConfirmationResponseBlockContent = () =>
   z.union([
-    StateBlock().extend({ linked_account: AccountString().optional(), subtype: SubtypeString().optional() }),
-    LegacyChangeBlock().extend({ linked_account: AccountString().optional() }),
-    LegacyOpenBlock().extend({ linked_account: AccountString().optional() }),
-    LegacyReceiveBlock().extend({ linked_account: AccountString().optional() }),
-    LegacySendBlock().extend({ linked_account: AccountString().optional() }),
+    StateBlock().extend({
+      linked_account: AccountString().or(z.literal("")).optional(),
+      subtype: SubtypeString().optional(),
+    }),
+    LegacyChangeBlock().extend({ linked_account: AccountString().or(z.literal("")).optional() }),
+    LegacyOpenBlock().extend({ linked_account: AccountString().or(z.literal("")).optional() }),
+    LegacyReceiveBlock().extend({ linked_account: AccountString().or(z.literal("")).optional() }),
+    LegacySendBlock().extend({ linked_account: AccountString().or(z.literal("")).optional() }),
   ]);
 
 export type ConfirmationResponse = z.infer<ReturnType<typeof ConfirmationResponse>>;
@@ -44,9 +48,9 @@ export const ConfirmationResponse = () =>
           time: TimestampString(),
           tally: RawAmountString(),
           final: RawAmountString(),
-          blocks: z.string(),
-          voters: z.string(),
-          request_count: z.string(),
+          blocks: UIntString(),
+          voters: UIntString(),
+          request_count: UIntString(),
           votes: z
             .object({
               representative: AccountString(),
