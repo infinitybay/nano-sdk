@@ -1,4 +1,4 @@
-import { SeedIndex, SeedString } from "../../../../src/nano/types/seed";
+import { SeedIndex, SeedIndexBounds, SeedString } from "../../../../src/nano/types/seed";
 import { TestData } from "../../test-data";
 
 describe("SeedString schema", () => {
@@ -41,8 +41,8 @@ describe("SeedIndex schema", () => {
   });
 
   test("rejects seed indices outside bounds", () => {
-    expect(SeedIndex().safeParse(-1).success).toBe(false);
-    expect(SeedIndex().safeParse(4294967296).success).toBe(false);
+    expect(SeedIndex().safeParse(SeedIndexBounds.min() - 1).success).toBe(false);
+    expect(SeedIndex().safeParse(SeedIndexBounds.max() + 1).success).toBe(false);
   });
 
   test("rejects non-numeric seed indices", () => {
