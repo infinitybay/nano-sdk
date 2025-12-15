@@ -1,5 +1,3 @@
-import "../../../zod-extensions";
-
 import { z } from "zod";
 
 import { BooleanDistribution } from "../../types/boolean-distribution";
@@ -9,7 +7,7 @@ import { UppercaseKeys } from "../../types/uppercase-keys";
 
 const PeerDetails = () =>
   z.object({
-    protocol_version: UIntString().transformToUInt(),
+    protocol_version: UIntString(),
     node_id: NodeIdString().or(z.literal("")),
     type: z.string(),
     peering: z.string(),

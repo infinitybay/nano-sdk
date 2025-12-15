@@ -1,5 +1,3 @@
-import "../../../zod-extensions";
-
 import { z } from "zod";
 
 import { AccountString } from "../../types/account";
@@ -19,8 +17,8 @@ const AccountInfoBase = () =>
     representative_block: HashString(),
     balance: RawAmountString(),
     modified_timestamp: TimestampString(),
-    block_count: UIntString().transformToUInt(),
-    account_version: UIntString().transformToUInt(),
+    block_count: UIntString(),
+    account_version: UIntString(),
   });
 
 const AccountInfoRepresentative = () => ({
@@ -37,7 +35,7 @@ const AccountInfoReceivable = () => ({
 
 const AccountInfoConfirmedBase = () => ({
   confirmed_balance: RawAmountString(),
-  confirmed_height: HeightString().transformToUInt(),
+  confirmed_height: HeightString(),
   confirmed_frontier: HashString(),
 });
 

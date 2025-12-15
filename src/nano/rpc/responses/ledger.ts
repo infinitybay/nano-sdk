@@ -1,5 +1,3 @@
-import "../../../zod-extensions";
-
 import { z } from "zod";
 
 import { AccountString } from "../../types/account";
@@ -18,7 +16,7 @@ const LedgerAccountBase = () =>
     representative_block: HashString(),
     balance: RawAmountString(),
     modified_timestamp: TimestampString(),
-    block_count: HeightString().transformToUInt(),
+    block_count: HeightString(),
   });
 
 type LedgerAccountOptions = {

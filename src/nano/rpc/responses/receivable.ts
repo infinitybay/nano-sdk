@@ -1,12 +1,10 @@
-import "../../../zod-extensions";
-
 import { z } from "zod";
 
 import { AccountString } from "../../types/account";
 import { RawAmountString } from "../../types/amount";
 import { BooleanDistribution } from "../../types/boolean-distribution";
 import { HashString } from "../../types/hash";
-import { UInt, UIntString } from "../../types/uint";
+import { UIntString } from "../../types/uint";
 import { UppercaseKeys } from "../../types/uppercase-keys";
 
 type ReceivableBlocksOptions = {
@@ -24,12 +22,12 @@ type ReceivableBlocksZodType<T extends UppercaseKeys<ReceivableBlocksOptions>> =
       z.ZodObject<{
         amount: ReturnType<typeof RawAmountString>;
         source: ReturnType<typeof AccountString>;
-        min_version: ReturnType<typeof UInt>;
+        min_version: ReturnType<typeof UIntString>;
       }>
     >,
     z.ZodRecord<
       ReturnType<typeof HashString>,
-      z.ZodObject<{ amount: ReturnType<typeof RawAmountString>; min_version: ReturnType<typeof UInt> }>
+      z.ZodObject<{ amount: ReturnType<typeof RawAmountString>; min_version: ReturnType<typeof UIntString> }>
     >
   >,
   BooleanDistribution<
@@ -59,7 +57,7 @@ function ReceivableBlocks(options: ReceivableBlocksOptions) {
         z.object({
           amount: RawAmountString(),
           source: AccountString(),
-          min_version: UIntString().transformToUInt(),
+          min_version: UIntString(),
         })
       );
     } else {
@@ -67,7 +65,7 @@ function ReceivableBlocks(options: ReceivableBlocksOptions) {
         HashString(),
         z.object({
           amount: RawAmountString(),
-          min_version: UIntString().transformToUInt(),
+          min_version: UIntString(),
         })
       );
     }

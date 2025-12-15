@@ -1,5 +1,3 @@
-import "../../../zod-extensions";
-
 import { z } from "zod";
 
 import { Block } from "../../blocks/block";
@@ -7,7 +5,7 @@ import { AccountString } from "../../types/account";
 import { RawAmountString } from "../../types/amount";
 import { BooleanDistribution } from "../../types/boolean-distribution";
 import { HashString } from "../../types/hash";
-import { UInt, UIntString } from "../../types/uint";
+import { UIntString } from "../../types/uint";
 import { UppercaseKeys } from "../../types/uppercase-keys";
 
 type ConfirmationInfoBlocksOptions = {
@@ -115,8 +113,8 @@ type ConfirmationInfoResponseOptions = {
 };
 
 type ConfirmationInfoResponseZodType<T extends UppercaseKeys<ConfirmationInfoResponseOptions>> = z.ZodObject<{
-  announcements: ReturnType<typeof UInt>;
-  voters: ReturnType<typeof UInt>;
+  announcements: ReturnType<typeof UIntString>;
+  voters: ReturnType<typeof UIntString>;
   last_winner: ReturnType<typeof HashString>;
   total_tally: ReturnType<typeof RawAmountString>;
   final_tally: ReturnType<typeof RawAmountString>;
@@ -132,8 +130,8 @@ export function ConfirmationInfoResponse<T extends ConfirmationInfoResponseOptio
 ): ConfirmationInfoResponseZodType<UppercaseKeys<T>>;
 export function ConfirmationInfoResponse(options: ConfirmationInfoResponseOptions) {
   return z.object({
-    announcements: UIntString().transformToUInt(),
-    voters: UIntString().transformToUInt(),
+    announcements: UIntString(),
+    voters: UIntString(),
     last_winner: HashString(),
     total_tally: RawAmountString(),
     final_tally: RawAmountString(),

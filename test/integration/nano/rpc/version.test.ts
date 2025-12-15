@@ -12,6 +12,6 @@ describe("version RPC integration", () => {
       rpcRequestConfig
     );
     assert(result.success);
-    expect(result.data.rpc_version).toBe(1);
+    expect(result.data.rpc_version).toBe("1");
   });
 });

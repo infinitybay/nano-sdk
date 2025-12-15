@@ -1,5 +1,3 @@
-import "../../../zod-extensions";
-
 import { z } from "zod";
 
 import { HashString } from "../../types/hash";
@@ -12,7 +10,7 @@ export function WorkGenerateResponse() {
     hash: HashString(),
     work: WorkString(),
     difficulty: WorkDifficultyString(),
-    multiplier: NumberString().transformToNumber(),
+    multiplier: NumberString(),
   });
 }
 

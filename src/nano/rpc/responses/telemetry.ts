@@ -1,5 +1,3 @@
-import "../../../zod-extensions";
-
 import z from "zod";
 
 import { BooleanDistribution } from "../../types/boolean-distribution";
@@ -21,20 +19,20 @@ const TelemetryError = () =>
 export type TelemetryMetrics = z.infer<ReturnType<typeof TelemetryMetrics>>;
 export const TelemetryMetrics = () =>
   z.object({
-    block_count: UIntString().transformToUInt(),
-    cemented_count: UIntString().transformToUInt(),
-    unchecked_count: UIntString().transformToUInt(),
-    account_count: UIntString().transformToUInt(),
-    bandwidth_cap: UIntString().transformToUInt(),
-    peer_count: UIntString().transformToUInt(),
-    protocol_version: UIntString().transformToUInt(),
+    block_count: UIntString(),
+    cemented_count: UIntString(),
+    unchecked_count: UIntString(),
+    account_count: UIntString(),
+    bandwidth_cap: UIntString(),
+    peer_count: UIntString(),
+    protocol_version: UIntString(),
     uptime: TimestampString(),
     genesis_block: HashString(),
-    major_version: UIntString().transformToUInt(),
-    minor_version: UIntString().transformToUInt(),
-    patch_version: UIntString().transformToUInt(),
-    pre_release_version: UIntString().transformToUInt(),
-    maker: UIntString().transformToUInt(),
+    major_version: UIntString(),
+    minor_version: UIntString(),
+    patch_version: UIntString(),
+    pre_release_version: UIntString(),
+    maker: UIntString(),
     timestamp: TimestampString(),
     active_difficulty: WorkDifficultyString(),
     node_id: NodeIdString(),
@@ -45,7 +43,7 @@ export type TelemetryMetricsRaw = z.infer<ReturnType<typeof TelemetryMetricsRaw>
 export const TelemetryMetricsRaw = () =>
   TelemetryMetrics().extend({
     address: EndpointString(),
-    port: PortString().transformToUInt(),
+    port: PortString(),
   });
 
 type TelemetryResponseOptions = {

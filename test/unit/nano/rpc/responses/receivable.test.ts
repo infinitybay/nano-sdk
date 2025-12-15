@@ -24,7 +24,7 @@ describe("ReceivableResponse schema", () => {
     });
     assert(result.success);
     assert(result.data.blocks);
-    expect(result.data.blocks[TestData.Valid.Hash1()].min_version).toBe(1);
+    expect(result.data.blocks[TestData.Valid.Hash1()].min_version).toBe("1");
   });
 
   test("parses receivable response with min_version", () => {
@@ -39,7 +39,7 @@ describe("ReceivableResponse schema", () => {
     });
     assert(result.success);
     assert(result.data.blocks);
-    expect(result.data.blocks[TestData.Valid.Hash1()].min_version).toBe(1);
+    expect(result.data.blocks[TestData.Valid.Hash1()].min_version).toBe("1");
   });
 
   test("parses receivable response with source", () => {

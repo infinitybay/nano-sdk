@@ -1,5 +1,3 @@
-import "../../../zod-extensions";
-
 import { z } from "zod";
 
 import { AccountString } from "../../types/account";
@@ -25,9 +23,9 @@ type BaseBlockHistory = z.infer<ReturnType<typeof BaseBlockHistory>>;
 const BaseBlockHistory = () =>
   z.object({
     local_timestamp: TimestampString(),
-    height: HeightString().transformToUInt(),
+    height: HeightString(),
     hash: HashString(),
-    confirmed: BooleanString().transformToBoolean(),
+    confirmed: BooleanString(),
     work: WorkString(),
     signature: SignatureString(),
   });
@@ -228,9 +226,9 @@ const AccountHistoryEntryNotRaw = () =>
     account: AccountString(),
     amount: RawAmountString(),
     local_timestamp: TimestampString(),
-    height: HeightString().transformToUInt(),
+    height: HeightString(),
     hash: HashString(),
-    confirmed: BooleanString().transformToBoolean(),
+    confirmed: BooleanString(),
   });
 
 type AccountHistoryEntryOptions = {

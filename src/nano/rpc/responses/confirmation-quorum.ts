@@ -1,5 +1,3 @@
-import "../../../zod-extensions";
-
 import { z } from "zod";
 
 import { AccountString } from "../../types/account";
@@ -12,7 +10,7 @@ type ConfirmationQuorum = z.infer<ReturnType<typeof ConfirmationQuorum>>;
 const ConfirmationQuorum = () =>
   z.object({
     quorum_delta: RawAmountString(),
-    online_weight_quorum_percent: NumberString().transformToNumber(),
+    online_weight_quorum_percent: NumberString(),
     online_weight_minimum: RawAmountString(),
     online_stake_total: RawAmountString(),
     peers_stake_total: RawAmountString(),

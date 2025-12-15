@@ -1,5 +1,3 @@
-import "../../../zod-extensions";
-
 import { z } from "zod";
 
 import { AccountString } from "../../types/account";
@@ -10,7 +8,7 @@ const BootstrapPriorities = () =>
   z
     .object({
       account: AccountString(),
-      priority: NumberString().transformToNumber(),
+      priority: NumberString(),
     })
     .array();
 
