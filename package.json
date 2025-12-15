@@ -29,7 +29,7 @@
     "dist"
   ],
   "config": {
-    "nanoRpcUrl": "http://45.90.120.106:7076"
+    "nanoRpcUrl": "http://127.0.0.1:7076"
   },
   "scripts": {
     "build": "rimraf dist && tsc",
