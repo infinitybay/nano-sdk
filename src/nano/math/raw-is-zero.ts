@@ -1,5 +1,6 @@
 import { RawAmountString } from "../types/amount";
 import { NonThrowing } from "../types/non-throwing";
+import { PredicateResult } from "../types/result";
 import { Throwing } from "../types/throwing";
 
 type RawIsZeroParams = {
@@ -14,17 +15,23 @@ function rawIsZeroThrowing(params: RawIsZeroParams & Throwing): boolean {
   return BigInt(rawResult.data) === 0n;
 }
 
-function rawIsZeroNonThrowing(params: RawIsZeroParams & NonThrowing): boolean {
+function rawIsZeroNonThrowing(params: RawIsZeroParams & NonThrowing): PredicateResult<"checked", "zero"> {
   try {
-    return rawIsZeroThrowing({ ...params, throwOnError: true });
-  } catch (_e) {
-    return false;
+    return {
+      checked: true,
+      zero: rawIsZeroThrowing({ ...params, throwOnError: true }),
+    };
+  } catch (e) {
+    return {
+      checked: false,
+      error: e instanceof Error ? e : new Error("Unexpected error."),
+    };
   }
 }
 
-export function rawIsZero(params: RawIsZeroParams & NonThrowing): boolean;
+export function rawIsZero(params: RawIsZeroParams & NonThrowing): PredicateResult<"checked", "zero">;
 export function rawIsZero(params: RawIsZeroParams & Throwing): boolean;
-export function rawIsZero(params: RawIsZeroParams): boolean;
+export function rawIsZero(params: RawIsZeroParams): PredicateResult<"checked", "zero"> | boolean;
 export function rawIsZero(params: RawIsZeroParams) {
   if (params.throwOnError === true) {
     return rawIsZeroThrowing({ ...params, throwOnError: true });

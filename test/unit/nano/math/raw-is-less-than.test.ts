@@ -1,5 +1,6 @@
 import { rawIsLessThan } from "../../../../src/nano/math/raw-is-less-than";
 import { RawAmountStrings } from "../../../../src/nano/types/amount";
+import { assert } from "../../../assert";
 
 describe("rawIsLessThan", () => {
   test("returns true when left is smaller than right", () => {
@@ -24,9 +25,24 @@ describe("rawIsLessThan", () => {
     expect(rawIsLessThan({ left: "9", right: "3", throwOnError: true })).toBe(false);
   });
 
-  test("returns false for invalid inputs without throwing", () => {
-    expect(rawIsLessThan({ left: "", right: RawAmountStrings.zero() })).toBe(false);
-    expect(rawIsLessThan({ left: RawAmountStrings.zero(), right: "-3" })).toBe(false);
+  test("returns predicate results without throwing", () => {
+    const lessResult = rawIsLessThan({ left: "1", right: "2" });
+    assert(lessResult.checked);
+    expect(lessResult.less).toBe(true);
+
+    const greaterResult = rawIsLessThan({ left: "5", right: "2" });
+    assert(greaterResult.checked);
+    expect(greaterResult.less).toBe(false);
+  });
+
+  test("returns predicate error for invalid inputs without throwing", () => {
+    const leftInvalid = rawIsLessThan({ left: "", right: RawAmountStrings.zero() });
+    assert(!leftInvalid.checked);
+    expect(leftInvalid.error).toBeInstanceOf(Error);
+
+    const rightInvalid = rawIsLessThan({ left: RawAmountStrings.zero(), right: "-3" });
+    assert(!rightInvalid.checked);
+    expect(rightInvalid.error).toBeInstanceOf(Error);
   });
 
   test("throws for invalid inputs when throwOnError is true", () => {

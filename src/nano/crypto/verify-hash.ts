@@ -3,6 +3,7 @@ import { RawAmountString } from "../types/amount";
 import { HashString } from "../types/hash";
 import { LinkString } from "../types/link";
 import { NonThrowing } from "../types/non-throwing";
+import { PredicateResult } from "../types/result";
 import { Throwing } from "../types/throwing";
 import { hashBlock } from "./hash-block";
 
@@ -29,17 +30,23 @@ function verifyHashThrowing(params: VerifyHashParams & Throwing): boolean {
   return validatedHash.data === blockHash;
 }
 
-function verifyHashNonThrowing(params: VerifyHashParams & NonThrowing): boolean {
+function verifyHashNonThrowing(params: VerifyHashParams & NonThrowing): PredicateResult<"checked", "validHash"> {
   try {
-    return verifyHashThrowing({ ...params, throwOnError: true });
-  } catch (_e) {
-    return false;
+    return {
+      checked: true,
+      validHash: verifyHashThrowing({ ...params, throwOnError: true }),
+    };
+  } catch (e) {
+    return {
+      checked: false,
+      error: e instanceof Error ? e : new Error("Unexpected error."),
+    };
   }
 }
 
-export function verifyHash(params: VerifyHashParams & NonThrowing): boolean;
+export function verifyHash(params: VerifyHashParams & NonThrowing): PredicateResult<"checked", "validHash">;
 export function verifyHash(params: VerifyHashParams & Throwing): boolean;
-export function verifyHash(params: VerifyHashParams): boolean;
+export function verifyHash(params: VerifyHashParams): PredicateResult<"checked", "validHash"> | boolean;
 export function verifyHash(params: VerifyHashParams) {
   if (params.throwOnError === true) {
     return verifyHashThrowing({ ...params, throwOnError: true });

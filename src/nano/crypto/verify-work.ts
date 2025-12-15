@@ -2,6 +2,7 @@ import { blake2bFinal, blake2bInit, blake2bUpdate } from "blakejs";
 
 import { HashString } from "../types/hash";
 import { NonThrowing } from "../types/non-throwing";
+import { PredicateResult } from "../types/result";
 import { Throwing } from "../types/throwing";
 import { WorkString } from "../types/work";
 import { WorkDifficultyString } from "../types/work-difficulty";
@@ -35,17 +36,23 @@ function verifyWorkThrowing(params: VerifyWorkParams & Throwing): boolean {
   }
 }
 
-function verifyWorkNonThrowing(params: VerifyWorkParams & NonThrowing): boolean {
+function verifyWorkNonThrowing(params: VerifyWorkParams & NonThrowing): PredicateResult<"checked", "validWork"> {
   try {
-    return verifyWorkThrowing({ ...params, throwOnError: true });
-  } catch (_e) {
-    return false;
+    return {
+      checked: true,
+      validWork: verifyWorkThrowing({ ...params, throwOnError: true }),
+    };
+  } catch (e) {
+    return {
+      checked: false,
+      error: e instanceof Error ? e : new Error("Unexpected error."),
+    };
   }
 }
 
-export function verifyWork(params: VerifyWorkParams & NonThrowing): boolean;
+export function verifyWork(params: VerifyWorkParams & NonThrowing): PredicateResult<"checked", "validWork">;
 export function verifyWork(params: VerifyWorkParams & Throwing): boolean;
-export function verifyWork(params: VerifyWorkParams): boolean;
+export function verifyWork(params: VerifyWorkParams): PredicateResult<"checked", "validWork"> | boolean;
 export function verifyWork(params: VerifyWorkParams) {
   if (params.throwOnError === true) {
     return verifyWorkThrowing({ ...params, throwOnError: true });

@@ -1,4 +1,5 @@
 import { NonThrowing } from "../types/non-throwing";
+import { PredicateResult } from "../types/result";
 import { Throwing } from "../types/throwing";
 import { compareRawValues, RawComparisonInputs } from "./comparison";
 
@@ -8,17 +9,29 @@ function rawIsGreaterThanOrEqualToThrowing(params: RawIsGreaterThanOrEqualToPara
   return compareRawValues(params.left, params.right) >= 0;
 }
 
-function rawIsGreaterThanOrEqualToNonThrowing(params: RawIsGreaterThanOrEqualToParams & NonThrowing): boolean {
+function rawIsGreaterThanOrEqualToNonThrowing(
+  params: RawIsGreaterThanOrEqualToParams & NonThrowing
+): PredicateResult<"checked", "greaterOrEqual"> {
   try {
-    return rawIsGreaterThanOrEqualToThrowing({ ...params, throwOnError: true });
-  } catch (_e) {
-    return false;
+    return {
+      checked: true,
+      greaterOrEqual: rawIsGreaterThanOrEqualToThrowing({ ...params, throwOnError: true }),
+    };
+  } catch (e) {
+    return {
+      checked: false,
+      error: e instanceof Error ? e : new Error("Unexpected error."),
+    };
   }
 }
 
-export function rawIsGreaterThanOrEqualTo(params: RawIsGreaterThanOrEqualToParams & NonThrowing): boolean;
+export function rawIsGreaterThanOrEqualTo(
+  params: RawIsGreaterThanOrEqualToParams & NonThrowing
+): PredicateResult<"checked", "greaterOrEqual">;
 export function rawIsGreaterThanOrEqualTo(params: RawIsGreaterThanOrEqualToParams & Throwing): boolean;
-export function rawIsGreaterThanOrEqualTo(params: RawIsGreaterThanOrEqualToParams): boolean;
+export function rawIsGreaterThanOrEqualTo(
+  params: RawIsGreaterThanOrEqualToParams
+): PredicateResult<"checked", "greaterOrEqual"> | boolean;
 export function rawIsGreaterThanOrEqualTo(params: RawIsGreaterThanOrEqualToParams) {
   if (params.throwOnError === true) {
     return rawIsGreaterThanOrEqualToThrowing({ ...params, throwOnError: true });

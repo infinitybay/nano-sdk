@@ -1,4 +1,5 @@
 import { verifySignature } from "../../../../src/nano/crypto/verify-signature";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("verifySignature function", () => {
@@ -11,7 +12,7 @@ describe("verifySignature function", () => {
     ];
     for (let i = 0; i < data.length; i++) {
       const result = verifySignature(data[i]);
-      expect(result).toBe(true);
+      expect(result).toEqual({ checked: true, validSignature: true });
     }
   });
 
@@ -24,7 +25,8 @@ describe("verifySignature function", () => {
     ];
     for (let i = 0; i < data.length; i++) {
       const result = verifySignature(data[i]);
-      expect(result).toBe(false);
+      assert(result.checked);
+      expect(result.validSignature).toBe(false);
     }
   });
 });

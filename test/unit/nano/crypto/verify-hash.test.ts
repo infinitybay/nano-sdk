@@ -1,4 +1,5 @@
 import { verifyHash } from "../../../../src/nano/crypto/verify-hash";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("verifyHash function", () => {
@@ -11,7 +12,7 @@ describe("verifyHash function", () => {
     ];
     for (let i = 0; i < data.length; i++) {
       const result = verifyHash(data[i]);
-      expect(result).toBe(true);
+      expect(result).toEqual({ checked: true, validHash: true });
     }
   });
 
@@ -24,7 +25,8 @@ describe("verifyHash function", () => {
     ];
     for (let i = 0; i < data.length; i++) {
       const result = verifyHash(data[i]);
-      expect(result).toBe(false);
+      assert(result.checked);
+      expect(result.validHash).toBe(false);
     }
   });
 });

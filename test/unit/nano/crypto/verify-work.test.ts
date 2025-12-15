@@ -1,4 +1,5 @@
 import { verifyWork } from "../../../../src/nano/crypto/verify-work";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("verifyWork function", () => {
@@ -11,7 +12,7 @@ describe("verifyWork function", () => {
     ];
     for (let i = 0; i < data.length; i++) {
       const result = verifyWork(data[i]);
-      expect(result).toBe(true);
+      expect(result).toEqual({ checked: true, validWork: true });
     }
   });
 
@@ -24,7 +25,8 @@ describe("verifyWork function", () => {
     ];
     for (let i = 0; i < data.length; i++) {
       const result = verifyWork(data[i]);
-      expect(result).toBe(false);
+      assert(result.checked);
+      expect(result.validWork).toBe(false);
     }
   });
 
@@ -37,7 +39,8 @@ describe("verifyWork function", () => {
     ];
     for (let i = 0; i < data.length; i++) {
       const result = verifyWork(data[i]);
-      expect(result).toBe(false);
+      assert(result.checked);
+      expect(result.validWork).toBe(false);
     }
   });
 });

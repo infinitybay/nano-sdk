@@ -2,6 +2,7 @@ import { HashString } from "../types/hash";
 import { Nacl } from "../types/nacl";
 import { NonThrowing } from "../types/non-throwing";
 import { PublicKeyString } from "../types/public-key";
+import { PredicateResult } from "../types/result";
 import { SignatureString } from "../types/signature";
 import { Throwing } from "../types/throwing";
 import { hashToBytes } from "./conversion/hash-converter";
@@ -26,17 +27,27 @@ function verifySignatureThrowing(params: VerifySignatureParams & Throwing): bool
   }
 }
 
-function verifySignatureNonThrowing(params: VerifySignatureParams & NonThrowing): boolean {
+function verifySignatureNonThrowing(
+  params: VerifySignatureParams & NonThrowing
+): PredicateResult<"checked", "validSignature"> {
   try {
-    return verifySignatureThrowing({ ...params, throwOnError: true });
-  } catch (_e) {
-    return false;
+    return {
+      checked: true,
+      validSignature: verifySignatureThrowing({ ...params, throwOnError: true }),
+    };
+  } catch (e) {
+    return {
+      checked: false,
+      error: e instanceof Error ? e : new Error("Unexpected error."),
+    };
   }
 }
 
-export function verifySignature(params: VerifySignatureParams & NonThrowing): boolean;
+export function verifySignature(
+  params: VerifySignatureParams & NonThrowing
+): PredicateResult<"checked", "validSignature">;
 export function verifySignature(params: VerifySignatureParams & Throwing): boolean;
-export function verifySignature(params: VerifySignatureParams): boolean;
+export function verifySignature(params: VerifySignatureParams): PredicateResult<"checked", "validSignature"> | boolean;
 export function verifySignature(params: VerifySignatureParams) {
   if (params.throwOnError === true) {
     return verifySignatureThrowing({ ...params, throwOnError: true });

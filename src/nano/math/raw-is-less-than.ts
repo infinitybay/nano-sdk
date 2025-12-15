@@ -1,4 +1,5 @@
 import { NonThrowing } from "../types/non-throwing";
+import { PredicateResult } from "../types/result";
 import { Throwing } from "../types/throwing";
 import { compareRawValues, RawComparisonInputs } from "./comparison";
 
@@ -8,17 +9,23 @@ function rawIsLessThanThrowing(params: RawIsLessThanParams & Throwing): boolean 
   return compareRawValues(params.left, params.right) < 0;
 }
 
-function rawIsLessThanNonThrowing(params: RawIsLessThanParams & NonThrowing): boolean {
+function rawIsLessThanNonThrowing(params: RawIsLessThanParams & NonThrowing): PredicateResult<"checked", "less"> {
   try {
-    return rawIsLessThanThrowing({ ...params, throwOnError: true });
-  } catch (_e) {
-    return false;
+    return {
+      checked: true,
+      less: rawIsLessThanThrowing({ ...params, throwOnError: true }),
+    };
+  } catch (e) {
+    return {
+      checked: false,
+      error: e instanceof Error ? e : new Error("Unexpected error."),
+    };
   }
 }
 
-export function rawIsLessThan(params: RawIsLessThanParams & NonThrowing): boolean;
+export function rawIsLessThan(params: RawIsLessThanParams & NonThrowing): PredicateResult<"checked", "less">;
 export function rawIsLessThan(params: RawIsLessThanParams & Throwing): boolean;
-export function rawIsLessThan(params: RawIsLessThanParams): boolean;
+export function rawIsLessThan(params: RawIsLessThanParams): PredicateResult<"checked", "less"> | boolean;
 export function rawIsLessThan(params: RawIsLessThanParams) {
   if (params.throwOnError === true) {
     return rawIsLessThanThrowing({ ...params, throwOnError: true });
