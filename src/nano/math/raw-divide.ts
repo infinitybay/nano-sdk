@@ -4,14 +4,14 @@ import { Result } from "../types/result";
 import { Throwing } from "../types/throwing";
 
 type RawDivideParams = {
-  dividend: RawAmountString;
+  raw: RawAmountString;
   divisor: RawAmountString;
 } & (Throwing | NonThrowing);
 
 function rawDivideThrowing(params: RawDivideParams & Throwing): RawAmountString {
-  const dividendResult = RawAmountString().safeParse(params.dividend);
+  const dividendResult = RawAmountString().safeParse(params.raw);
   if (!dividendResult.success) {
-    throw new Error("Invalid dividend value.");
+    throw new Error("Invalid raw value.");
   }
 
   const divisorResult = RawAmountString().safeParse(params.divisor);
