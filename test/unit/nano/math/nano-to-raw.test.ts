@@ -28,7 +28,15 @@ describe("nanoToRaw", () => {
 
   test("returns failure result when validation fails without throwing", () => {
     expect(nanoToRaw({ nano: "", throwOnError: false }).success).toBe(false);
-    expect(nanoToRaw({ nano: " -1", throwOnError: false }).success).toBe(false);
+    expect(nanoToRaw({ nano: " 0", throwOnError: false }).success).toBe(false);
+    expect(nanoToRaw({ nano: "0 ", throwOnError: false }).success).toBe(false);
+    expect(nanoToRaw({ nano: ".", throwOnError: false }).success).toBe(false);
+    expect(nanoToRaw({ nano: ".0", throwOnError: false }).success).toBe(false);
+    expect(nanoToRaw({ nano: "0.", throwOnError: false }).success).toBe(false);
+    expect(nanoToRaw({ nano: "00", throwOnError: false }).success).toBe(false);
+    expect(nanoToRaw({ nano: "00.0", throwOnError: false }).success).toBe(false);
+    expect(nanoToRaw({ nano: "01.0", throwOnError: false }).success).toBe(false);
+    expect(nanoToRaw({ nano: "0.0000000000000000000000000000001", throwOnError: false }).success).toBe(false);
     expect(nanoToRaw({ nano: "0.1234567890123456789012345678901", throwOnError: false }).success).toBe(false);
   });
 

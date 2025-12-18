@@ -18,9 +18,12 @@ function nanoToRawThrowing(params: NanoToRawParams & Throwing): RawAmountString 
 
   const [integerPart, fractionPart = ""] = nanoResult.data.split(".");
 
+  const rawUnnormalized = `${integerPart}${fractionPart.padEnd(30, "0")}`;
+  const rawNormalized = BigInt(rawUnnormalized);
+
   return formatRaw({
     ...params,
-    raw: `${integerPart}${fractionPart.padEnd(30, "0")}`,
+    raw: rawNormalized,
     unit: "raw",
   });
 }
