@@ -6,7 +6,7 @@ import { compareRawValues, RawComparisonInputs } from "./comparison";
 type RawIsLessThanParams = RawComparisonInputs & (Throwing | NonThrowing);
 
 function rawIsLessThanThrowing(params: RawIsLessThanParams & Throwing): boolean {
-  return compareRawValues(params.left, params.right) < 0;
+  return compareRawValues(params.raw, params.compareTo) < 0;
 }
 
 function rawIsLessThanNonThrowing(params: RawIsLessThanParams & NonThrowing): PredicateResult<"checked", "less"> {

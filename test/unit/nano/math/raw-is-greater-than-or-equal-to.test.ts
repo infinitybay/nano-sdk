@@ -6,8 +6,8 @@ describe("rawIsGreaterThanOrEqualTo", () => {
   test("returns true when left is larger than right", () => {
     expect(
       rawIsGreaterThanOrEqualTo({
-        left: RawAmountStrings.max(),
-        right: (BigInt(RawAmountStrings.max()) - 1n).toString(),
+        raw: RawAmountStrings.max(),
+        compareTo: (BigInt(RawAmountStrings.max()) - 1n).toString(),
         throwOnError: true,
       })
     ).toBe(true);
@@ -15,37 +15,37 @@ describe("rawIsGreaterThanOrEqualTo", () => {
 
   test("returns true when values are equal", () => {
     const value = (10n ** 10n).toString();
-    expect(rawIsGreaterThanOrEqualTo({ left: value, right: value, throwOnError: true })).toBe(true);
+    expect(rawIsGreaterThanOrEqualTo({ raw: value, compareTo: value, throwOnError: true })).toBe(true);
   });
 
   test("returns false when left is smaller than right", () => {
     expect(
       rawIsGreaterThanOrEqualTo({
-        left: RawAmountStrings.zero(),
-        right: RawAmountStrings.max(),
+        raw: RawAmountStrings.zero(),
+        compareTo: RawAmountStrings.max(),
         throwOnError: true,
       })
     ).toBe(false);
   });
 
   test("returns predicate results without throwing", () => {
-    const greaterResult = rawIsGreaterThanOrEqualTo({ left: "2", right: "1", throwOnError: false });
+    const greaterResult = rawIsGreaterThanOrEqualTo({ raw: "2", compareTo: "1", throwOnError: false });
     assert(greaterResult.checked);
     expect(greaterResult.greaterOrEqual).toBe(true);
 
-    const lesserResult = rawIsGreaterThanOrEqualTo({ left: "1", right: "2", throwOnError: false });
+    const lesserResult = rawIsGreaterThanOrEqualTo({ raw: "1", compareTo: "2", throwOnError: false });
     assert(lesserResult.checked);
     expect(lesserResult.greaterOrEqual).toBe(false);
   });
 
   test("returns predicate error for invalid inputs without throwing", () => {
-    const leftInvalid = rawIsGreaterThanOrEqualTo({ left: "", right: RawAmountStrings.zero(), throwOnError: false });
+    const leftInvalid = rawIsGreaterThanOrEqualTo({ raw: "", compareTo: RawAmountStrings.zero(), throwOnError: false });
     assert(!leftInvalid.checked);
     expect(leftInvalid.error).toBeInstanceOf(Error);
 
     const rightInvalid = rawIsGreaterThanOrEqualTo({
-      left: RawAmountStrings.zero(),
-      right: " ",
+      raw: RawAmountStrings.zero(),
+      compareTo: " ",
       throwOnError: false,
     });
     assert(!rightInvalid.checked);
@@ -53,11 +53,11 @@ describe("rawIsGreaterThanOrEqualTo", () => {
   });
 
   test("throws for invalid inputs when throwOnError is true", () => {
-    expect(() => rawIsGreaterThanOrEqualTo({ left: "", right: RawAmountStrings.zero(), throwOnError: true })).toThrow(
-      "Invalid left value."
-    );
     expect(() =>
-      rawIsGreaterThanOrEqualTo({ left: RawAmountStrings.zero(), right: "1.1", throwOnError: true })
-    ).toThrow("Invalid right value.");
+      rawIsGreaterThanOrEqualTo({ raw: "", compareTo: RawAmountStrings.zero(), throwOnError: true })
+    ).toThrow("Invalid raw value.");
+    expect(() =>
+      rawIsGreaterThanOrEqualTo({ raw: RawAmountStrings.zero(), compareTo: "1.1", throwOnError: true })
+    ).toThrow("Invalid compareTo value.");
   });
 });

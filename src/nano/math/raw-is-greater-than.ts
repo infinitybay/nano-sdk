@@ -6,7 +6,7 @@ import { compareRawValues, RawComparisonInputs } from "./comparison";
 type RawIsGreaterThanParams = RawComparisonInputs & (Throwing | NonThrowing);
 
 function rawIsGreaterThanThrowing(params: RawIsGreaterThanParams & Throwing): boolean {
-  return compareRawValues(params.left, params.right) > 0;
+  return compareRawValues(params.raw, params.compareTo) > 0;
 }
 
 function rawIsGreaterThanNonThrowing(

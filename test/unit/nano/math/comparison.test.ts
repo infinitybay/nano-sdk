@@ -9,29 +9,29 @@ describe("compareRawValues", () => {
     }
   });
 
-  test("returns 1 when left value is greater", () => {
-    const right = (BigInt(RawAmountStrings.max()) - 1n).toString();
-    expect(compareRawValues(RawAmountStrings.max(), right)).toBe(1);
+  test("returns 1 when raw value is greater", () => {
+    const compareTo = (BigInt(RawAmountStrings.max()) - 1n).toString();
+    expect(compareRawValues(RawAmountStrings.max(), compareTo)).toBe(1);
     expect(compareRawValues("10", "2")).toBe(1);
   });
 
-  test("returns -1 when left value is smaller", () => {
+  test("returns -1 when raw value is smaller", () => {
     expect(compareRawValues(RawAmountStrings.zero(), "1")).toBe(-1);
-    const left = (BigInt(RawAmountStrings.min()) + 1n).toString();
-    expect(compareRawValues(left, RawAmountStrings.max())).toBe(-1);
+    const raw = (BigInt(RawAmountStrings.min()) + 1n).toString();
+    expect(compareRawValues(raw, RawAmountStrings.max())).toBe(-1);
   });
 
-  test("throws when left value is invalid", () => {
-    const invalidLeftValues = ["", " ", "-1", "abc", (BigInt(RawAmountStrings.max()) + 1n).toString(), "1.0"];
-    for (const left of invalidLeftValues) {
-      expect(() => compareRawValues(left, RawAmountStrings.zero())).toThrow("Invalid left value.");
+  test("throws when raw value is invalid", () => {
+    const invalidRawValues = ["", " ", "-1", "abc", (BigInt(RawAmountStrings.max()) + 1n).toString(), "1.0"];
+    for (const raw of invalidRawValues) {
+      expect(() => compareRawValues(raw, RawAmountStrings.zero())).toThrow("Invalid raw value.");
     }
   });
 
-  test("throws when right value is invalid", () => {
-    const invalidRightValues = ["", " ", "-5", "xyz", (BigInt(RawAmountStrings.max()) + 1n).toString(), "2.5"];
-    for (const right of invalidRightValues) {
-      expect(() => compareRawValues(RawAmountStrings.zero(), right)).toThrow("Invalid right value.");
+  test("throws when compareTo value is invalid", () => {
+    const invalidCompareToValues = ["", " ", "-5", "xyz", (BigInt(RawAmountStrings.max()) + 1n).toString(), "2.5"];
+    for (const compareTo of invalidCompareToValues) {
+      expect(() => compareRawValues(RawAmountStrings.zero(), compareTo)).toThrow("Invalid compareTo value.");
     }
   });
 });

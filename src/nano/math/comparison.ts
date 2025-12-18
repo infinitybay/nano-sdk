@@ -1,19 +1,19 @@
 import { RawAmountString } from "../types/amount";
 
 export type RawComparisonInputs = {
-  left: RawAmountString;
-  right: RawAmountString;
+  raw: RawAmountString;
+  compareTo: RawAmountString;
 };
 
 export function compareRawValues(leftValue: RawAmountString, rightValue: RawAmountString): number {
   const leftResult = RawAmountString().safeParse(leftValue);
   if (!leftResult.success) {
-    throw new Error("Invalid left value.");
+    throw new Error("Invalid raw value.");
   }
 
   const rightResult = RawAmountString().safeParse(rightValue);
   if (!rightResult.success) {
-    throw new Error("Invalid right value.");
+    throw new Error("Invalid compareTo value.");
   }
 
   const left = BigInt(leftResult.data);
