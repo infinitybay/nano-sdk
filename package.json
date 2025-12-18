@@ -1,7 +1,7 @@
 {
   "name": "nano-sdk",
   "version": "1.0.0",
-  "description": "SDK for the Nano cryptocurrency with strong typing, Zod schemas, RPC interface, and cryptographic utilities for TypeScript developers.",
+  "description": "SDK for the Nano cryptocurrency with strong typing, Zod schemas, RPC interface, safe amount arithmetic, and cryptographic utilities for TypeScript developers.",
   "keywords": [
     "nano",
     "nano node",
