@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-const NANO_REGEX = /^\d+(\.\d{0,30})?$/;
-const RAW_REGEX = /^\d+$/;
+const NANO_REGEX = /^(0|[1-9][0-9]*)(\.[0-9]{1,30})?$/;
+const RAW_REGEX = /^(0|[1-9][0-9]*)$/;
 
 const RAW_MIN_STRING = "0";
 const RAW_MAX_STRING = "340282366920938463463374607431768211455";
