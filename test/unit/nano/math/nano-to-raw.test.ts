@@ -20,12 +20,6 @@ describe("nanoToRaw", () => {
     expect(nanoToRaw({ nano: NanoAmountStrings.max(), throwOnError: true })).toBe(RawAmountStrings.max());
   });
 
-  test("applies grouping to raw output", () => {
-    const nanoValue = "1234";
-    const expected = "1,234,000,000,000,000,000,000,000,000,000,000";
-    expect(nanoToRaw({ nano: nanoValue, groupingSize: 3, groupingSeparator: ",", throwOnError: true })).toBe(expected);
-  });
-
   test("returns failure result when validation fails without throwing", () => {
     expect(nanoToRaw({ nano: "", throwOnError: false }).success).toBe(false);
     expect(nanoToRaw({ nano: " 0", throwOnError: false }).success).toBe(false);
@@ -44,9 +38,5 @@ describe("nanoToRaw", () => {
     expect(() => nanoToRaw({ nano: "", throwOnError: true })).toThrow();
     expect(() => nanoToRaw({ nano: "0.1234567890123456789012345678901", throwOnError: true })).toThrow();
     expect(() => nanoToRaw({ nano: "-1", throwOnError: true })).toThrow();
-  });
-
-  test("throws on invalid grouping options", () => {
-    expect(() => nanoToRaw({ nano: "1", groupingSize: 40, throwOnError: true })).toThrow();
   });
 });

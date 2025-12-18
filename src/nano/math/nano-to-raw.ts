@@ -2,12 +2,9 @@ import { NanoAmountString, RawAmountString } from "../types/amount";
 import { NonThrowing } from "../types/non-throwing";
 import { Result } from "../types/result";
 import { Throwing } from "../types/throwing";
-import { formatRaw } from "./format-raw";
 
 type NanoToRawParams = {
   nano: NanoAmountString;
-  groupingSize?: number;
-  groupingSeparator?: "," | "." | " ";
 } & (Throwing | NonThrowing);
 
 function nanoToRawThrowing(params: NanoToRawParams & Throwing): RawAmountString {
@@ -18,14 +15,12 @@ function nanoToRawThrowing(params: NanoToRawParams & Throwing): RawAmountString 
 
   const [integerPart, fractionPart = ""] = nanoResult.data.split(".");
 
-  const rawUnnormalized = `${integerPart}${fractionPart.padEnd(30, "0")}`;
-  const rawNormalized = BigInt(rawUnnormalized);
+  const rawResult = RawAmountString().safeParse(BigInt(`${integerPart}${fractionPart.padEnd(30, "0")}`).toString());
+  if (!rawResult.success) {
+    throw new Error("Invalid raw result.");
+  }
 
-  return formatRaw({
-    ...params,
-    raw: rawNormalized,
-    unit: "raw",
-  });
+  return rawResult.data;
 }
 
 function nanoToRawNonThrowing(params: NanoToRawParams & NonThrowing): Result<RawAmountString> {
