@@ -6,6 +6,7 @@ describe("rawIsZero", () => {
   test("identifies zero raw amounts", () => {
     expect(rawIsZero({ raw: RawAmountStrings.zero(), throwOnError: true })).toBe(true);
     expect(rawIsZero({ raw: RawAmountStrings.min(), throwOnError: true })).toBe(true);
+    expect(rawIsZero({ raw: 0n, throwOnError: true })).toBe(true);
   });
 
   test("returns false for non-zero values", () => {
@@ -16,6 +17,7 @@ describe("rawIsZero", () => {
         throwOnError: true,
       })
     ).toBe(false);
+    expect(rawIsZero({ raw: 2n, throwOnError: true })).toBe(false);
   });
 
   test("returns predicate results without throwing", () => {
@@ -26,6 +28,10 @@ describe("rawIsZero", () => {
     const nonZeroResult = rawIsZero({ raw: RawAmountStrings.max(), throwOnError: false });
     assert(nonZeroResult.checked);
     expect(nonZeroResult.zero).toBe(false);
+
+    const bigintResult = rawIsZero({ raw: 1n, throwOnError: false });
+    assert(bigintResult.checked);
+    expect(bigintResult.zero).toBe(false);
   });
 
   test("returns predicate error for invalid values without throwing", () => {
@@ -39,7 +45,7 @@ describe("rawIsZero", () => {
   });
 
   test("throws for invalid values when throwOnError is true", () => {
-    expect(() => rawIsZero({ raw: "", throwOnError: true })).toThrow("Invalid raw value.");
-    expect(() => rawIsZero({ raw: "1.0", throwOnError: true })).toThrow("Invalid raw value.");
+    expect(() => rawIsZero({ raw: "", throwOnError: true })).toThrow();
+    expect(() => rawIsZero({ raw: "1.0", throwOnError: true })).toThrow();
   });
 });

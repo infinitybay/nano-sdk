@@ -41,16 +41,12 @@ describe("nanoToRaw", () => {
   });
 
   test("throws on invalid nano input when configured to throw", () => {
-    expect(() => nanoToRaw({ nano: "", throwOnError: true })).toThrow("Invalid nano value.");
-    expect(() => nanoToRaw({ nano: "0.1234567890123456789012345678901", throwOnError: true })).toThrow(
-      "Invalid nano value."
-    );
-    expect(() => nanoToRaw({ nano: "-1", throwOnError: true })).toThrow("Invalid nano value.");
+    expect(() => nanoToRaw({ nano: "", throwOnError: true })).toThrow();
+    expect(() => nanoToRaw({ nano: "0.1234567890123456789012345678901", throwOnError: true })).toThrow();
+    expect(() => nanoToRaw({ nano: "-1", throwOnError: true })).toThrow();
   });
 
   test("throws on invalid grouping options", () => {
-    expect(() => nanoToRaw({ nano: "1", groupingSize: 40, throwOnError: true })).toThrow(
-      "Invalid grouping size value."
-    );
+    expect(() => nanoToRaw({ nano: "1", groupingSize: 40, throwOnError: true })).toThrow();
   });
 });

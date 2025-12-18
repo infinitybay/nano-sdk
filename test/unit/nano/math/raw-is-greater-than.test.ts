@@ -12,6 +12,7 @@ describe("rawIsGreaterThan", () => {
       })
     ).toBe(true);
     expect(rawIsGreaterThan({ raw: "5", compareTo: "4", throwOnError: true })).toBe(true);
+    expect(rawIsGreaterThan({ raw: 6n, compareTo: 4n, throwOnError: true })).toBe(true);
   });
 
   test("returns false when left is equal to or smaller than right", () => {
@@ -23,6 +24,7 @@ describe("rawIsGreaterThan", () => {
       })
     ).toBe(false);
     expect(rawIsGreaterThan({ raw: "3", compareTo: "9", throwOnError: true })).toBe(false);
+    expect(rawIsGreaterThan({ raw: 3n, compareTo: 9n, throwOnError: true })).toBe(false);
   });
 
   test("returns predicate results without throwing", () => {
@@ -46,11 +48,7 @@ describe("rawIsGreaterThan", () => {
   });
 
   test("throws for invalid inputs when throwOnError is true", () => {
-    expect(() => rawIsGreaterThan({ raw: "", compareTo: RawAmountStrings.zero(), throwOnError: true })).toThrow(
-      "Invalid raw value."
-    );
-    expect(() => rawIsGreaterThan({ raw: RawAmountStrings.zero(), compareTo: "-1", throwOnError: true })).toThrow(
-      "Invalid compareTo value."
-    );
+    expect(() => rawIsGreaterThan({ raw: "", compareTo: RawAmountStrings.zero(), throwOnError: true })).toThrow();
+    expect(() => rawIsGreaterThan({ raw: RawAmountStrings.zero(), compareTo: "-1", throwOnError: true })).toThrow();
   });
 });

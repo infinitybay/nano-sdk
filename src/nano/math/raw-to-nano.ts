@@ -1,11 +1,11 @@
-import { NanoAmountString, RawAmountString } from "../types/amount";
+import { NanoAmountString, RawAmount, RawAmountString } from "../types/amount";
 import { NonThrowing } from "../types/non-throwing";
 import { Result } from "../types/result";
 import { Throwing } from "../types/throwing";
 import { formatRaw } from "./format-raw";
 
 type RawToNanoParams = {
-  raw: RawAmountString;
+  raw: RawAmount | RawAmountString;
   decimalPlaces?: number;
   decimalSeparator?: "." | ",";
   groupingSize?: number;

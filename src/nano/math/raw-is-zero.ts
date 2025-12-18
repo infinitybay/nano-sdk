@@ -1,18 +1,18 @@
-import { RawAmountString } from "../types/amount";
+import { RawAmount, RawAmountString } from "../types/amount";
 import { NonThrowing } from "../types/non-throwing";
 import { PredicateResult } from "../types/result";
 import { Throwing } from "../types/throwing";
 
 type RawIsZeroParams = {
-  raw: RawAmountString;
+  raw: RawAmount | RawAmountString;
 } & (Throwing | NonThrowing);
 
 function rawIsZeroThrowing(params: RawIsZeroParams & Throwing): boolean {
-  const rawResult = RawAmountString().safeParse(params.raw);
+  const rawResult = RawAmount().safeParse(params.raw);
   if (!rawResult.success) {
     throw new Error("Invalid raw value.");
   }
-  return BigInt(rawResult.data) === 0n;
+  return rawResult.data === 0n;
 }
 
 function rawIsZeroNonThrowing(params: RawIsZeroParams & NonThrowing): PredicateResult<"checked", "zero"> {

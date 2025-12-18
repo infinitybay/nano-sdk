@@ -1,26 +1,38 @@
-import { RawAmountString } from "../types/amount";
+import { RawAmount, RawAmountString } from "../types/amount";
 import { NonThrowing } from "../types/non-throwing";
 import { Result } from "../types/result";
 import { Throwing } from "../types/throwing";
 
 type RawDivideParams = {
-  raw: RawAmountString;
-  divisor: RawAmountString;
-} & (Throwing | NonThrowing);
+  raw: RawAmount | RawAmountString;
+  divisor: RawAmount | RawAmountString;
+};
 
-function rawDivideThrowing(params: RawDivideParams & Throwing): RawAmountString {
-  const dividendResult = RawAmountString().safeParse(params.raw);
+type RawDivideRawAmountParams = {
+  raw: RawAmount;
+  divisor: RawAmount | RawAmountString;
+};
+
+type RawDivideRawAmountStringParams = {
+  raw: RawAmountString;
+  divisor: RawAmount | RawAmountString;
+};
+
+function rawDivideThrowing(params: RawDivideRawAmountParams & Throwing): RawAmount;
+function rawDivideThrowing(params: RawDivideRawAmountStringParams & Throwing): RawAmountString;
+function rawDivideThrowing(params: RawDivideParams & Throwing) {
+  const dividendResult = RawAmount().safeParse(params.raw);
   if (!dividendResult.success) {
     throw new Error("Invalid raw value.");
   }
 
-  const divisorResult = RawAmountString().safeParse(params.divisor);
+  const divisorResult = RawAmount().safeParse(params.divisor);
   if (!divisorResult.success) {
     throw new Error("Invalid divisor value.");
   }
 
-  const dividend = BigInt(dividendResult.data);
-  const divisor = BigInt(divisorResult.data);
+  const dividend = dividendResult.data;
+  const divisor = divisorResult.data;
 
   if (divisor === 0n) {
     throw new Error("Division by zero is not allowed.");
@@ -33,19 +45,31 @@ function rawDivideThrowing(params: RawDivideParams & Throwing): RawAmountString 
     throw new Error("Resulting amount must be an integer.");
   }
 
-  const result = RawAmountString().safeParse(quotient.toString());
+  const result = RawAmount().safeParse(quotient);
   if (!result.success) {
     throw new Error("Resulting amount is no valid raw amount.");
   }
 
-  return result.data;
+  if (typeof params.raw === "bigint") {
+    return result.data;
+  } else {
+    return result.data.toString();
+  }
 }
 
-function rawDivideNonThrowing(params: RawDivideParams & NonThrowing): Result<RawAmountString> {
+function rawDivideNonThrowing(params: RawDivideRawAmountParams & NonThrowing): Result<RawAmount>;
+function rawDivideNonThrowing(params: RawDivideRawAmountStringParams & NonThrowing): Result<RawAmountString>;
+function rawDivideNonThrowing(params: RawDivideParams & NonThrowing) {
   try {
+    let result;
+    if (typeof params.raw === "bigint") {
+      result = rawDivideThrowing({ raw: params.raw, divisor: params.divisor, throwOnError: true });
+    } else {
+      result = rawDivideThrowing({ raw: params.raw, divisor: params.divisor, throwOnError: true });
+    }
     return {
       success: true,
-      data: rawDivideThrowing({ ...params, throwOnError: true }),
+      data: result,
     };
   } catch (e) {
     return {
@@ -55,13 +79,24 @@ function rawDivideNonThrowing(params: RawDivideParams & NonThrowing): Result<Raw
   }
 }
 
-export function rawDivide(params: RawDivideParams & NonThrowing): Result<RawAmountString>;
-export function rawDivide(params: RawDivideParams & Throwing): RawAmountString;
-export function rawDivide(params: RawDivideParams): RawAmountString | Result<RawAmountString>;
-export function rawDivide(params: RawDivideParams) {
+export function rawDivide(params: RawDivideRawAmountParams & NonThrowing): Result<RawAmount>;
+export function rawDivide(params: RawDivideRawAmountParams & Throwing): RawAmount;
+export function rawDivide(params: RawDivideRawAmountParams): RawAmount | Result<RawAmount>;
+export function rawDivide(params: RawDivideRawAmountStringParams & NonThrowing): Result<RawAmountString>;
+export function rawDivide(params: RawDivideRawAmountStringParams & Throwing): RawAmountString;
+export function rawDivide(params: RawDivideRawAmountStringParams): RawAmountString | Result<RawAmountString>;
+export function rawDivide(params: RawDivideParams & (Throwing | NonThrowing)) {
   if (params.throwOnError === false) {
-    return rawDivideNonThrowing({ ...params, throwOnError: false });
+    if (typeof params.raw === "bigint") {
+      return rawDivideNonThrowing({ raw: params.raw, divisor: params.divisor, throwOnError: false });
+    } else {
+      return rawDivideNonThrowing({ raw: params.raw, divisor: params.divisor, throwOnError: false });
+    }
   } else {
-    return rawDivideThrowing({ ...params, throwOnError: true });
+    if (typeof params.raw === "bigint") {
+      return rawDivideThrowing({ raw: params.raw, divisor: params.divisor, throwOnError: true });
+    } else {
+      return rawDivideThrowing({ raw: params.raw, divisor: params.divisor, throwOnError: true });
+    }
   }
 }

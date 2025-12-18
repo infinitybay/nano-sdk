@@ -1,48 +1,65 @@
-import { RAW_MAX, RAW_MIN, RawAmountString } from "../types/amount";
+import { RawAmount, RawAmountString } from "../types/amount";
 import { NonThrowing } from "../types/non-throwing";
 import { Result } from "../types/result";
 import { Throwing } from "../types/throwing";
 
 type RawMultiplyParams = {
-  raw: RawAmountString;
-  multiplier: RawAmountString;
-} & (Throwing | NonThrowing);
+  raw: RawAmount | RawAmountString;
+  multiplier: RawAmount | RawAmountString;
+};
 
-function rawMultiplyThrowing(params: RawMultiplyParams & Throwing): RawAmountString {
-  const baseResult = RawAmountString().safeParse(params.raw);
+type RawMultiplyRawAmountParams = {
+  raw: RawAmount;
+  multiplier: RawAmount | RawAmountString;
+};
+
+type RawMultiplyRawAmountStringParams = {
+  raw: RawAmountString;
+  multiplier: RawAmount | RawAmountString;
+};
+
+function rawMultiplyThrowing(params: RawMultiplyRawAmountParams & Throwing): RawAmount;
+function rawMultiplyThrowing(params: RawMultiplyRawAmountStringParams & Throwing): RawAmountString;
+function rawMultiplyThrowing(params: RawMultiplyParams & Throwing) {
+  const baseResult = RawAmount().safeParse(params.raw);
   if (!baseResult.success) {
     throw new Error("Invalid raw value.");
   }
 
-  const multiplierResult = RawAmountString().safeParse(params.multiplier);
+  const multiplierResult = RawAmount().safeParse(params.multiplier);
   if (!multiplierResult.success) {
     throw new Error("Invalid multiplier value.");
   }
 
-  const base = BigInt(baseResult.data);
-  const multiplier = BigInt(multiplierResult.data);
+  const base = baseResult.data;
+  const multiplier = multiplierResult.data;
+  const product = base * multiplier;
 
-  const result = base * multiplier;
-  if (result < RAW_MIN) {
-    throw new Error(`Resulting amount may not be less than ${RAW_MIN.toString()}!`);
-  }
-  if (result > RAW_MAX) {
-    throw new Error(`Resulting amount may not be greater than ${RAW_MAX.toString()}!`);
+  const result = RawAmount().safeParse(product);
+  if (!result.success) {
+    throw new Error("Resulting amount is no valid raw amount.");
   }
 
-  const rawResult = RawAmountString().safeParse(result.toString());
-  if (!rawResult.success) {
-    throw new Error("Resulting amount is invalid.");
+  if (typeof params.raw === "bigint") {
+    return result.data;
+  } else {
+    return result.data.toString();
   }
-
-  return rawResult.data;
 }
 
-function rawMultiplyNonThrowing(params: RawMultiplyParams & NonThrowing): Result<RawAmountString> {
+function rawMultiplyNonThrowing(params: RawMultiplyRawAmountParams & NonThrowing): Result<RawAmount>;
+function rawMultiplyNonThrowing(params: RawMultiplyRawAmountStringParams & NonThrowing): Result<RawAmountString>;
+function rawMultiplyNonThrowing(params: RawMultiplyParams & NonThrowing) {
   try {
+    let result;
+    if (typeof params.raw === "bigint") {
+      result = rawMultiplyThrowing({ raw: params.raw, multiplier: params.multiplier, throwOnError: true });
+    } else {
+      result = rawMultiplyThrowing({ raw: params.raw, multiplier: params.multiplier, throwOnError: true });
+    }
     return {
       success: true,
-      data: rawMultiplyThrowing({ ...params, throwOnError: true }),
+      data: result,
     };
   } catch (e) {
     return {
@@ -52,13 +69,24 @@ function rawMultiplyNonThrowing(params: RawMultiplyParams & NonThrowing): Result
   }
 }
 
-export function rawMultiply(params: RawMultiplyParams & NonThrowing): Result<RawAmountString>;
-export function rawMultiply(params: RawMultiplyParams & Throwing): RawAmountString;
-export function rawMultiply(params: RawMultiplyParams): RawAmountString | Result<RawAmountString>;
-export function rawMultiply(params: RawMultiplyParams) {
+export function rawMultiply(params: RawMultiplyRawAmountParams & NonThrowing): Result<RawAmount>;
+export function rawMultiply(params: RawMultiplyRawAmountParams & Throwing): RawAmount;
+export function rawMultiply(params: RawMultiplyRawAmountParams): RawAmount | Result<RawAmount>;
+export function rawMultiply(params: RawMultiplyRawAmountStringParams & NonThrowing): Result<RawAmountString>;
+export function rawMultiply(params: RawMultiplyRawAmountStringParams & Throwing): RawAmountString;
+export function rawMultiply(params: RawMultiplyRawAmountStringParams): RawAmountString | Result<RawAmountString>;
+export function rawMultiply(params: RawMultiplyParams & (Throwing | NonThrowing)) {
   if (params.throwOnError === false) {
-    return rawMultiplyNonThrowing({ ...params, throwOnError: false });
+    if (typeof params.raw === "bigint") {
+      return rawMultiplyNonThrowing({ raw: params.raw, multiplier: params.multiplier, throwOnError: false });
+    } else {
+      return rawMultiplyNonThrowing({ raw: params.raw, multiplier: params.multiplier, throwOnError: false });
+    }
   } else {
-    return rawMultiplyThrowing({ ...params, throwOnError: true });
+    if (typeof params.raw === "bigint") {
+      return rawMultiplyThrowing({ raw: params.raw, multiplier: params.multiplier, throwOnError: true });
+    } else {
+      return rawMultiplyThrowing({ raw: params.raw, multiplier: params.multiplier, throwOnError: true });
+    }
   }
 }

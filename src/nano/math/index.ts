@@ -8,6 +8,7 @@ export { rawIsLessThan } from "./raw-is-less-than";
 export { rawIsLessThanOrEqualTo } from "./raw-is-less-than-or-equal-to";
 export { rawIsZero } from "./raw-is-zero";
 export { rawMinus } from "./raw-minus";
+export { rawModulo } from "./raw-modulo";
 export { rawMultiply } from "./raw-multiply";
 export { rawPlus } from "./raw-plus";
 export { rawToNano } from "./raw-to-nano";

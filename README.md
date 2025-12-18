@@ -1,6 +1,6 @@
 # nano-sdk
 
-Production-grade TypeScript SDK for interacting with a **Nano** Node, including typed and runtime-validated RPC methods, WebSocket message schemas, and utilities for blocks, crypto, and raw amount math.
+Production-grade TypeScript SDK for interacting with a **Nano** node, including typed and runtime-validated RPC methods, WebSocket message schemas, and utilities for blocks, crypto, and raw amount math.
 
 ## Installation
 
@@ -57,9 +57,9 @@ The SDK uses a single root namespace (**Nano**), organized into sub-namespaces, 
 - `Nano.Blocks`: Block schemas (**Zod**) for validating and composing **Nano** blocks
 - `Nano.Crypto`: Key derivation, block hashing, signing, and verification
 - `Nano.Math`: Raw amount conversion, formatting, and safe raw arithmetic
-- `Nano.RPC`: **Nano** Node RPC methods (HTTP POST), with typed requests and typed responses
+- `Nano.RPC`: **Nano** node RPC methods (HTTP POST), with typed requests and typed responses
 - `Nano.Types`: Runtime validators for common **Nano** primitives (account, hash, keys, raw amounts, etc.)
-- `Nano.WebSocket`: **Zod** schemas/types for **Nano** Node WebSocket topics
+- `Nano.WebSocket`: **Zod** schemas/types for **Nano** node WebSocket topics
 
 ## RPC Usage
 
@@ -84,7 +84,7 @@ By default, RPC calls throw `Nano.RPC.PostError` for:
 
 - Invalid request payloads
 - HTTP or transport errors
-- **Nano** Node error responses
+- **Nano** node error responses
 - Invalid or unexpected response data
 
 If `throwOnError` is set to false, the method instead returns a structured result object indicating success or failure.
@@ -108,7 +108,7 @@ RPC methods accept a custom `httpClient` via the request config. See the `axios`
 
 ## WebSocket Usage
 
-`Nano.WebSocket` provides schemas and types for **Nano** Node WebSocket messages (requests and responses). This SDK does not ship a WebSocket client; use your preferred WebSocket implementation and validate outgoing/incoming payloads with the provided schemas.
+`Nano.WebSocket` provides schemas and types for **Nano** node WebSocket messages (requests and responses). This SDK does not ship a WebSocket client; use your preferred WebSocket implementation and validate outgoing/incoming payloads with the provided schemas.
 
 Use cases:
 
@@ -136,16 +136,25 @@ Example:
 
 `Nano.Math` provides safe arithmetic, comparison, and formatting utilities for **nano** and **raw** amounts.
 
- **Nano** and **raw** amounts are represented as **strings** to avoid precision issues and remain JSON-serializable. This also eliminates the need for additional BigNumber dependencies. Internally, all `Nano.Math` operations use native `BigInt` for validation and arithmetic and return string results.
+**Raw** amounts can be represented as **strings** (`RawAmountString`, to remain JSON-serializable) and native `BigInt` values (`RawAmount`).
+
+**Nano** amounts are represented as **strings** (`NanoAmountString`) to avoid precision issues and eliminate the need for a `BigNumber.js` dependency.
+
+All raw functions support **mixed inputs** (`RawAmount` and `RawAmountString`).
+The **type of the first parameter** of arithmetic functions determines the return type:
+- If the first `raw` parameter is a `RawAmount` (`BigInt`), the result is returned as `BigInt`
+- If the first `raw` parameter is a `RawAmountString` (`String`), the result is returned as `String`
+
+Available utilities:
 
 - Conversion: `nanoToRaw`, `rawToNano`
 - Formatting: `formatRaw`
 - Arithmetic (with bounds checking):  
-  `rawPlus`, `rawMinus`, `rawMultiply`, `rawDivide`
+  `rawPlus`, `rawMinus`, `rawMultiply`, `rawDivide`, `rawModulo`
 - Comparisons:  
-  `rawIsZero`, `rawIsGreaterThan`, `rawIsLessThan`, `rawIsEqualTo`, ...
+  `rawIsZero`, `rawIsGreaterThan`, `rawIsGreaterThanOrEqualTo`, `rawIsLessThan`, `rawIsLessThanOrEqualTo`, `rawIsEqualTo`
 
-Example:
+Examples:
 
 - [`format-raw.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/math/format-raw.example.ts)
 - [`raw-arithmetic.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/math/raw-arithmetic.example.ts)

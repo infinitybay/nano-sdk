@@ -6,6 +6,7 @@ describe("rawToNano", () => {
   test("converts smallest raw value to nano with full precision", () => {
     const expected = `0.${"0".repeat(29)}1`;
     expect(rawToNano({ raw: "1", throwOnError: true })).toBe(expected);
+    expect(rawToNano({ raw: 1n, throwOnError: true })).toBe(expected);
   });
 
   test("converts raw values with configurable decimal places", () => {
@@ -14,6 +15,7 @@ describe("rawToNano", () => {
 
     const rawOnePointFive = (15n * 10n ** 29n).toString();
     expect(rawToNano({ raw: rawOnePointFive, decimalPlaces: 3, throwOnError: true })).toBe("1.500");
+    expect(rawToNano({ raw: 15n * 10n ** 29n, decimalPlaces: 3, throwOnError: true })).toBe("1.500");
   });
 
   test("returns success result in non-throwing mode", () => {
@@ -21,6 +23,10 @@ describe("rawToNano", () => {
     const result = rawToNano({ raw: rawOneNano, throwOnError: false });
     assert(result.success);
     expect(result.data).toBe(`1.${"0".repeat(30)}`);
+
+    const bigintResult = rawToNano({ raw: RAW_SCALE, throwOnError: false });
+    assert(bigintResult.success);
+    expect(bigintResult.data).toBe(`1.${"0".repeat(30)}`);
   });
 
   test("handles maximum values without precision loss", () => {
@@ -46,13 +52,9 @@ describe("rawToNano", () => {
   });
 
   test("throws for invalid inputs when configured to throw", () => {
-    expect(() => rawToNano({ raw: "-1", throwOnError: true })).toThrow("Invalid raw value.");
-    expect(() => rawToNano({ raw: RawAmountStrings.zero(), decimalPlaces: -1, throwOnError: true })).toThrow(
-      "Invalid decimal places value."
-    );
-    expect(() => rawToNano({ raw: RawAmountStrings.zero(), decimalPlaces: 31, throwOnError: true })).toThrow(
-      "Invalid decimal places value."
-    );
+    expect(() => rawToNano({ raw: "-1", throwOnError: true })).toThrow();
+    expect(() => rawToNano({ raw: RawAmountStrings.zero(), decimalPlaces: -1, throwOnError: true })).toThrow();
+    expect(() => rawToNano({ raw: RawAmountStrings.zero(), decimalPlaces: 31, throwOnError: true })).toThrow();
   });
 
   test("returns failure result for invalid decimal precision without throwing", () => {

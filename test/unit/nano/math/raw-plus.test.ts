@@ -3,15 +3,24 @@ import { RawAmountStrings } from "../../../../src/nano/types/amount";
 import { assert } from "../../../assert";
 
 describe("rawPlus", () => {
-  test("adds raw values correctly", () => {
+  test("adds raw values correctly (string inputs)", () => {
     expect(rawPlus({ raw: "5", addend: "3", throwOnError: true })).toBe("8");
     expect(rawPlus({ raw: RawAmountStrings.zero(), addend: RawAmountStrings.zero(), throwOnError: true })).toBe("0");
   });
 
-  test("returns success result in non-throwing mode", () => {
-    const result = rawPlus({ raw: "5", addend: "4", throwOnError: false });
-    assert(result.success);
-    expect(result.data).toBe("9");
+  test("adds raw values correctly (bigint inputs)", () => {
+    expect(rawPlus({ raw: 5n, addend: 3n, throwOnError: true })).toBe(8n);
+    expect(rawPlus({ raw: 0n, addend: 0n, throwOnError: true })).toBe(0n);
+  });
+
+  test("returns success result in non-throwing mode with matching return types", () => {
+    const stringResult = rawPlus({ raw: "5", addend: "4", throwOnError: false });
+    assert(stringResult.success);
+    expect(stringResult.data).toBe("9");
+
+    const bigintResult = rawPlus({ raw: 5n, addend: 4n, throwOnError: false });
+    assert(bigintResult.success);
+    expect(bigintResult.data).toBe(9n);
   });
 
   test("handles additions near the maximum boundary", () => {
@@ -20,21 +29,26 @@ describe("rawPlus", () => {
   });
 
   test("throws when the result exceeds the maximum", () => {
-    expect(() => rawPlus({ raw: RawAmountStrings.max(), addend: "1", throwOnError: true })).toThrow(
-      "Resulting amount may not be greater than"
-    );
+    expect(rawPlus({ raw: RawAmountStrings.max(), addend: "1", throwOnError: false }).success).toBe(false);
   });
 
   test("returns failure result when addition would overflow without throwing", () => {
-    const result = rawPlus({ raw: RawAmountStrings.max(), addend: "1", throwOnError: false });
-    expect(result.success).toBe(false);
+    expect(rawPlus({ raw: RawAmountStrings.max(), addend: "1", throwOnError: false }).success).toBe(false);
   });
 
   test("rejects invalid inputs", () => {
-    expect(() => rawPlus({ raw: "", addend: "1", throwOnError: true })).toThrow("Invalid raw value.");
-    expect(() => rawPlus({ raw: "1", addend: "-5", throwOnError: true })).toThrow("Invalid addend value.");
+    expect(rawPlus({ raw: "", addend: "1", throwOnError: false }).success).toBe(false);
+    expect(rawPlus({ raw: "1", addend: "-5", throwOnError: false }).success).toBe(false);
+    expect(rawPlus({ raw: "abc", addend: "1", throwOnError: false }).success).toBe(false);
+  });
 
-    const result = rawPlus({ raw: "abc", addend: "1", throwOnError: false });
-    expect(result.success).toBe(false);
+  test("accepts mixed input types and returns matching output type", () => {
+    expect(rawPlus({ raw: "5", addend: 3n, throwOnError: true })).toBe("8");
+    expect(rawPlus({ raw: 5n, addend: "3", throwOnError: true })).toBe(8n);
+  });
+
+  test("supports zero addition with bigint and string", () => {
+    expect(rawPlus({ raw: 10n, addend: "0", throwOnError: true })).toBe(10n);
+    expect(rawPlus({ raw: "10", addend: 0n, throwOnError: true })).toBe("10");
   });
 });

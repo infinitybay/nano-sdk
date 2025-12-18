@@ -1,4 +1,4 @@
-import { RAW_SCALE, RawAmountString } from "../types/amount";
+import { RAW_SCALE, RawAmount, RawAmountString } from "../types/amount";
 import { NonThrowing } from "../types/non-throwing";
 import { Result } from "../types/result";
 import { Throwing } from "../types/throwing";
@@ -29,7 +29,7 @@ function addGrouping(params: { integerPart: string; groupingSize: number; groupi
 }
 
 function formatNanoFromRaw(params: {
-  rawValue: bigint;
+  rawValue: RawAmount;
   decimalPlaces: number;
   decimalSeparator: string;
   groupingSize: number;
@@ -63,7 +63,7 @@ function formatNanoFromRaw(params: {
 type FormatUnit = "raw" | "nano";
 
 type FormatRawParams = {
-  raw: RawAmountString;
+  raw: RawAmount | RawAmountString;
   unit?: FormatUnit;
   decimalPlaces?: number;
   decimalSeparator?: "." | ",";
@@ -72,7 +72,7 @@ type FormatRawParams = {
 } & (Throwing | NonThrowing);
 
 function formatRawThrowing(params: FormatRawParams & Throwing): string {
-  const rawResult = RawAmountString().safeParse(params.raw);
+  const rawResult = RawAmount().safeParse(params.raw);
   if (!rawResult.success) {
     throw new Error("Invalid raw value.");
   }
@@ -83,7 +83,7 @@ function formatRawThrowing(params: FormatRawParams & Throwing): string {
     throw new Error("Invalid format unit.");
   }
 
-  const rawValue = BigInt(rawResult.data);
+  const rawValue = rawResult.data;
 
   if (unit === "raw") {
     return params.groupingSize

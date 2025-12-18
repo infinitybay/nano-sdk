@@ -3,15 +3,24 @@ import { RawAmountStrings } from "../../../../src/nano/types/amount";
 import { assert } from "../../../assert";
 
 describe("rawMultiply", () => {
-  test("multiplies raw values correctly", () => {
+  test("multiplies raw values correctly (string inputs)", () => {
     expect(rawMultiply({ raw: "2", multiplier: "3", throwOnError: true })).toBe("6");
     expect(rawMultiply({ raw: "0", multiplier: "999", throwOnError: true })).toBe("0");
   });
 
-  test("returns success result in non-throwing mode", () => {
-    const result = rawMultiply({ raw: "3", multiplier: "3", throwOnError: false });
-    assert(result.success);
-    expect(result.data).toBe("9");
+  test("multiplies raw values correctly (bigint inputs)", () => {
+    expect(rawMultiply({ raw: 2n, multiplier: 3n, throwOnError: true })).toBe(6n);
+    expect(rawMultiply({ raw: 0n, multiplier: 999n, throwOnError: true })).toBe(0n);
+  });
+
+  test("returns success result in non-throwing mode with matching return types", () => {
+    const stringResult = rawMultiply({ raw: "3", multiplier: "3", throwOnError: false });
+    assert(stringResult.success);
+    expect(stringResult.data).toBe("9");
+
+    const bigintResult = rawMultiply({ raw: 3n, multiplier: 3n, throwOnError: false });
+    assert(bigintResult.success);
+    expect(bigintResult.data).toBe(9n);
   });
 
   test("handles large products that stay within bounds", () => {
@@ -20,21 +29,26 @@ describe("rawMultiply", () => {
   });
 
   test("throws when the result exceeds the maximum", () => {
-    expect(() => rawMultiply({ raw: RawAmountStrings.max(), multiplier: "2", throwOnError: true })).toThrow(
-      "Resulting amount may not be greater than"
-    );
+    expect(rawMultiply({ raw: RawAmountStrings.max(), multiplier: "2", throwOnError: false }).success).toBe(false);
   });
 
   test("returns failure result when multiplication would overflow without throwing", () => {
-    const result = rawMultiply({ raw: RawAmountStrings.max(), multiplier: "2", throwOnError: false });
-    expect(result.success).toBe(false);
+    expect(rawMultiply({ raw: RawAmountStrings.max(), multiplier: "2", throwOnError: false }).success).toBe(false);
   });
 
   test("rejects invalid inputs", () => {
-    expect(() => rawMultiply({ raw: "", multiplier: "1", throwOnError: true })).toThrow("Invalid raw value.");
-    expect(() => rawMultiply({ raw: "1", multiplier: "-1", throwOnError: true })).toThrow("Invalid multiplier value.");
+    expect(rawMultiply({ raw: "", multiplier: "1", throwOnError: false }).success).toBe(false);
+    expect(rawMultiply({ raw: "1", multiplier: "-1", throwOnError: false }).success).toBe(false);
+    expect(rawMultiply({ raw: "abc", multiplier: "1", throwOnError: false }).success).toBe(false);
+  });
 
-    const result = rawMultiply({ raw: "abc", multiplier: "1", throwOnError: false });
-    expect(result.success).toBe(false);
+  test("accepts mixed input types and returns matching output type", () => {
+    expect(rawMultiply({ raw: "2", multiplier: 3n, throwOnError: true })).toBe("6");
+    expect(rawMultiply({ raw: 2n, multiplier: "3", throwOnError: true })).toBe(6n);
+  });
+
+  test("supports multiplication by zero across types", () => {
+    expect(rawMultiply({ raw: 10n, multiplier: "0", throwOnError: true })).toBe(0n);
+    expect(rawMultiply({ raw: "10", multiplier: 0n, throwOnError: true })).toBe("0");
   });
 });

@@ -1,7 +1,7 @@
 import { Nano } from "nano-sdk";
 
 try {
-  const formatted = Nano.Math.formatRaw({
+  const formatted1 = Nano.Math.formatRaw({
     raw: "1234567000000000000000000000000000",
     unit: "nano",
     decimalPlaces: 6,
@@ -9,10 +9,7 @@ try {
     groupingSize: 3,
     groupingSeparator: ",",
   });
-  console.log("Nano:", formatted); // prints "Nano: 1,234.567000"
-
-  // Invalid input → throws
-  Nano.Math.formatRaw({ raw: "-1" });
+  console.log("Nano:", formatted1); // prints "Nano: 1,234.567000"
 } catch (err) {
-  console.error("formatRaw failed:", err); // prints "formatRaw failed: Error: Invalid raw value."
+  console.error("Unexpected failure:", err);
 }

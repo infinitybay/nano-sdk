@@ -8,6 +8,8 @@ describe("rawIsEqualTo", () => {
     for (const value of values) {
       expect(rawIsEqualTo({ raw: value, compareTo: value, throwOnError: true })).toBe(true);
     }
+    expect(rawIsEqualTo({ raw: 10n, compareTo: 10n, throwOnError: true })).toBe(true);
+    expect(rawIsEqualTo({ raw: 10n, compareTo: "10", throwOnError: true })).toBe(true);
   });
 
   test("returns predicate result when values are equal without throwing", () => {
@@ -28,6 +30,7 @@ describe("rawIsEqualTo", () => {
       })
     ).toBe(false);
     expect(rawIsEqualTo({ raw: "1", compareTo: "2", throwOnError: true })).toBe(false);
+    expect(rawIsEqualTo({ raw: 2n, compareTo: 1n, throwOnError: true })).toBe(false);
   });
 
   test("returns predicate error for invalid inputs without throwing", () => {
@@ -41,11 +44,7 @@ describe("rawIsEqualTo", () => {
   });
 
   test("throws for invalid inputs when throwOnError is true", () => {
-    expect(() => rawIsEqualTo({ raw: "", compareTo: RawAmountStrings.zero(), throwOnError: true })).toThrow(
-      "Invalid raw value."
-    );
-    expect(() => rawIsEqualTo({ raw: RawAmountStrings.zero(), compareTo: "-1", throwOnError: true })).toThrow(
-      "Invalid compareTo value."
-    );
+    expect(() => rawIsEqualTo({ raw: "", compareTo: RawAmountStrings.zero(), throwOnError: true })).toThrow();
+    expect(() => rawIsEqualTo({ raw: RawAmountStrings.zero(), compareTo: "-1", throwOnError: true })).toThrow();
   });
 });

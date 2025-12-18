@@ -89,3 +89,34 @@ export const RawAmountStrings = {
   max: (): RawAmountString => RAW_MAX_STRING,
   zero: (): RawAmountString => "0",
 };
+
+export type RawAmount = z.infer<ReturnType<typeof RawAmount>>;
+export const RawAmount = () =>
+  z
+    .union([
+      // string input
+      z
+        .string()
+        .regex(RAW_REGEX)
+        .transform((v) => BigInt(v)),
+
+      // number input
+      z
+        .number()
+        .refine((v) => Number.isFinite(v) && Number.isInteger(v) && Number.isSafeInteger(v), {
+          message: "Invalid raw amount!",
+        })
+        .transform((v) => BigInt(v)),
+
+      // bigint input
+      z.bigint(),
+    ])
+    .refine((v) => v >= RAW_MIN && v <= RAW_MAX, {
+      message: "Invalid raw amount!",
+    });
+
+export const RawAmounts = {
+  min: (): RawAmount => RAW_MIN,
+  max: (): RawAmount => RAW_MAX,
+  zero: (): RawAmount => 0n,
+};

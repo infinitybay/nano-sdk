@@ -1,45 +1,65 @@
-import { RAW_MAX, RawAmountString } from "../types/amount";
+import { RawAmount, RawAmountString } from "../types/amount";
 import { NonThrowing } from "../types/non-throwing";
 import { Result } from "../types/result";
 import { Throwing } from "../types/throwing";
 
 type RawPlusParams = {
-  raw: RawAmountString;
-  addend: RawAmountString;
-} & (Throwing | NonThrowing);
+  raw: RawAmount | RawAmountString;
+  addend: RawAmount | RawAmountString;
+};
 
-function rawPlusThrowing(params: RawPlusParams & Throwing): RawAmountString {
-  const baseResult = RawAmountString().safeParse(params.raw);
+type RawPlusRawAmountParams = {
+  raw: RawAmount;
+  addend: RawAmount | RawAmountString;
+};
+
+type RawPlusRawAmountStringParams = {
+  raw: RawAmountString;
+  addend: RawAmount | RawAmountString;
+};
+
+function rawPlusThrowing(params: RawPlusRawAmountParams & Throwing): RawAmount;
+function rawPlusThrowing(params: RawPlusRawAmountStringParams & Throwing): RawAmountString;
+function rawPlusThrowing(params: RawPlusParams & Throwing) {
+  const baseResult = RawAmount().safeParse(params.raw);
   if (!baseResult.success) {
     throw new Error("Invalid raw value.");
   }
 
-  const addendResult = RawAmountString().safeParse(params.addend);
+  const addendResult = RawAmount().safeParse(params.addend);
   if (!addendResult.success) {
     throw new Error("Invalid addend value.");
   }
 
-  const base = BigInt(baseResult.data);
-  const addend = BigInt(addendResult.data);
+  const base = baseResult.data;
+  const addend = addendResult.data;
+  const sum = base + addend;
 
-  const result = base + addend;
-  if (result > RAW_MAX) {
-    throw new Error(`Resulting amount may not be greater than ${RAW_MAX.toString()}!`);
+  const result = RawAmount().safeParse(sum);
+  if (!result.success) {
+    throw new Error("Resulting amount is no valid raw amount.");
   }
 
-  const rawResult = RawAmountString().safeParse(result.toString());
-  if (!rawResult.success) {
-    throw new Error("Resulting amount is invalid.");
+  if (typeof params.raw === "bigint") {
+    return result.data;
+  } else {
+    return result.data.toString();
   }
-
-  return rawResult.data;
 }
 
-function rawPlusNonThrowing(params: RawPlusParams & NonThrowing): Result<RawAmountString> {
+function rawPlusNonThrowing(params: RawPlusRawAmountParams & NonThrowing): Result<RawAmount>;
+function rawPlusNonThrowing(params: RawPlusRawAmountStringParams & NonThrowing): Result<RawAmountString>;
+function rawPlusNonThrowing(params: RawPlusParams & NonThrowing) {
   try {
+    let result;
+    if (typeof params.raw === "bigint") {
+      result = rawPlusThrowing({ raw: params.raw, addend: params.addend, throwOnError: true });
+    } else {
+      result = rawPlusThrowing({ raw: params.raw, addend: params.addend, throwOnError: true });
+    }
     return {
       success: true,
-      data: rawPlusThrowing({ ...params, throwOnError: true }),
+      data: result,
     };
   } catch (e) {
     return {
@@ -49,13 +69,24 @@ function rawPlusNonThrowing(params: RawPlusParams & NonThrowing): Result<RawAmou
   }
 }
 
-export function rawPlus(params: RawPlusParams & NonThrowing): Result<RawAmountString>;
-export function rawPlus(params: RawPlusParams & Throwing): RawAmountString;
-export function rawPlus(params: RawPlusParams): RawAmountString | Result<RawAmountString>;
-export function rawPlus(params: RawPlusParams) {
+export function rawPlus(params: RawPlusRawAmountParams & NonThrowing): Result<RawAmount>;
+export function rawPlus(params: RawPlusRawAmountParams & Throwing): RawAmount;
+export function rawPlus(params: RawPlusRawAmountParams): RawAmount | Result<RawAmount>;
+export function rawPlus(params: RawPlusRawAmountStringParams & NonThrowing): Result<RawAmountString>;
+export function rawPlus(params: RawPlusRawAmountStringParams & Throwing): RawAmountString;
+export function rawPlus(params: RawPlusRawAmountStringParams): RawAmountString | Result<RawAmountString>;
+export function rawPlus(params: RawPlusParams & (Throwing | NonThrowing)) {
   if (params.throwOnError === false) {
-    return rawPlusNonThrowing({ ...params, throwOnError: false });
+    if (typeof params.raw === "bigint") {
+      return rawPlusNonThrowing({ raw: params.raw, addend: params.addend, throwOnError: false });
+    } else {
+      return rawPlusNonThrowing({ raw: params.raw, addend: params.addend, throwOnError: false });
+    }
   } else {
-    return rawPlusThrowing({ ...params, throwOnError: true });
+    if (typeof params.raw === "bigint") {
+      return rawPlusThrowing({ raw: params.raw, addend: params.addend, throwOnError: true });
+    } else {
+      return rawPlusThrowing({ raw: params.raw, addend: params.addend, throwOnError: true });
+    }
   }
 }
