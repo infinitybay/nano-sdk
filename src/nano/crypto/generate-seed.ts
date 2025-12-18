@@ -26,11 +26,12 @@ function generateSeedNonThrowing(params: GenerateSeedParams & NonThrowing): Resu
   }
 }
 
+export function generateSeed(): SeedString;
 export function generateSeed(params: GenerateSeedParams & NonThrowing): Result<SeedString>;
 export function generateSeed(params: GenerateSeedParams & Throwing): SeedString;
 export function generateSeed(params: GenerateSeedParams): SeedString | Result<SeedString>;
-export function generateSeed(params: GenerateSeedParams = {}) {
-  if (params.throwOnError === false) {
+export function generateSeed(params?: GenerateSeedParams) {
+  if (params?.throwOnError === false) {
     return generateSeedNonThrowing({ ...params, throwOnError: false });
   } else {
     return generateSeedThrowing({ ...params, throwOnError: true });

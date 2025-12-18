@@ -26,11 +26,12 @@ function generatePublicKeyNonThrowing(params: GeneratePublicKeyParams & NonThrow
   }
 }
 
+export function generatePublicKey(): PublicKeyString;
 export function generatePublicKey(params: GeneratePublicKeyParams & NonThrowing): Result<PublicKeyString>;
 export function generatePublicKey(params: GeneratePublicKeyParams & Throwing): PublicKeyString;
 export function generatePublicKey(params: GeneratePublicKeyParams): PublicKeyString | Result<PublicKeyString>;
-export function generatePublicKey(params: GeneratePublicKeyParams = {}) {
-  if (params.throwOnError === false) {
+export function generatePublicKey(params?: GeneratePublicKeyParams) {
+  if (params?.throwOnError === false) {
     return generatePublicKeyNonThrowing({ ...params, throwOnError: false });
   } else {
     return generatePublicKeyThrowing({ ...params, throwOnError: true });
