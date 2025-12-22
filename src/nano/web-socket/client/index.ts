@@ -7,8 +7,6 @@
  * Modified and adapted for the nano-sdk project.
  */
 
-export type BinaryType = "blob" | "arraybuffer";
-
 export const ReadyStates = {
   Connecting: 0,
   Open: 1,
@@ -24,7 +22,7 @@ export interface WebSocketLikeEvents {
 }
 
 export interface WebSocketLike {
-  binaryType: BinaryType;
+  binaryType: string;
 
   readonly bufferedAmount: number;
   readonly extensions: string;
@@ -46,7 +44,9 @@ export interface WebSocketLike {
   send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void;
   close(code?: number, reason?: string): void;
 }
-export type WebSocketConstructor = new (url: string, protocols?: string | string[]) => WebSocketLike;
+export type WebSocketConstructor = {
+  new (url: string, protocols?: string | string[]): WebSocketLike;
+};
 
 const getDefaultWebSocketClass = (): WebSocketConstructor | undefined => {
   if (typeof WebSocket !== "undefined") {
@@ -56,34 +56,24 @@ const getDefaultWebSocketClass = (): WebSocketConstructor | undefined => {
 };
 const isWebSocketClass = (w: any) => typeof w !== "undefined" && !!w && w.CLOSING === 2;
 
-export class Event {
-  public target: any;
-  public type: string;
-  constructor(type: string, target: any) {
-    this.target = target;
-    this.type = type;
-  }
+export interface Event {
+  target: any;
+  type: string;
 }
 
-export class ErrorEvent extends Event {
-  public message: string;
-  public error: Error;
-  constructor(error: Error, target: any) {
-    super("error", target);
-    this.message = error.message;
-    this.error = error;
-  }
+export interface MessageEvent extends Event {
+  data: unknown;
 }
 
-export class CloseEvent extends Event {
-  public code: number;
-  public reason: string;
-  public wasClean = true;
-  constructor(code = 1000, reason = "", target: any) {
-    super("close", target);
-    this.code = code;
-    this.reason = reason;
-  }
+export interface ErrorEvent extends Event {
+  message: string;
+  error: Error;
+}
+
+export interface CloseEvent extends Event {
+  code: number;
+  reason: string;
+  wasClean: boolean;
 }
 
 export type WebSocketClientOptions = {
@@ -128,9 +118,9 @@ export class WebSocketClient {
   private readonly _protocols?: string | string[];
   private readonly _options: WebSocketClientOptions;
   private _socket?: WebSocketLike;
-  private _binaryType: BinaryType = "blob";
+  private _binaryType: string = "blob";
   private _reconnectEnabled = true;
-  private _reconnectionAttempts = 0;
+  private _reconnectionAttempts = -1;
   private _messageQueue: Message[] = [];
   private _connectLock = false;
   private _closeCalled = false;
@@ -193,7 +183,7 @@ export class WebSocketClient {
    * The value is stored internally and immediately applied to the underlying
    * socket if it already exists.
    */
-  set binaryType(value: BinaryType) {
+  set binaryType(value: string) {
     this._binaryType = value;
     if (this._socket) {
       this._socket.binaryType = value;
@@ -459,7 +449,7 @@ export class WebSocketClient {
     try {
       this._socket.close(code, reason);
 
-      this.handleClose(new CloseEvent(code, reason, this));
+      this.handleClose({ type: "close", code: code, reason: reason ?? "", wasClean: true, target: this });
     } catch (_error) {
       // ignore
     }
@@ -494,7 +484,7 @@ export class WebSocketClient {
   }
 
   private handleTimeout() {
-    this.handleError(new ErrorEvent(Error("TIMEOUT"), this));
+    this.handleError({ type: "error", message: "TIMEOUT", error: Error("TIMEOUT"), target: this });
   }
 
   private handleOpen = (event: Event) => {
@@ -536,6 +526,10 @@ export class WebSocketClient {
     this.connect();
   };
 
+  private handleErrorDuringTransition = (_event: ErrorEvent) => {
+    // Do nothing
+  };
+
   private handleClose = (event: CloseEvent) => {
     this.clearTimeouts();
 
@@ -556,11 +550,15 @@ export class WebSocketClient {
       this._socket.removeEventListener("close", this.handleClose);
       this._socket.removeEventListener("message", this.handleMessage);
       this._socket.removeEventListener("error", this.handleError);
+      // Ignore 'WebSocket was closed before the connection was established'
+      // when close() is called during readyState === ReadyStates.Connecting
+      this._socket.addEventListener("error", this.handleErrorDuringTransition);
     }
   }
 
   private addListeners() {
     if (this._socket) {
+      this._socket.removeEventListener("error", this.handleErrorDuringTransition);
       this._socket.addEventListener("open", this.handleOpen);
       this._socket.addEventListener("close", this.handleClose);
       this._socket.addEventListener("message", this.handleMessage);
@@ -600,6 +598,9 @@ export class WebSocketClient {
       const url = urlProvider();
       if (typeof url === "string") {
         return Promise.resolve(url);
+      }
+      if (url && typeof (url as any).then === "function") {
+        return url as Promise<string>;
       }
     }
 
