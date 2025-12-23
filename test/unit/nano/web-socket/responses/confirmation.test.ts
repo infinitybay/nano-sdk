@@ -4,7 +4,7 @@ import {
 } from "../../../../../src/nano/web-socket/responses/confirmation";
 import { TestData } from "../../../test-data";
 
-describe("ConfirmationResponseBlockContent schema", () => {
+describe("ConfirmationMessageBlock schema", () => {
   test("validates state block confirmation content", () => {
     const result = ConfirmationMessageBlock().safeParse({
       ...TestData.Valid.StateBlock1(),
