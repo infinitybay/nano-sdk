@@ -9,6 +9,7 @@ import {
   StoppedElectionResponse,
   TopicResponse,
   VoteResponse,
+  WorkResponse,
 } from "../responses";
 import { PongAckResponse } from "../responses/pong-ack-response";
 import { SubscribeAckResponse } from "../responses/subscribe-ack-response";
@@ -162,7 +163,7 @@ const TopicResponseSchemaMap = {
   stopped_election: StoppedElectionResponse(),
   telemetry: z.unknown(),
   vote: VoteResponse(),
-  work: z.unknown(),
+  work: WorkResponse(),
 };
 
 export type TopicResponseTypeMap = {
@@ -173,7 +174,7 @@ export type TopicResponseTypeMap = {
   stopped_election: StoppedElectionResponse;
   telemetry: unknown;
   vote: VoteResponse;
-  work: unknown;
+  work: WorkResponse;
 };
 
 export type TopicListener<T extends Topic> =

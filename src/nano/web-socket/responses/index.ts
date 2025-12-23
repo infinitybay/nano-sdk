@@ -4,3 +4,4 @@ export * from "./started-election";
 export * from "./stopped-election";
 export * from "./topic";
 export * from "./vote";
+export * from "./work";
