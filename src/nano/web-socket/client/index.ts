@@ -147,8 +147,8 @@ export type AckResponseTypeMap = {
 };
 
 export type AckListener<A extends Ack> =
-  | ((message: AckResponseTypeMap[A]) => void)
-  | { handleAck(message: AckResponseTypeMap[A]): void };
+  | ((response: AckResponseTypeMap[A]) => void)
+  | { handleAck(response: AckResponseTypeMap[A]): void };
 
 type AckListenersMap = {
   [A in Ack]: Array<AckListener<A>>;
@@ -178,8 +178,8 @@ export type TopicResponseTypeMap = {
 };
 
 export type TopicListener<T extends Topic> =
-  | ((message: TopicResponseTypeMap[T]) => void)
-  | { handleTopic(message: TopicResponseTypeMap[T]): void };
+  | ((response: TopicResponseTypeMap[T]) => void)
+  | { handleTopic(response: TopicResponseTypeMap[T]): void };
 
 type TopicListenersMap = {
   [T in Topic]: Array<TopicListener<T>>;
@@ -443,11 +443,11 @@ export class WebSocketClient {
    *
    * Returns `true` to match the EventTarget `dispatchEvent` contract.
    */
-  public dispatchAck<A extends Ack>(ack: A, message: AckResponseTypeMap[A]) {
+  public dispatchAck<A extends Ack>(ack: A, response: AckResponseTypeMap[A]) {
     const listeners = this._ackListeners[ack];
     if (listeners) {
       for (const listener of listeners) {
-        this.callAckListener(message, listener);
+        this.callAckListener(response, listener);
       }
     }
     return true;
@@ -457,11 +457,11 @@ export class WebSocketClient {
    * Invokes an acknowledgment listener, supporting both function listeners
    * and listener objects with a `handleAck` method.
    */
-  private callAckListener<A extends Ack>(message: AckResponseTypeMap[A], listener: AckListener<A>) {
+  private callAckListener<A extends Ack>(response: AckResponseTypeMap[A], listener: AckListener<A>) {
     if ("handleAck" in listener) {
-      listener.handleAck(message);
+      listener.handleAck(response);
     } else {
-      listener(message);
+      listener(response);
     }
   }
 
@@ -494,11 +494,11 @@ export class WebSocketClient {
    *
    * Returns `true` to match the EventTarget `dispatchEvent` contract.
    */
-  public dispatchTopic<T extends Topic>(topic: T, message: TopicResponseTypeMap[T]) {
+  public dispatchTopic<T extends Topic>(topic: T, response: TopicResponseTypeMap[T]) {
     const listeners = this._topicListeners[topic];
     if (listeners) {
       for (const listener of listeners) {
-        this.callTopicListener(message, listener);
+        this.callTopicListener(response, listener);
       }
     }
     return true;
@@ -508,11 +508,11 @@ export class WebSocketClient {
    * Invokes a topic listener, supporting both function listeners and
    * listener objects with a `handleTopic` method.
    */
-  private callTopicListener<T extends Topic>(message: TopicResponseTypeMap[T], listener: TopicListener<T>) {
+  private callTopicListener<T extends Topic>(response: TopicResponseTypeMap[T], listener: TopicListener<T>) {
     if ("handleTopic" in listener) {
-      listener.handleTopic(message);
+      listener.handleTopic(response);
     } else {
-      listener(message);
+      listener(response);
     }
   }
 
@@ -713,9 +713,9 @@ export class WebSocketClient {
       if (data) {
         const parsedTopicResponse = TopicResponseSchema.safeParse(data);
         if (parsedTopicResponse.success) {
-          const parsedMessage = TopicResponseSchemaMap[parsedTopicResponse.data.topic].safeParse(data);
-          if (parsedMessage.success) {
-            this.dispatchTopic(parsedTopicResponse.data.topic, parsedMessage.data);
+          const parsedResponse = TopicResponseSchemaMap[parsedTopicResponse.data.topic].safeParse(data);
+          if (parsedResponse.success) {
+            this.dispatchTopic(parsedTopicResponse.data.topic, parsedResponse.data);
           } else {
             this.dispatchError({
               type: "error",
@@ -729,9 +729,9 @@ export class WebSocketClient {
         } else {
           const parsedAckResponse = AckResponseSchema.safeParse(data);
           if (parsedAckResponse.success) {
-            const parsedMessage = AckResponseSchemaMap[parsedAckResponse.data.ack].safeParse(data);
-            if (parsedMessage.success) {
-              this.dispatchAck(parsedAckResponse.data.ack, parsedMessage.data);
+            const parsedResponse = AckResponseSchemaMap[parsedAckResponse.data.ack].safeParse(data);
+            if (parsedResponse.success) {
+              this.dispatchAck(parsedAckResponse.data.ack, parsedResponse.data);
             } else {
               this.dispatchError({
                 type: "error",
