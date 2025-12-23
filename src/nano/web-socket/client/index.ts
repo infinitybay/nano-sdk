@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-import z from "zod";
-
 import {
   AckResponse,
+  BootstrapResponse,
   ConfirmationResponse,
   NewUnconfirmedBlockResponse,
   StartedElectionResponse,
@@ -158,7 +156,7 @@ type AckListenersMap = {
 
 const TopicResponseSchema = TopicResponse();
 const TopicResponseSchemaMap = {
-  bootstrap: z.unknown(),
+  bootstrap: BootstrapResponse(),
   confirmation: ConfirmationResponse(),
   new_unconfirmed_block: NewUnconfirmedBlockResponse(),
   started_election: StartedElectionResponse(),
@@ -169,7 +167,7 @@ const TopicResponseSchemaMap = {
 };
 
 export type TopicResponseTypeMap = {
-  bootstrap: unknown;
+  bootstrap: BootstrapResponse;
   confirmation: ConfirmationResponse;
   new_unconfirmed_block: NewUnconfirmedBlockResponse;
   started_election: StartedElectionResponse;

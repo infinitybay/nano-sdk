@@ -1,4 +1,5 @@
 export * from "./ack";
+export * from "./bootstrap";
 export * from "./confirmation";
 export * from "./new-unconfirmed-block";
 export * from "./started-election";
