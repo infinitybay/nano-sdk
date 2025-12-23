@@ -6,7 +6,6 @@ describe("WebSocket index exports", () => {
     expect(WebSocket.AckResponse).toBeDefined();
     expect(WebSocket.ConfirmationRequest).toBeDefined();
     expect(WebSocket.ConfirmationResponse).toBeDefined();
-    expect(WebSocket.ConfirmationResponseBlockContent).toBeDefined();
     expect(WebSocket.PingRequest).toBeDefined();
     expect(WebSocket.TopicResponse).toBeDefined();
   });

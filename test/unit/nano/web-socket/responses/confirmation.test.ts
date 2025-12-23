@@ -1,12 +1,12 @@
 import {
+  ConfirmationMessageBlock,
   ConfirmationResponse,
-  ConfirmationResponseBlockContent,
 } from "../../../../../src/nano/web-socket/responses/confirmation";
 import { TestData } from "../../../test-data";
 
 describe("ConfirmationResponseBlockContent schema", () => {
   test("validates state block confirmation content", () => {
-    const result = ConfirmationResponseBlockContent().safeParse({
+    const result = ConfirmationMessageBlock().safeParse({
       ...TestData.Valid.StateBlock1(),
       linked_account: TestData.Valid.Account1(),
       subtype: "send",
@@ -15,7 +15,7 @@ describe("ConfirmationResponseBlockContent schema", () => {
   });
 
   test("validates legacy block confirmation content", () => {
-    const result = ConfirmationResponseBlockContent().safeParse({
+    const result = ConfirmationMessageBlock().safeParse({
       type: "open",
       source: TestData.Valid.Hash1(),
       representative: TestData.Valid.Representative1(),
@@ -28,7 +28,7 @@ describe("ConfirmationResponseBlockContent schema", () => {
   });
 
   test("rejects confirmation content with missing required fields", () => {
-    const result = ConfirmationResponseBlockContent().safeParse({
+    const result = ConfirmationMessageBlock().safeParse({
       type: "state",
       account: TestData.Valid.Account1(),
     });
