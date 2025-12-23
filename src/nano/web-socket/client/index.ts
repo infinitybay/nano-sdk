@@ -13,7 +13,7 @@ import {
 } from "../responses";
 import { PongAckResponse } from "../responses/pong-ack-response";
 import { SubscribeAckResponse } from "../responses/subscribe-ack-response";
-import { UnsubscribeAckResponse } from "../responses/unsibscribe-ack-response";
+import { UnsubscribeAckResponse } from "../responses/unsubscribe-ack-response";
 import { UpdateAckResponse } from "../responses/update-ack-response";
 import { Topic } from "../types";
 import { Ack } from "../types/ack";
