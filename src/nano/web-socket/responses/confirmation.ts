@@ -13,8 +13,8 @@ import { SubtypeString } from "../../types/subtype";
 import { TimestampString } from "../../types/timestamp";
 import { UIntString } from "../../types/uint";
 
-export type ConfirmationResponseBlockContent = z.infer<ReturnType<typeof ConfirmationResponseBlockContent>>;
-export const ConfirmationResponseBlockContent = () =>
+export type ConfirmationMessageBlock = z.infer<ReturnType<typeof ConfirmationMessageBlock>>;
+export const ConfirmationMessageBlock = () =>
   z.union([
     StateBlock().extend({
       linked_account: AccountString().or(z.literal("")).optional(),
@@ -26,47 +26,55 @@ export const ConfirmationResponseBlockContent = () =>
     LegacySendBlock().extend({ linked_account: AccountString().or(z.literal("")).optional() }),
   ]);
 
+export type ConfirmationMessageElectionInfo = z.infer<ReturnType<typeof ConfirmationMessageElectionInfo>>;
+export const ConfirmationMessageElectionInfo = () =>
+  z.object({
+    duration: TimestampString(),
+    time: TimestampString(),
+    tally: RawAmountString(),
+    final: RawAmountString(),
+    blocks: UIntString(),
+    voters: UIntString(),
+    request_count: UIntString(),
+    votes: z
+      .object({
+        representative: AccountString(),
+        timestamp: TimestampString(),
+        hash: HashString(),
+        weight: RawAmountString(),
+      })
+      .array()
+      .optional(),
+  });
+
+export type ConfirmationMessageSideband = z.infer<ReturnType<typeof ConfirmationMessageSideband>>;
+export const ConfirmationMessageSideband = () =>
+  z.object({
+    height: HeightString(),
+    local_timestamp: TimestampString(),
+  });
+
+export type ConfirmationMessage = z.infer<ReturnType<typeof ConfirmationMessage>>;
+export const ConfirmationMessage = () =>
+  z.object({
+    account: AccountString(),
+    amount: RawAmountString(),
+    hash: HashString(),
+    confirmation_type: z.union([
+      z.literal("active_confirmation_height"),
+      z.literal("active_quorum"),
+      z.literal("inactive"),
+      z.literal("unknown"),
+    ]),
+    block: ConfirmationMessageBlock().optional(),
+    election_info: ConfirmationMessageElectionInfo().optional(),
+    sideband: ConfirmationMessageSideband().optional(),
+  });
+
 export type ConfirmationResponse = z.infer<ReturnType<typeof ConfirmationResponse>>;
 export const ConfirmationResponse = () =>
   z.object({
     topic: z.literal("confirmation"),
     time: TimestampString(),
-    message: z.object({
-      account: AccountString(),
-      amount: RawAmountString(),
-      hash: HashString(),
-      confirmation_type: z.union([
-        z.literal("active_confirmation_height"),
-        z.literal("active_quorum"),
-        z.literal("inactive"),
-        z.literal("unknown"),
-      ]),
-      block: ConfirmationResponseBlockContent().optional(),
-      election_info: z
-        .object({
-          duration: TimestampString(),
-          time: TimestampString(),
-          tally: RawAmountString(),
-          final: RawAmountString(),
-          blocks: UIntString(),
-          voters: UIntString(),
-          request_count: UIntString(),
-          votes: z
-            .object({
-              representative: AccountString(),
-              timestamp: TimestampString(),
-              hash: HashString(),
-              weight: RawAmountString(),
-            })
-            .array()
-            .optional(),
-        })
-        .optional(),
-      sideband: z
-        .object({
-          height: HeightString(),
-          local_timestamp: TimestampString(),
-        })
-        .optional(),
-    }),
+    message: ConfirmationMessage(),
   });
