@@ -1,20 +1,20 @@
 import { z } from "zod";
 
-import { UInt } from "../../types";
+import { UIntString } from "../../types";
 import { AccountString } from "../../types/account";
 import { HashString } from "../../types/hash";
 import { SignatureString } from "../../types/signature";
-import { TimestampString } from "../../types/timestamp";
+import { FinalVoteTimestampString, TimestampString } from "../../types/timestamp";
 import { VoteType } from "../types/vote-type";
 
 export type VoteMessage = z.infer<ReturnType<typeof VoteMessage>>;
 export const VoteMessage = () =>
   z.object({
     account: AccountString(),
-    signature: SignatureString(),
-    sequence: TimestampString(),
-    timestamp: TimestampString(),
-    duration: UInt().max(255),
+    signature: SignatureString().or(z.string()), // Currently returned as string number; not converted to hex string in nano::vote::serialize_json
+    sequence: TimestampString().or(FinalVoteTimestampString()),
+    timestamp: TimestampString().or(FinalVoteTimestampString()),
+    duration: UIntString(),
     blocks: HashString().array(),
     type: VoteType(),
   });

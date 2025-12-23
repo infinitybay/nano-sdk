@@ -16,3 +16,6 @@ export const TimestampString = () =>
     .refine((val) => Timestamp().safeParse(Number(val)).success, {
       message: "Invalid timestamp",
     });
+
+export type FinalVoteTimestampString = z.infer<ReturnType<typeof FinalVoteTimestampString>>;
+export const FinalVoteTimestampString = () => z.literal("18446744073709551615");

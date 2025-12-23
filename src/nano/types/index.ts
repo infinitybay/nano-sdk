@@ -29,7 +29,7 @@ export { RootString, RootStrings } from "./root";
 export { SeedIndex, SeedIndexBounds, SeedString } from "./seed";
 export { SignatureString, SignatureStrings } from "./signature";
 export { SubtypeString } from "./subtype";
-export { Timestamp, TimestampBounds, TimestampString } from "./timestamp";
+export { FinalVoteTimestampString, Timestamp, TimestampBounds, TimestampString } from "./timestamp";
 export { TypeString } from "./type";
 export { UInt, UIntBounds, UIntString } from "./uint";
 export { WorkString, WorkStrings } from "./work";
