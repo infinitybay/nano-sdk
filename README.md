@@ -108,14 +108,37 @@ RPC methods accept a custom `httpClient` via the request config. See the `axios`
 
 ## WebSocket Usage
 
-`Nano.WebSocket` provides schemas and types for **Nano** node WebSocket messages (requests and responses). This SDK does not ship a WebSocket client; use your preferred WebSocket implementation and validate outgoing/incoming payloads with the provided schemas.
+`Nano.WebSocket` provides a complete, strongly typed implementation of all **Nano** node WebSocket request and response schemas and ships with a built-in `WebSocketClient`. By default, the client uses the globally available `WebSocket` implementation provided by the current runtime environment (browser or Node.js).
 
-Use cases:
+The `WebSocketClient` exposes **fully typed WebSocket interactions** through two complementary listener APIs:
 
-- validate subscription payloads before sending them
-- validate incoming messages before handling them
+- **Ack listeners** for handling typed acknowledgement messages returned by the node when a WebSocket action explicitly requests an acknowledgement (`subscribe`, `unsubscribe`, `update`, or `pong`)
+- **Topic listeners** for typed streaming subscriptions, including `bootstrap`, `confirmation`, `new_unconfirmed_block`, `started_election`, `stopped_election`, `telemetry`, `work`, and `vote`
 
-WebSocket schemas are currently incomplete, with several message types still pending implementation.
+All incoming messages are validated and typed based on the corresponding WebSocket schemas, enabling safe, ergonomic access to response data without manual parsing or casting.
+
+![Typed WebSocket Response IntelliSense](./images/web-socket-response-intellisense.gif)
+
+### Available options
+
+```ts
+const ws = new Nano.WebSocket.WebSocketClient(webSocketUrl, undefined, {
+  webSocketClass: undefined, // WebSocket constructor, if none provided, defaults to global WebSocket
+  connectionTimeout: 4000, // retry connect if not connected after this time, in ms
+  minUptime: 5000, // min time in ms to consider connection as stable
+  maxEnqueuedMessages: Infinity, // maximum number of messages to buffer until reconnection
+  maxReconnectionAttempts: Infinity, // maximum number of reconnection attempts
+  maxReconnectionDelay: 10000, // max delay in ms between reconnections
+  minReconnectionDelay: 1000 + Math.random() * 4000, // min delay in ms between reconnections
+  reconnectionDelayGrowFactor: 1.3, // how fast the reconnection delay grows
+  startClosed: false, // start websocket in CLOSED state, call `.reconnect()` to connect
+});
+```
+
+Examples:
+
+- [`typed-ack-and-topic-listeners.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/web-socket/typed-ack-and-topic-listeners.example.ts)
+- [`custom-web-socket-client.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/web-socket/custom-web-socket-client.example.ts)
 
 ## Validation & Typing
 
