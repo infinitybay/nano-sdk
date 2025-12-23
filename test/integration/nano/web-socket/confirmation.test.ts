@@ -1,85 +1,11 @@
 import { Nano } from "../../../../src";
 import { WebSocketClient } from "../../../../src/nano/web-socket";
-import { assert } from "../../../assert";
 import { webSocketUrl } from "../../config";
-import { onWebSocketClientAck, onWebSocketClientTopic, onWebSocketMessage, onWebSocketOpen } from "./helpers";
+import { onWebSocketClientAck, onWebSocketClientTopic, onWebSocketOpen } from "./helpers";
 
 jest.setTimeout(120_000);
 
 describe("WebSocket confirmation integration", () => {
-  let ws: WebSocket;
-
-  afterEach(() => {
-    ws.close();
-  });
-
-  test("subscribes, unsubscribes and receives ack message", async () => {
-    ws = new WebSocket(webSocketUrl);
-
-    await onWebSocketOpen(ws);
-
-    const request1: Nano.WebSocket.ConfirmationRequest = {
-      action: "subscribe",
-      ack: true,
-      id: "integration-confirmation",
-      topic: "confirmation",
-    };
-    ws.send(JSON.stringify(request1));
-
-    const message1 = await onWebSocketMessage(ws);
-
-    const request2: Nano.WebSocket.ConfirmationRequest = {
-      action: "unsubscribe",
-      ack: true,
-      id: "integration-confirmation",
-      topic: "confirmation",
-    };
-    ws.send(JSON.stringify(request2));
-
-    const message2 = await onWebSocketMessage(ws);
-
-    const data1 = JSON.parse(message1.data);
-    const data2 = JSON.parse(message2.data);
-
-    const response1 = Nano.WebSocket.AckResponse().safeParse(data1);
-    const response2 = Nano.WebSocket.AckResponse().safeParse(data2);
-
-    assert(response1.success);
-    assert(response2.success);
-    expect(response1.data.ack).toBe("subscribe");
-    expect(response2.data.ack).toBe("unsubscribe");
-    expect(response1.data.id).toBe("integration-confirmation");
-    expect(response2.data.id).toBe("integration-confirmation");
-  });
-
-  test("subscribes and receives confirmation message", async () => {
-    ws = new WebSocket(webSocketUrl);
-
-    await onWebSocketOpen(ws);
-
-    const request: Nano.WebSocket.ConfirmationRequest = {
-      action: "subscribe",
-      topic: "confirmation",
-      options: {
-        include_block: true,
-        include_election_info: true,
-        include_sideband_info: true,
-      },
-    };
-    ws.send(JSON.stringify(request));
-
-    const message = await onWebSocketMessage(ws);
-    const data = JSON.parse(message.data);
-    const confirmationResponse = Nano.WebSocket.ConfirmationResponse().safeParse(data);
-    assert(confirmationResponse.success);
-    expect(confirmationResponse.data.topic).toBe("confirmation");
-    expect(confirmationResponse.data.message.block).toBeDefined();
-    expect(confirmationResponse.data.message.election_info).toBeDefined();
-    expect(confirmationResponse.data.message.sideband).toBeDefined();
-  });
-});
-
-describe("WebSocketClient confirmation integration", () => {
   let ws: WebSocketClient;
 
   afterEach(() => {
