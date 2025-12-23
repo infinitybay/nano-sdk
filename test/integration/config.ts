@@ -7,7 +7,7 @@ export const rpcUrl = process.env.NANO_RPC_URL ?? process.env.npm_package_config
 export const webSocketUrl =
   process.env.NANO_WEB_SOCKET_URL ?? process.env.npm_package_config_nanoWebSocketUrl ?? DEFAULT_NANO_WEB_SOCKET_URL;
 export const webSocketOpenTimeout = 5_000;
-export const webSocketMessageTimeout = 25_000;
+export const webSocketMessageTimeout = 60_000;
 
 export const rpcRequestConfig: NonThrowingRequestConfig = {
   timeoutInMs: 2000,
