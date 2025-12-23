@@ -5,6 +5,7 @@ import z from "zod";
 import {
   AckResponse,
   ConfirmationResponse,
+  NewUnconfirmedBlockResponse,
   StartedElectionResponse,
   StoppedElectionResponse,
   TopicResponse,
@@ -158,7 +159,7 @@ const TopicResponseSchema = TopicResponse();
 const TopicResponseSchemaMap = {
   bootstrap: z.unknown(),
   confirmation: ConfirmationResponse(),
-  new_unconfirmed_block: z.unknown(),
+  new_unconfirmed_block: NewUnconfirmedBlockResponse(),
   started_election: StartedElectionResponse(),
   stopped_election: StoppedElectionResponse(),
   telemetry: z.unknown(),
@@ -169,7 +170,7 @@ const TopicResponseSchemaMap = {
 export type TopicResponseTypeMap = {
   bootstrap: unknown;
   confirmation: ConfirmationResponse;
-  new_unconfirmed_block: unknown;
+  new_unconfirmed_block: NewUnconfirmedBlockResponse;
   started_election: StartedElectionResponse;
   stopped_election: StoppedElectionResponse;
   telemetry: unknown;
