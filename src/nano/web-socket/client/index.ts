@@ -2,7 +2,13 @@
 
 import z from "zod";
 
-import { AckResponse, ConfirmationResponse, TopicResponse } from "../responses";
+import {
+  AckResponse,
+  ConfirmationResponse,
+  StartedElectionResponse,
+  StoppedElectionResponse,
+  TopicResponse,
+} from "../responses";
 import { PongAckResponse } from "../responses/pong-ack-response";
 import { SubscribeAckResponse } from "../responses/subscribe-ack-response";
 import { UnsubscribeAckResponse } from "../responses/unsibscribe-ack-response";
@@ -151,8 +157,8 @@ const TopicResponseSchemaMap = {
   bootstrap: z.unknown(),
   confirmation: ConfirmationResponse(),
   new_unconfirmed_block: z.unknown(),
-  started_election: z.unknown(),
-  stopped_election: z.unknown(),
+  started_election: StartedElectionResponse(),
+  stopped_election: StoppedElectionResponse(),
   telemetry: z.unknown(),
   vote: z.unknown(),
   work: z.unknown(),
@@ -162,8 +168,8 @@ export type TopicResponseTypeMap = {
   bootstrap: unknown;
   confirmation: ConfirmationResponse;
   new_unconfirmed_block: unknown;
-  started_election: unknown;
-  stopped_election: unknown;
+  started_election: StartedElectionResponse;
+  stopped_election: StoppedElectionResponse;
   telemetry: unknown;
   vote: unknown;
   work: unknown;
