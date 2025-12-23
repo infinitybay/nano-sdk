@@ -211,7 +211,6 @@ export class WebSocketClient {
     update: [],
   };
   private _topicListeners: TopicListenersMap = {
-    active_difficulty: [],
     bootstrap: [],
     confirmation: [],
     new_unconfirmed_block: [],
