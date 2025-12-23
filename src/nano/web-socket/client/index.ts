@@ -1,5 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import z from "zod";
+
+import { AckResponse, ConfirmationResponse, TopicResponse } from "../responses";
+import { PongAckResponse } from "../responses/pong-ack-response";
+import { SubscribeAckResponse } from "../responses/subscribe-ack-response";
+import { UnsubscribeAckResponse } from "../responses/unsibscribe-ack-response";
+import { UpdateAckResponse } from "../responses/update-ack-response";
+import { Topic } from "../types";
+import { Ack } from "../types/ack";
+
 /**
  * Based on the MIT-licensed "reconnecting-websocket" implementation
  * by Pedro Ladaria (https://github.com/pladaria/reconnecting-websocket).
@@ -113,6 +123,64 @@ type WebSocketEventListenersMap = {
   [K in keyof WebSocketEventListenerMap]: Array<WebSocketEventListenerMap[K]>;
 };
 
+const AckResponseSchema = AckResponse();
+const AckResponseSchemaMap = {
+  pong: PongAckResponse(),
+  subscribe: SubscribeAckResponse(),
+  unsubscribe: UnsubscribeAckResponse(),
+  update: UpdateAckResponse(),
+};
+
+export type AckResponseTypeMap = {
+  pong: PongAckResponse;
+  subscribe: SubscribeAckResponse;
+  unsubscribe: UnsubscribeAckResponse;
+  update: UpdateAckResponse;
+};
+
+export type AckListener<A extends Ack> =
+  | ((message: AckResponseTypeMap[A]) => void)
+  | { handleAck(message: AckResponseTypeMap[A]): void };
+
+type AckListenersMap = {
+  [A in Ack]: Array<AckListener<A>>;
+};
+
+const TopicResponseSchema = TopicResponse();
+const TopicResponseSchemaMap = {
+  active_difficulty: z.unknown(),
+  bootstrap: z.unknown(),
+  confirmation: ConfirmationResponse(),
+  new_unconfirmed_block: z.unknown(),
+  started_election: z.unknown(),
+  stopped_election: z.unknown(),
+  telemetry: z.unknown(),
+  update: z.unknown(),
+  work: z.unknown(),
+  vote: z.unknown(),
+};
+
+export type TopicResponseTypeMap = {
+  active_difficulty: unknown;
+  bootstrap: unknown;
+  confirmation: ConfirmationResponse;
+  new_unconfirmed_block: unknown;
+  started_election: unknown;
+  stopped_election: unknown;
+  telemetry: unknown;
+  update: unknown;
+  work: unknown;
+  vote: unknown;
+};
+
+export type TopicListener<T extends Topic> =
+  | ((message: TopicResponseTypeMap[T]) => void)
+  | { handleTopic(message: TopicResponseTypeMap[T]): void };
+
+type TopicListenersMap = {
+  [T in Topic]: Array<TopicListener<T>>;
+};
+
 export class WebSocketClient {
   private readonly _url: UrlProvider;
   private readonly _protocols?: string | string[];
@@ -131,6 +199,24 @@ export class WebSocketClient {
     message: [],
     error: [],
     close: [],
+  };
+  private _ackListeners: AckListenersMap = {
+    pong: [],
+    subscribe: [],
+    unsubscribe: [],
+    update: [],
+  };
+  private _topicListeners: TopicListenersMap = {
+    active_difficulty: [],
+    bootstrap: [],
+    confirmation: [],
+    new_unconfirmed_block: [],
+    started_election: [],
+    stopped_election: [],
+    telemetry: [],
+    update: [],
+    work: [],
+    vote: [],
   };
 
   /**
@@ -341,6 +427,108 @@ export class WebSocketClient {
   }
 
   /**
+   * Registers an acknowledgment listener for the specified ack type.
+   */
+  public addAckListener<A extends Ack>(ack: A, listener: AckListener<A>): void {
+    if (this._ackListeners[ack] && !this._ackListeners[ack].includes(listener)) {
+      this._ackListeners[ack].push(listener);
+    }
+  }
+
+  /**
+   * Dispatches an acknowledgment message to all registered listeners
+   * of the corresponding ack type.
+   *
+   * Returns `true` to match the EventTarget `dispatchEvent` contract.
+   */
+  public dispatchAck<A extends Ack>(ack: A, message: AckResponseTypeMap[A]) {
+    const listeners = this._ackListeners[ack];
+    if (listeners) {
+      for (const listener of listeners) {
+        this.callAckListener(message, listener);
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Invokes an acknowledgment listener, supporting both function listeners
+   * and listener objects with a `handleAck` method.
+   */
+  private callAckListener<A extends Ack>(message: AckResponseTypeMap[A], listener: AckListener<A>) {
+    if ("handleAck" in listener) {
+      listener.handleAck(message);
+    } else {
+      listener(message);
+    }
+  }
+
+  /**
+   * Removes a previously registered acknowledgment listener
+   * for the specified ack type.
+   *
+   * If the listener is not registered, this method has no effect.
+   */
+  public removeAckListener<A extends Ack>(ack: A, listener: AckListener<A>): void {
+    if (this._ackListeners[ack]) {
+      const index = this._ackListeners[ack].indexOf(listener);
+      if (index !== -1) {
+        this._ackListeners[ack].splice(index, 1);
+      }
+    }
+  }
+
+  /**
+   * Registers a listener for the specified topic.
+   */
+  public addTopicListener<T extends Topic>(topic: T, listener: TopicListener<T>): void {
+    if (this._topicListeners[topic] && !this._topicListeners[topic].includes(listener)) {
+      this._topicListeners[topic].push(listener);
+    }
+  }
+
+  /**
+   * Dispatches a message to all registered listeners of the given topic.
+   *
+   * Returns `true` to match the EventTarget `dispatchEvent` contract.
+   */
+  public dispatchTopic<T extends Topic>(topic: T, message: TopicResponseTypeMap[T]) {
+    const listeners = this._topicListeners[topic];
+    if (listeners) {
+      for (const listener of listeners) {
+        this.callTopicListener(message, listener);
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Invokes a topic listener, supporting both function listeners and
+   * listener objects with a `handleTopic` method.
+   */
+  private callTopicListener<T extends Topic>(message: TopicResponseTypeMap[T], listener: TopicListener<T>) {
+    if ("handleTopic" in listener) {
+      listener.handleTopic(message);
+    } else {
+      listener(message);
+    }
+  }
+
+  /**
+   * Removes a previously registered listener for the specified topic.
+   *
+   * If the listener is not registered, this method has no effect.
+   */
+  public removeTopicListener<T extends Topic>(topic: T, listener: TopicListener<T>): void {
+    if (this._topicListeners[topic]) {
+      const index = this._topicListeners[topic].indexOf(listener);
+      if (index !== -1) {
+        this._topicListeners[topic].splice(index, 1);
+      }
+    }
+  }
+
+  /**
    * Initiates a WebSocket connection attempt.
    *
    * This method respects internal connection locks, reconnection settings,
@@ -512,16 +700,68 @@ export class WebSocketClient {
     }
 
     this._listeners.message.forEach((listener) => this.callEventListener(event, listener));
+
+    if (typeof event.data === "string") {
+      let data = undefined;
+      try {
+        data = JSON.parse(event.data);
+      } catch (_err) {
+        // Do nothing
+      }
+      if (data) {
+        const parsedTopicResponse = TopicResponseSchema.safeParse(data);
+        if (parsedTopicResponse.success) {
+          const parsedMessage = TopicResponseSchemaMap[parsedTopicResponse.data.topic].safeParse(data);
+          if (parsedMessage.success) {
+            this.dispatchTopic(parsedTopicResponse.data.topic, parsedMessage.data);
+          } else {
+            this.dispatchError({
+              type: "error",
+              message: `Failed to parse topic response '${parsedTopicResponse.data.topic}'. Please contact the library developer with details about your usage and environment.`,
+              error: Error(
+                `Failed to parse topic response '${parsedTopicResponse.data.topic}'. Please contact the library developer with details about your usage and environment.`
+              ),
+              target: this,
+            });
+          }
+        } else {
+          const parsedAckResponse = AckResponseSchema.safeParse(data);
+          if (parsedAckResponse.success) {
+            console.log("CALL dispatchAck1111");
+            const parsedMessage = AckResponseSchemaMap[parsedAckResponse.data.ack].safeParse(data);
+            console.log("CALL BBBBB");
+            if (parsedMessage.success) {
+              console.log("CALL dispatchAck", parsedMessage.error);
+              this.dispatchAck(parsedAckResponse.data.ack, parsedMessage.data);
+            } else {
+              console.log("CALL dispatchAck", parsedMessage.error);
+              this.dispatchError({
+                type: "error",
+                message: `Failed to parse acknowledgment response '${parsedAckResponse.data.ack}'. Please contact the library developer with details about your usage and environment.`,
+                error: Error(
+                  `Failed to parse acknowledgment response '${parsedAckResponse.data.ack}'. Please contact the library developer with details about your usage and environment.`
+                ),
+                target: this,
+              });
+            }
+          }
+        }
+      }
+    }
   };
 
-  private handleError = (event: ErrorEvent) => {
-    this.disconnect(undefined, event.message === "TIMEOUT" ? "timeout" : undefined);
-
+  private dispatchError(event: ErrorEvent) {
     if (this.onerror) {
       this.onerror(event);
     }
 
     this._listeners.error.forEach((listener) => this.callEventListener(event, listener));
+  }
+
+  private handleError = (event: ErrorEvent) => {
+    this.disconnect(undefined, event.message === "TIMEOUT" ? "timeout" : undefined);
+
+    this.dispatchError(event);
 
     this.connect();
   };
