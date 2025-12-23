@@ -7,18 +7,22 @@ import { SignatureString } from "../../types/signature";
 import { TimestampString } from "../../types/timestamp";
 import { VoteType } from "../types/vote-type";
 
+export type VoteMessage = z.infer<ReturnType<typeof VoteMessage>>;
+export const VoteMessage = () =>
+  z.object({
+    account: AccountString(),
+    signature: SignatureString(),
+    sequence: TimestampString(),
+    timestamp: TimestampString(),
+    duration: UInt().max(255),
+    blocks: HashString().array(),
+    type: VoteType(),
+  });
+
 export type VoteResponse = z.infer<ReturnType<typeof VoteResponse>>;
 export const VoteResponse = () =>
   z.object({
     topic: z.literal("vote"),
     time: TimestampString(),
-    message: z.object({
-      account: AccountString(),
-      signature: SignatureString(),
-      sequence: TimestampString(),
-      timestamp: TimestampString(),
-      duration: UInt().max(255),
-      blocks: HashString().array(),
-      type: VoteType(),
-    }),
+    message: VoteMessage(),
   });

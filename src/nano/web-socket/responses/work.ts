@@ -8,8 +8,8 @@ import { TimestampString } from "../../types/timestamp";
 import { WorkString } from "../../types/work";
 import { WorkDifficultyString } from "../../types/work-difficulty";
 
-export type WorkResponseMessage = z.infer<ReturnType<typeof WorkResponseMessage>>;
-export const WorkResponseMessage = () =>
+export type WorkMessage = z.infer<ReturnType<typeof WorkMessage>>;
+export const WorkMessage = () =>
   z.object({
     success: BooleanString(),
     reason: z.union([z.literal(""), z.literal("cancelled"), z.literal("failure")]),
@@ -36,5 +36,5 @@ export const WorkResponse = () =>
   z.object({
     topic: z.literal("work"),
     time: TimestampString(),
-    message: WorkResponseMessage(),
+    message: WorkMessage(),
   });
