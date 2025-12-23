@@ -8,6 +8,7 @@ import {
   StartedElectionResponse,
   StoppedElectionResponse,
   TopicResponse,
+  VoteResponse,
 } from "../responses";
 import { PongAckResponse } from "../responses/pong-ack-response";
 import { SubscribeAckResponse } from "../responses/subscribe-ack-response";
@@ -160,7 +161,7 @@ const TopicResponseSchemaMap = {
   started_election: StartedElectionResponse(),
   stopped_election: StoppedElectionResponse(),
   telemetry: z.unknown(),
-  vote: z.unknown(),
+  vote: VoteResponse(),
   work: z.unknown(),
 };
 
@@ -171,7 +172,7 @@ export type TopicResponseTypeMap = {
   started_election: StartedElectionResponse;
   stopped_election: StoppedElectionResponse;
   telemetry: unknown;
-  vote: unknown;
+  vote: VoteResponse;
   work: unknown;
 };
 
@@ -216,9 +217,8 @@ export class WebSocketClient {
     started_election: [],
     stopped_election: [],
     telemetry: [],
-    update: [],
-    work: [],
     vote: [],
+    work: [],
   };
 
   /**
