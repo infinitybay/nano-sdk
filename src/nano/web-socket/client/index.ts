@@ -729,14 +729,10 @@ export class WebSocketClient {
         } else {
           const parsedAckResponse = AckResponseSchema.safeParse(data);
           if (parsedAckResponse.success) {
-            console.log("CALL dispatchAck1111");
             const parsedMessage = AckResponseSchemaMap[parsedAckResponse.data.ack].safeParse(data);
-            console.log("CALL BBBBB");
             if (parsedMessage.success) {
-              console.log("CALL dispatchAck", parsedMessage.error);
               this.dispatchAck(parsedAckResponse.data.ack, parsedMessage.data);
             } else {
-              console.log("CALL dispatchAck", parsedMessage.error);
               this.dispatchError({
                 type: "error",
                 message: `Failed to parse acknowledgment response '${parsedAckResponse.data.ack}'. Please contact the library developer with details about your usage and environment.`,
