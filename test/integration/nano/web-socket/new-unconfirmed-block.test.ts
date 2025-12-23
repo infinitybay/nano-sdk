@@ -6,7 +6,7 @@ import { onWebSocketClientAck, onWebSocketClientTopic, onWebSocketMessage, onWeb
 
 jest.setTimeout(120_000);
 
-describe("WebSocket confirmation integration", () => {
+describe("WebSocket new_unconfirmed_block integration", () => {
   let ws: WebSocket;
 
   afterEach(() => {
@@ -18,21 +18,21 @@ describe("WebSocket confirmation integration", () => {
 
     await onWebSocketOpen(ws);
 
-    const request1: Nano.WebSocket.ConfirmationRequest = {
+    const request1: Nano.WebSocket.NewUnconfirmedBlockRequest = {
       action: "subscribe",
       ack: true,
-      id: "integration-confirmation",
-      topic: "confirmation",
+      id: "integration-new-unconfirmed-block",
+      topic: "new_unconfirmed_block",
     };
     ws.send(JSON.stringify(request1));
 
     const message1 = await onWebSocketMessage(ws);
 
-    const request2: Nano.WebSocket.ConfirmationRequest = {
+    const request2: Nano.WebSocket.NewUnconfirmedBlockRequest = {
       action: "unsubscribe",
       ack: true,
-      id: "integration-confirmation",
-      topic: "confirmation",
+      id: "integration-new-unconfirmed-block",
+      topic: "new_unconfirmed_block",
     };
     ws.send(JSON.stringify(request2));
 
@@ -48,8 +48,8 @@ describe("WebSocket confirmation integration", () => {
     assert(response2.success);
     expect(response1.data.ack).toBe("subscribe");
     expect(response2.data.ack).toBe("unsubscribe");
-    expect(response1.data.id).toBe("integration-confirmation");
-    expect(response2.data.id).toBe("integration-confirmation");
+    expect(response1.data.id).toBe("integration-new-unconfirmed-block");
+    expect(response2.data.id).toBe("integration-new-unconfirmed-block");
   });
 
   test("subscribes and receives confirmation message", async () => {
@@ -57,29 +57,23 @@ describe("WebSocket confirmation integration", () => {
 
     await onWebSocketOpen(ws);
 
-    const request: Nano.WebSocket.ConfirmationRequest = {
+    const request: Nano.WebSocket.NewUnconfirmedBlockRequest = {
       action: "subscribe",
-      topic: "confirmation",
-      options: {
-        include_block: true,
-        include_election_info: true,
-        include_sideband_info: true,
-      },
+      topic: "new_unconfirmed_block",
     };
     ws.send(JSON.stringify(request));
 
     const message = await onWebSocketMessage(ws);
     const data = JSON.parse(message.data);
-    const confirmationResponse = Nano.WebSocket.ConfirmationResponse().safeParse(data);
-    assert(confirmationResponse.success);
-    expect(confirmationResponse.data.topic).toBe("confirmation");
-    expect(confirmationResponse.data.message.block).toBeDefined();
-    expect(confirmationResponse.data.message.election_info).toBeDefined();
-    expect(confirmationResponse.data.message.sideband).toBeDefined();
+    const response = Nano.WebSocket.NewUnconfirmedBlockResponse().safeParse(data);
+
+    assert(response.success);
+    expect(response.data.topic).toBe("new_unconfirmed_block");
+    expect(response.data.hash).toBeDefined();
   });
 });
 
-describe("WebSocketClient confirmation integration", () => {
+describe("WebSocketClient new_unconfirmed_block integration", () => {
   let ws: WebSocketClient;
 
   afterEach(() => {
@@ -91,26 +85,21 @@ describe("WebSocketClient confirmation integration", () => {
 
     await onWebSocketOpen(ws);
 
-    const request1: Nano.WebSocket.ConfirmationRequest = {
+    const request1: Nano.WebSocket.NewUnconfirmedBlockRequest = {
       action: "subscribe",
       ack: true,
-      id: "integration-confirmation",
-      topic: "confirmation",
-      options: {
-        include_block: true,
-        include_election_info: true,
-        include_sideband_info: true,
-      },
+      id: "integration-new-unconfirmed-block",
+      topic: "new_unconfirmed_block",
     };
     ws.send(JSON.stringify(request1));
 
     const response1 = await onWebSocketClientAck("subscribe", ws);
 
-    const request2: Nano.WebSocket.ConfirmationRequest = {
+    const request2: Nano.WebSocket.NewUnconfirmedBlockRequest = {
       action: "unsubscribe",
       ack: true,
-      id: "integration-confirmation",
-      topic: "confirmation",
+      id: "integration-new-unconfirmed-block",
+      topic: "new_unconfirmed_block",
     };
     ws.send(JSON.stringify(request2));
 
@@ -118,8 +107,8 @@ describe("WebSocketClient confirmation integration", () => {
 
     expect(response1.ack).toBe("subscribe");
     expect(response2.ack).toBe("unsubscribe");
-    expect(response1.id).toBe("integration-confirmation");
-    expect(response2.id).toBe("integration-confirmation");
+    expect(response1.id).toBe("integration-new-unconfirmed-block");
+    expect(response2.id).toBe("integration-new-unconfirmed-block");
   });
 
   test("subscribes and receives confirmation message", async () => {
@@ -127,21 +116,14 @@ describe("WebSocketClient confirmation integration", () => {
 
     await onWebSocketOpen(ws);
 
-    const request: Nano.WebSocket.ConfirmationRequest = {
+    const request: Nano.WebSocket.NewUnconfirmedBlockRequest = {
       action: "subscribe",
-      topic: "confirmation",
-      options: {
-        include_block: true,
-        include_election_info: true,
-        include_sideband_info: true,
-      },
+      topic: "new_unconfirmed_block",
     };
     ws.send(JSON.stringify(request));
 
-    const response = await onWebSocketClientTopic("confirmation", ws);
-    expect(response.topic).toBe("confirmation");
-    expect(response.message.block).toBeDefined();
-    expect(response.message.election_info).toBeDefined();
-    expect(response.message.sideband).toBeDefined();
+    const response = await onWebSocketClientTopic("new_unconfirmed_block", ws);
+    expect(response.topic).toBe("new_unconfirmed_block");
+    expect(response.hash).toBeDefined();
   });
 });
