@@ -8,6 +8,7 @@ import {
   NewUnconfirmedBlockResponse,
   StartedElectionResponse,
   StoppedElectionResponse,
+  TelemetryResponse,
   TopicResponse,
   VoteResponse,
   WorkResponse,
@@ -162,7 +163,7 @@ const TopicResponseSchemaMap = {
   new_unconfirmed_block: NewUnconfirmedBlockResponse(),
   started_election: StartedElectionResponse(),
   stopped_election: StoppedElectionResponse(),
-  telemetry: z.unknown(),
+  telemetry: TelemetryResponse(),
   vote: VoteResponse(),
   work: WorkResponse(),
 };
@@ -173,7 +174,7 @@ export type TopicResponseTypeMap = {
   new_unconfirmed_block: NewUnconfirmedBlockResponse;
   started_election: StartedElectionResponse;
   stopped_election: StoppedElectionResponse;
-  telemetry: unknown;
+  telemetry: TelemetryResponse;
   vote: VoteResponse;
   work: WorkResponse;
 };

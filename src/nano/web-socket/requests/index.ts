@@ -4,5 +4,6 @@ export * from "./new-unconfirmed-block";
 export * from "./ping";
 export * from "./started-election";
 export * from "./stopped-election";
+export * from "./telemetry";
 export * from "./vote";
 export * from "./work";
