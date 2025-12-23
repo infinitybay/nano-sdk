@@ -148,29 +148,25 @@ type AckListenersMap = {
 
 const TopicResponseSchema = TopicResponse();
 const TopicResponseSchemaMap = {
-  active_difficulty: z.unknown(),
   bootstrap: z.unknown(),
   confirmation: ConfirmationResponse(),
   new_unconfirmed_block: z.unknown(),
   started_election: z.unknown(),
   stopped_election: z.unknown(),
   telemetry: z.unknown(),
-  update: z.unknown(),
-  work: z.unknown(),
   vote: z.unknown(),
+  work: z.unknown(),
 };
 
 export type TopicResponseTypeMap = {
-  active_difficulty: unknown;
   bootstrap: unknown;
   confirmation: ConfirmationResponse;
   new_unconfirmed_block: unknown;
   started_election: unknown;
   stopped_election: unknown;
   telemetry: unknown;
-  update: unknown;
-  work: unknown;
   vote: unknown;
+  work: unknown;
 };
 
 export type TopicListener<T extends Topic> =
