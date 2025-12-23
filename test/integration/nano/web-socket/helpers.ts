@@ -1,5 +1,9 @@
 import { Nano } from "../../../../src";
-import { AckResponseTypeMap, TopicResponseTypeMap, WebSocketClient } from "../../../../src/nano/web-socket/client";
+import {
+  AckResponseTypeMap,
+  TopicResponseTypeMap,
+  WebSocketClient,
+} from "../../../../src/nano/web-socket/client/web-socket-client";
 import { Ack } from "../../../../src/nano/web-socket/types/ack";
 import { Topic } from "../../../../src/nano/web-socket/types/topic";
 import { webSocketMessageTimeout, webSocketOpenTimeout } from "../../config";
