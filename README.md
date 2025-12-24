@@ -106,6 +106,11 @@ RPC methods accept a custom `httpClient` via the request config. See the `axios`
 
 - [`axios-http-client.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/rpc/axios-http-client.example.ts)
 
+### Examples
+
+- [`account-info.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/rpc/account-info.example.ts)
+- [`version.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/rpc/version.example.ts)
+
 ## WebSocket Usage
 
 `Nano.WebSocket` provides a complete, strongly typed implementation of all **Nano** node WebSocket request and response schemas and ships with a built-in `WebSocketClient`. By default, the client uses the globally available `WebSocket` implementation provided by the current runtime environment (browser or Node.js).
