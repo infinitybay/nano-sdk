@@ -1,13 +1,16 @@
+<a name="nano-sdk"></a>
 # nano-sdk
 
 Production-grade TypeScript SDK for interacting with a **Nano** node, providing fully typed and runtime-validated RPC and WebSocket APIs, a built-in WebSocket client with typed ack and topic listeners, and utilities for blocks, cryptography, and safe raw amount arithmetic.
 
+<a name="installation"></a>
 ## Installation
 
 ```bash
 npm i nano-sdk zod
 ```
 
+<a name="quick-start"></a>
 ## Quick Start
 
 ```ts
@@ -44,12 +47,14 @@ async function fetchAccountBalance(account: AccountString) {
 fetchAccountBalance("nano_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3").catch((err) => console.error("Unexpected failure:", err));
 ```
 
+<a name="typed-rpc-example"></a>
 ## Typed & Runtime-Validated RPC
 
 RPC requests and responses are fully typed and validated at runtime. Response types are derived from the corresponding request parameters, meaning the shape of the response object adapts based on the options you provide.
 
 ![Typed RPC Response IntelliSense](./images/rpc-response-intellisense.gif)
 
+<a name="overview"></a>
 ## Overview & Features
 
 The SDK uses a single root namespace (**Nano**), organized into sub-namespaces, each focused on a specific responsibility:
@@ -62,6 +67,7 @@ The SDK uses a single root namespace (**Nano**), organized into sub-namespaces, 
 - `Nano.WebSocket`: Fully typed **Nano** node WebSocket request and response schemas, including acknowledgement and topic message definitions
 - `Nano.WebSocketClient`: Instantiable WebSocket client providing fully typed acknowledgement and topic-based message handling using the `Nano.WebSocket` schemas
 
+<a name="rpc"></a>
 ## RPC Usage
 
 All RPC methods:
@@ -112,6 +118,7 @@ RPC methods accept a custom `httpClient` via the request config. See the `axios`
 - [`account-info.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/rpc/account-info.example.ts)
 - [`version.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/rpc/version.example.ts)
 
+<a name="websocket"></a>
 ## WebSocket Usage
 
 `Nano.WebSocket` provides a complete, strongly typed implementation of all **Nano** node WebSocket request and response schemas and ships with a built-in `WebSocketClient`. By default, the client uses the globally available `WebSocket` implementation provided by the current runtime environment (browser or Node.js).
@@ -146,6 +153,7 @@ const ws = new Nano.WebSocketClient(webSocketUrl, undefined, {
 - [`typed-ack-and-topic-listeners.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/web-socket/typed-ack-and-topic-listeners.example.ts)
 - [`custom-web-socket-client.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/web-socket/custom-web-socket-client.example.ts)
 
+<a name="validation"></a>
 ## Validation & Typing
 
 `Nano.Types` provides a collection of **reusable Zod schemas** for common **Nano-specific primitives**. These schemas form the foundation for higher-level features such as cryptography and RPC validation. Use them to validate external input and to type values throughout your codebase:
@@ -161,6 +169,7 @@ The available schemas cover a wide range of Nano primitives, including but not l
 
 - [`alias-and-safe-parse.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/types/alias-and-safe-parse.example.ts)
 
+<a name="math"></a>
 ## Math
 
 `Nano.Math` provides safe arithmetic, comparison, and formatting utilities for **nano** and **raw** amounts.
@@ -189,6 +198,7 @@ Available utilities:
 - [`raw-arithmetic.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/math/raw-arithmetic.example.ts)
 - [`raw-comparison.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/math/raw-comparison.example.ts)
 
+<a name="crypto"></a>
 ## Crypto
 
 `Nano.Crypto` provides cryptographic utilities commonly needed when building **Nano**-related services:
@@ -218,6 +228,7 @@ Available block schemas:
 
 - [`state-block-with-hash.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/blocks/state-block-with-hash.example.ts)
 
+<a name="testing"></a>
 ## Testing
 
 - Unit tests (`test/unit`) cover schemas, math edge cases, crypto utilities, and parsing/validation flows (throwing and non-throwing).
