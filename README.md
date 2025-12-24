@@ -1,6 +1,6 @@
 # nano-sdk
 
-Production-grade TypeScript SDK for interacting with a **Nano** node, including typed and runtime-validated RPC methods, WebSocket message schemas, and utilities for blocks, crypto, and raw amount math.
+Production-grade TypeScript SDK for interacting with a **Nano** node, providing fully typed and runtime-validated RPC and WebSocket APIs, a built-in WebSocket client with typed ack and topic listeners, and utilities for blocks, cryptography, and safe raw amount arithmetic.
 
 ## Installation
 
@@ -55,11 +55,11 @@ RPC requests and responses are fully typed and validated at runtime. Response ty
 The SDK uses a single root namespace (**Nano**), organized into sub-namespaces, each focused on a specific responsibility:
 
 - `Nano.Blocks`: Block schemas (**Zod**) for validating and composing **Nano** blocks
-- `Nano.Crypto`: Key derivation, block hashing, signing, and verification
+- `Nano.Crypto`: Key derivation, block hashing, signing, and verification utilities
 - `Nano.Math`: Raw amount conversion, formatting, and safe raw arithmetic
 - `Nano.RPC`: **Nano** node RPC methods (HTTP POST), with typed requests and typed responses
 - `Nano.Types`: Runtime validators for common **Nano** primitives (account, hash, keys, raw amounts, etc.)
-- `Nano.WebSocket`: **Zod** schemas/types for **Nano** node WebSocket topics
+- `Nano.WebSocket`: Fully typed **Nano** node WebSocket request/response schemas and a built-in `WebSocketClient` supporting typed ack and topic listeners
 
 ## RPC Usage
 
