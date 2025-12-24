@@ -1,6 +1,6 @@
 import { Nano } from "nano-sdk";
 
-const WSClient = Nano.WebSocket.WebSocketClient;
+const WSClient = Nano.WebSocketClient;
 
 const webSocketUrl = "ws://127.0.0.1:7078";
 const ws = new WSClient(webSocketUrl, undefined, {

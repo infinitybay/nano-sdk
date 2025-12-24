@@ -59,7 +59,8 @@ The SDK uses a single root namespace (**Nano**), organized into sub-namespaces, 
 - `Nano.Math`: Raw amount conversion, formatting, and safe raw arithmetic
 - `Nano.RPC`: **Nano** node RPC methods (HTTP POST), with typed requests and typed responses
 - `Nano.Types`: Runtime validators for common **Nano** primitives (account, hash, keys, raw amounts, etc.)
-- `Nano.WebSocket`: Fully typed **Nano** node WebSocket request/response schemas and a built-in `WebSocketClient` supporting typed ack and topic listeners
+- `Nano.WebSocket`: Fully typed **Nano** node WebSocket request and response schemas, including acknowledgement and topic message definitions
+- `Nano.WebSocketClient`: Instantiable WebSocket client providing fully typed acknowledgement and topic-based message handling using the `Nano.WebSocket` schemas
 
 ## RPC Usage
 
@@ -127,7 +128,7 @@ All incoming messages are validated and typed based on the corresponding WebSock
 ### Available options
 
 ```ts
-const ws = new Nano.WebSocket.WebSocketClient(webSocketUrl, undefined, {
+const ws = new Nano.WebSocketClient(webSocketUrl, undefined, {
   webSocketClass: undefined, // WebSocket constructor, if none provided, defaults to global WebSocket
   connectionTimeout: 4000, // retry connect if not connected after this time, in ms
   minUptime: 5000, // min time in ms to consider connection as stable

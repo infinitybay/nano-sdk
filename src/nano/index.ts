@@ -15,3 +15,6 @@ export * as Types from "./types";
 
 // web-socket
 export * as WebSocket from "./web-socket";
+
+// WebSocketClient alias
+export { WebSocketClient } from "./web-socket/client/web-socket-client";

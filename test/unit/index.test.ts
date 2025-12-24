@@ -9,5 +9,6 @@ describe("Nano index exports", () => {
     expect(Nano.RPC).toBeDefined();
     expect(Nano.Types).toBeDefined();
     expect(Nano.WebSocket).toBeDefined();
+    expect(Nano.WebSocketClient).toBeDefined();
   });
 });
