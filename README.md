@@ -135,7 +135,7 @@ const ws = new Nano.WebSocket.WebSocketClient(webSocketUrl, undefined, {
 });
 ```
 
-Examples:
+### Examples
 
 - [`typed-ack-and-topic-listeners.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/web-socket/typed-ack-and-topic-listeners.example.ts)
 - [`custom-web-socket-client.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/web-socket/custom-web-socket-client.example.ts)
@@ -151,7 +151,7 @@ The available schemas cover a wide range of Nano primitives, including but not l
 
 - `AccountString`, `RawAmountString`, `NanoAmountString`, `PrivateKeyString`, `PublicKeyString`, `SignatureString`, `HashString`, `HexString`, ...
 
-Example:
+### Examples
 
 - [`alias-and-safe-parse.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/types/alias-and-safe-parse.example.ts)
 
@@ -177,7 +177,7 @@ Available utilities:
 - Comparisons:  
   `rawIsZero`, `rawIsGreaterThan`, `rawIsGreaterThanOrEqualTo`, `rawIsLessThan`, `rawIsLessThanOrEqualTo`, `rawIsEqualTo`
 
-Examples:
+### Examples
 
 - [`format-raw.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/math/format-raw.example.ts)
 - [`raw-arithmetic.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/math/raw-arithmetic.example.ts)
@@ -192,7 +192,7 @@ Examples:
 - Block signing and signature verification
 - Proof-of-work hash verification
 
-Examples:
+### Examples
 
 - [`derive-account-from-seed.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/crypto/derive-account-from-seed.example.ts)
 - [`hash-and-verify-hash.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/crypto/hash-and-verify-hash.example.ts)
@@ -208,7 +208,7 @@ Available block schemas:
 - `LegacySendBlock`, `LegacyReceiveBlock`, `LegacyOpenBlock`, `LegacyChangeBlock`
 - `Block` as a union of all supported block variants
 
-Example:
+### Examples
 
 - [`state-block-with-hash.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/blocks/state-block-with-hash.example.ts)
 
