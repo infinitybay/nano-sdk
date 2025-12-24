@@ -238,3 +238,5 @@ npm run test:integration
 
 - npm: https://www.npmjs.com/package/nano-sdk
 - GitHub: https://github.com/infinitybay/nano-sdk
+- Nano Node RPC Protocol: https://docs.nano.org/commands/rpc-protocol/
+- Nano Node WebSockets Integration Guide: https://docs.nano.org/integration-guides/websockets/
