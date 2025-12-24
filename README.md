@@ -232,16 +232,24 @@ Available block schemas:
 ## Testing
 
 - Unit tests (`test/unit`) cover schemas, math edge cases, crypto utilities, and parsing/validation flows (throwing and non-throwing).
-- Integration tests (`test/integration`) execute RPC calls against a real **Nano** node to verify request/response schemas with live responses.
+- Integration tests (`test/integration`) verify both **RPC** and **WebSocket** functionality against a real **Nano** node, ensuring request and response schemas match live node behavior.
+
+Unit tests are executed using:
+
+```bash
+npm run test:unit
+```
 
 Integration test requirements:
 
 - A running **Nano** node is required.
-- All public **Nano** RPC endpoints must be reachable. `enable_control=true` is **not** required for any currently enabled integration tests.
-- The RPC URL can be configured either via the `config.nanoRpcUrl` field in package.json or via the `NANO_RPC_URL` environment variable. The environment variable takes precedence if both are set.
+- All public **Nano** RPC and WebSocket endpoints must be reachable. `enable_control=true` is **not** required for any currently enabled integration tests.
+- The RPC endpoint URL can be configured via the `config.nanoRpcUrl` field in `package.json` or via the `NANO_RPC_URL` environment variable. The environment variable takes precedence if both are set.
+- The WebSocket endpoint URL can be configured via the `config.nanoWebSocketUrl` field in `package.json` or via the `NANO_WEB_SOCKET_URL` environment variable. The environment variable takes precedence if both are set.
+
+Integration tests for RPC and WebSocket are executed together using:
 
 ```bash
-npm run test:unit
 npm run test:integration
 ```
 
