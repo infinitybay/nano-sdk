@@ -206,6 +206,7 @@ Available utilities:
 - Key pair generation and deterministic key derivation
 - Block hashing and hash verification
 - Block signing and signature verification
+- Block verification (combines hash, link, and signature validation for state blocks into a single method call)
 - Proof-of-work hash verification
 
 ### Examples
@@ -213,6 +214,7 @@ Available utilities:
 - [`derive-account-from-seed.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/crypto/derive-account-from-seed.example.ts)
 - [`hash-and-verify-hash.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/crypto/hash-and-verify-hash.example.ts)
 - [`sign-and-verify-signature.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/crypto/sign-and-verify-signature.example.ts)
+- [`verify-block.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/crypto/verify-block.example.ts)
 
 ## Blocks
 

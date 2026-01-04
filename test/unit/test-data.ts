@@ -158,6 +158,47 @@ export const TestData = {
     Timestamp3: (): TimestampString => "1759285938",
     Timestamp4: (): TimestampString => "1764461015",
 
+    Epoch: {
+      V1: {
+        Signer: {
+          Account: (): AccountString => "nano_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3",
+          PublicKey: (): PublicKeyString => "E89208DD038FBB269987689621D52292AE9C35941A7484756ECCED92A65093BA",
+          Link: (): LinkString => "65706F636820763120626C6F636B000000000000000000000000000000000000",
+        },
+        StateBlock1: (): StateBlock => ({
+          type: "state",
+          account: "nano_13ezf4od79h1tgj9aiu4djzcmmguendtjfuhwfukhuucboua8cpoihmh8byo",
+          previous: "C7764B37F04C74CF814B19C4DC6FFD53B5E999495C8E5C0D7EA1372A57E1E9C6",
+          representative: "nano_1awsn43we17c1oshdru4azeqjz9wii41dy8npubm4rg11so7dx3jtqgoeahy",
+          balance: "579573579623600346831066759150",
+          link: "65706F636820763120626C6F636B000000000000000000000000000000000000",
+          link_as_account: "nano_1sdifxjpia5p86i86u5hefoi1111111111111111111111111111g7jhnpfy",
+          signature:
+            "86E106B140467B5DE749DB90C05E528C8FBB3AA1911A375BA59597636751C2FD404719300DE80AF4DBD87F456556A88FFCDAB4F6349D7ECCD2CCB4601590320D",
+          work: "a368854d43d255d2",
+        }),
+      },
+      V2: {
+        Signer: {
+          Account: (): AccountString => "nano_3qb6o6i1tkzr6jwr5s7eehfxwg9x6eemitdinbpi7u8bjjwsgqfj4wzser3x",
+          PublicKey: (): PublicKeyString => "DD24A9200D4BF8247981E4AC63DBDE38FD2319386970A26D02ECC98C79975DB1",
+          Link: (): LinkString => "65706F636820763220626C6F636B000000000000000000000000000000000000",
+        },
+        StateBlock1: (): StateBlock => ({
+          type: "state",
+          account: "nano_13ezf4od79h1tgj9aiu4djzcmmguendtjfuhwfukhuucboua8cpoihmh8byo",
+          previous: "56423504169DAA0857CE60CDFEA4B9900F229DC90BBAB1AA1BFF69C52198AB54",
+          representative: "nano_1awsn43we17c1oshdru4azeqjz9wii41dy8npubm4rg11so7dx3jtqgoeahy",
+          balance: "579573579623600346831066759150",
+          link: "65706F636820763220626C6F636B000000000000000000000000000000000000",
+          link_as_account: "nano_1sdifxjpia5p8ai86u5hefoi1111111111111111111111111111ngspq7ps",
+          signature:
+            "5605E6F79F4BD6AEC11D72A6C2DDE9D5340A7B9E3EF95E7E519249667893602B90DBAF5EA67E845F7684E09A7D5B3B5703370AA2E4647D147529EA56194E9706",
+          work: "ba6d99a7b565a0fa",
+        }),
+      },
+    },
+
     StateBlock1: (): StateBlock => ({
       type: "state",
       account: TestData.Valid.Account1(),
