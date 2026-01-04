@@ -17,7 +17,7 @@ function verifyBlockThrowing(params: VerifyBlockParams & Throwing): boolean {
     return false;
   }
   return verifySignature({
-    hash: hashBlock(params.block),
+    hash: hashBlock({ block: params.block }),
     publicKey: params.publicKey ?? derivePublicKeyFromAccount({ account: params.block.account }),
     signature: params.block.signature,
   });

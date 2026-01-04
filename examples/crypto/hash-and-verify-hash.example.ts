@@ -17,7 +17,7 @@ const stateBlock: StateBlock = {
 };
 
 try {
-  const hash = Nano.Crypto.hashBlock(stateBlock);
+  const hash = Nano.Crypto.hashBlock({ block: stateBlock });
   const validHash = Nano.Crypto.verifyHash({ hash: hash, block: stateBlock });
   console.log("Valid Hash:", validHash); // prints "Valid Hash: true"
 } catch (err) {

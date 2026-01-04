@@ -12,41 +12,45 @@ import { accountToBytes } from "./conversion/account-converter";
 import { bytesToHash, hashToBytes } from "./conversion/hash-converter";
 import { hexToBytes } from "./conversion/hex-converter";
 
-type HashBlockParams = {
+type BlockInput = {
   account: AccountString;
   previous: HashString;
   representative: AccountString;
   balance: RawAmountString;
   link: LinkString;
+};
+
+type HashBlockParams = {
+  block: BlockInput;
 } & (Throwing | NonThrowing);
 
 const STATE_BLOCK_PREAMBLE_BYTES = new Uint8Array(32);
 STATE_BLOCK_PREAMBLE_BYTES[31] = 6;
 
 function hashBlockThrowing(params: HashBlockParams & Throwing): HashString {
-  const validatedAccount = AccountString().safeParse(params.account);
+  const validatedAccount = AccountString().safeParse(params.block.account);
   if (!validatedAccount.success) {
-    throw new Error("Invalid account value.");
+    throw new Error("Invalid block account value.");
   }
 
-  const validatedPrevious = HashString().safeParse(params.previous);
+  const validatedPrevious = HashString().safeParse(params.block.previous);
   if (!validatedPrevious.success) {
-    throw new Error("Invalid previous value.");
+    throw new Error("Invalid block previous value.");
   }
 
-  const validatedRepresentative = AccountString().safeParse(params.representative);
+  const validatedRepresentative = AccountString().safeParse(params.block.representative);
   if (!validatedRepresentative.success) {
-    throw new Error("Invalid representative value.");
+    throw new Error("Invalid block representative value.");
   }
 
-  const validatedBalance = RawAmountString().safeParse(params.balance);
+  const validatedBalance = RawAmountString().safeParse(params.block.balance);
   if (!validatedBalance.success) {
-    throw new Error("Invalid balance value.");
+    throw new Error("Invalid block balance value.");
   }
 
-  const validatedLink = LinkString().safeParse(params.link);
+  const validatedLink = LinkString().safeParse(params.block.link);
   if (!validatedLink.success) {
-    throw new Error("Invalid link value.");
+    throw new Error("Invalid block link value.");
   }
 
   const accountBytes = accountToBytes({ account: validatedAccount.data, throwOnError: true });

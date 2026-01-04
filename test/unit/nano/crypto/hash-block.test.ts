@@ -10,7 +10,7 @@ describe("hashBlock function", () => {
       { hash: TestData.Valid.Hash4(), block: TestData.Valid.StateBlock4() },
     ];
     for (let i = 0; i < data.length; i++) {
-      expect(hashBlock({ ...data[i].block, throwOnError: true }).toUpperCase()).toBe(data[i].hash.toUpperCase());
+      expect(hashBlock({ block: data[i].block }).toUpperCase()).toBe(data[i].hash.toUpperCase());
     }
   });
 
@@ -28,7 +28,7 @@ describe("hashBlock function", () => {
     invalidBlocks[3].balance = TestData.Invalid.RawAmount.InvalidCharacters();
     invalidBlocks[4].link = TestData.Invalid.Link.TooLong();
     for (let i = 0; i < invalidBlocks.length; i++) {
-      expect(hashBlock({ ...invalidBlocks[i], throwOnError: false }).success).toBe(false);
+      expect(hashBlock({ block: invalidBlocks[i], throwOnError: false }).success).toBe(false);
     }
   });
 });

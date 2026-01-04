@@ -26,7 +26,7 @@ function verifyHashThrowing(params: VerifyHashParams & Throwing): boolean {
     throw new Error("Invalid hash value.");
   }
 
-  const blockHash = hashBlock({ ...params.block, throwOnError: true });
+  const blockHash = hashBlock({ block: params.block, throwOnError: true });
   return validatedHash.data === blockHash;
 }
 
