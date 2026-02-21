@@ -1,5 +1,3 @@
-import { isIP } from "node:net";
-
 import { z } from "zod";
 
 import { PortString } from "./port";
@@ -14,6 +12,57 @@ const isInvalidNumericDotted = (host: string) => {
 };
 
 const hasValidPort = (port?: string) => (port === undefined ? true : PortString().safeParse(port).success);
+
+const isIPv4 = (input: string): boolean => {
+  const parts = input.split(".");
+  if (parts.length !== 4) return false;
+
+  for (const part of parts) {
+    if (!/^\d+$/.test(part)) return false;
+    const num = Number(part);
+    if (num < 0 || num > 255) return false;
+    if (part.length > 1 && part.startsWith("0")) return false; // no leading zeros
+  }
+
+  return true;
+};
+
+const isIPv6 = (input: string): boolean => {
+  if (input.includes(".")) {
+    const lastColon = input.lastIndexOf(":");
+    if (lastColon === -1) return false;
+    const ipv4Part = input.slice(lastColon + 1);
+    if (!isIPv4(ipv4Part)) return false;
+    input = input.slice(0, lastColon) + ":0:0"; // normalize for validation
+  }
+
+  const parts = input.split("::");
+
+  if (parts.length > 2) return false;
+
+  const head = parts[0] ? parts[0].split(":") : [];
+  const tail = parts[1] ? parts[1].split(":") : [];
+
+  if (parts.length === 1) {
+    if (head.length !== 8) return false;
+  } else {
+    if (head.length + tail.length >= 8) return false;
+  }
+
+  const validHex = /^[0-9a-fA-F]{1,4}$/;
+
+  for (const part of [...head, ...tail]) {
+    if (!validHex.test(part)) return false;
+  }
+
+  return true;
+};
+
+const isIP = (input: string): 0 | 4 | 6 => {
+  if (isIPv4(input)) return 4;
+  if (isIPv6(input)) return 6;
+  return 0;
+};
 
 const isValidHostname = (host: string) => hostnamePattern.test(host);
 
