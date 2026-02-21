@@ -6,6 +6,29 @@ type WebCrypto = {
   getRandomValues?<T extends ArrayBufferView>(array: T): T;
 };
 
+type NodeRequireFn = (id: string) => unknown;
+
+function getNodeRequire(): NodeRequireFn | undefined {
+  const g = globalThis as typeof globalThis & {
+    require?: NodeRequireFn;
+  };
+
+  if (typeof g.require === "function") {
+    return g.require;
+  }
+
+  try {
+    return Function("return typeof require !== 'undefined' && require")() as NodeRequireFn | undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+type NodeCryptoLike = {
+  randomFillSync?: (buffer: Uint8Array) => Uint8Array;
+  randomBytes?: (size: number) => Uint8Array;
+};
+
 type GenerateRandomBytesParams = {
   count: number;
 } & (Throwing | NonThrowing);
@@ -28,17 +51,19 @@ function generateRandomBytesThrowing(params: GenerateRandomBytesParams & Throwin
   }
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const nodeCrypto = require("crypto") as typeof import("crypto");
+    const nodeRequire = getNodeRequire();
+    if (nodeRequire) {
+      const nodeCrypto = nodeRequire("crypto") as NodeCryptoLike | undefined;
 
-    if (typeof nodeCrypto.randomFillSync === "function") {
-      nodeCrypto.randomFillSync(byteArray);
-      return byteArray;
-    }
+      if (nodeCrypto?.randomFillSync) {
+        nodeCrypto.randomFillSync(byteArray);
+        return byteArray;
+      }
 
-    if (typeof nodeCrypto.randomBytes === "function") {
-      byteArray.set(nodeCrypto.randomBytes(byteArray.length));
-      return byteArray;
+      if (nodeCrypto?.randomBytes) {
+        byteArray.set(nodeCrypto.randomBytes(byteArray.length));
+        return byteArray;
+      }
     }
   } catch (_) {
     // Do nothing
