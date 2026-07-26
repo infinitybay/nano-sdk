@@ -751,12 +751,11 @@ export class Nacl {
   }
 
   static derivePublicFromSecret(sk: Uint8Array): Uint8Array {
-    let d: Uint8Array = new Uint8Array(64);
     const p = [gf(), gf(), gf(), gf()];
     const pk = new Uint8Array(32);
     const context = blake.blake2bInit(64);
     blake.blake2bUpdate(context, sk);
-    d = blake.blake2bFinal(context);
+    const d = blake.blake2bFinal(context);
 
     d[0] &= 248;
     d[31] &= 127;
@@ -853,13 +852,11 @@ export class Nacl {
 
   static cryptoSignOpen(m: Uint8Array, sm: Uint8Array, n: number, pk: Uint8Array): number {
     let i;
-    let mlen;
     const t = new Uint8Array(32);
     const h = new Uint8Array(64);
     const p = [gf(), gf(), gf(), gf()];
     const q = [gf(), gf(), gf(), gf()];
 
-    mlen = -1;
     if (n < 64) return -1;
 
     if (this.unpackneg(q, pk)) return -1;
@@ -881,8 +878,7 @@ export class Nacl {
     }
 
     for (i = 0; i < n; i++) m[i] = sm[i + 64];
-    mlen = n;
-    return mlen;
+    return n;
   }
 
   /* High-level API */

@@ -23,6 +23,9 @@ export default defineConfig([
       prettier: prettierPlugin,
     },
     rules: {
+      // The SDK targets ES2020 and preserves its established public error abstraction instead of requiring Error.cause.
+      "preserve-caught-error": "off",
+
       // Prettier
       "prettier/prettier": "error",
 

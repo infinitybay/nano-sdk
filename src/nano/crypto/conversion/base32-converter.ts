@@ -91,7 +91,7 @@ function decodeBase32Throwing(params: DecodeBase32Params & Throwing): Uint8Array
   }
 
   if (bufferBits > 0) {
-    decodedBytes[outputIndex++] = (buffer << (bufferBits + paddingBits - 8)) & 255;
+    decodedBytes[outputIndex] = (buffer << (bufferBits + paddingBits - 8)) & 255;
   }
 
   if (remainingBits !== 0) {

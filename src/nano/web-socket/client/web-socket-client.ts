@@ -147,8 +147,7 @@ export type AckResponseTypeMap = {
 };
 
 export type AckListener<A extends Ack> =
-  | ((response: AckResponseTypeMap[A]) => void)
-  | { handleAck(response: AckResponseTypeMap[A]): void };
+  ((response: AckResponseTypeMap[A]) => void) | { handleAck(response: AckResponseTypeMap[A]): void };
 
 type AckListenersMap = {
   [A in Ack]: Array<AckListener<A>>;
@@ -178,8 +177,7 @@ export type TopicResponseTypeMap = {
 };
 
 export type TopicListener<T extends Topic> =
-  | ((response: TopicResponseTypeMap[T]) => void)
-  | { handleTopic(response: TopicResponseTypeMap[T]): void };
+  ((response: TopicResponseTypeMap[T]) => void) | { handleTopic(response: TopicResponseTypeMap[T]): void };
 
 type TopicListenersMap = {
   [T in Topic]: Array<TopicListener<T>>;
