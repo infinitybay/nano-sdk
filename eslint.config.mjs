@@ -12,7 +12,10 @@ export default defineConfig([
   ...tseslint.configs.recommended,
 
   {
-    files: ["src/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}", "test/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    files: [
+      "src/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+      "test/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+    ],
     languageOptions: {
       ecmaVersion: 2020,
       globals: { ...globals.node },

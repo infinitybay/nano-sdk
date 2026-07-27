@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 export const IntBounds = {
   min: () => Number.MIN_SAFE_INTEGER,

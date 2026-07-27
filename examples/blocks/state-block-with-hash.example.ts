@@ -1,5 +1,4 @@
-import z from "zod";
-
+import { z } from "zod";
 import { Nano } from "nano-sdk";
 
 type StateBlockWithHash = z.infer<typeof StateBlockWithHash>;

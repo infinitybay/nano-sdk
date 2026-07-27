@@ -37,6 +37,30 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./blocks": {
+      "types": "./dist/nano/blocks/index.d.ts",
+      "default": "./dist/nano/blocks/index.js"
+    },
+    "./crypto": {
+      "types": "./dist/nano/crypto/index.d.ts",
+      "default": "./dist/nano/crypto/index.js"
+    },
+    "./math": {
+      "types": "./dist/nano/math/index.d.ts",
+      "default": "./dist/nano/math/index.js"
+    },
+    "./rpc": {
+      "types": "./dist/nano/rpc/index.d.ts",
+      "default": "./dist/nano/rpc/index.js"
+    },
+    "./types": {
+      "types": "./dist/nano/types/index.d.ts",
+      "default": "./dist/nano/types/index.js"
+    },
+    "./web-socket": {
+      "types": "./dist/nano/web-socket/index.d.ts",
+      "default": "./dist/nano/web-socket/index.js"
     }
   },
   "sideEffects": false,

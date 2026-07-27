@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 import { BooleanDistribution } from "../../types/boolean-distribution";
 import { EndpointString } from "../../types/endpoint";

@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 import { ErrorResponse } from "../responses/error-response";
 import { defaultHttpClient } from "./http-client";

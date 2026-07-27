@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 import { HashString } from "../../types/hash";
 import { UIntString } from "../../types/uint";

@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 import { post } from "../../../../../src/nano/rpc/http/post";
 

@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 export type NumberString = z.infer<ReturnType<typeof NumberString>>;
 export const NumberString = () =>

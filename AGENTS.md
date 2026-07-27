@@ -69,7 +69,7 @@ layers, but inspect imports and call sites before adding a new cross-area depend
 
 ## Source Layout and Placement
 
-- `src/index.ts`: the only package entry source; exports `Nano`.
+- `src/index.ts`: the root package entry source; exports `Nano`.
 - `src/nano/index.ts`: assembles `Nano.Blocks`, `Nano.Crypto`, `Nano.Math`, `Nano.RPC`, `Nano.Types`,
   `Nano.WebSocket`, and the convenience alias `Nano.WebSocketClient`.
 - `src/nano/*/index.ts`: public barrels. A file existing under `src` is not automatically public.
@@ -79,8 +79,6 @@ layers, but inspect imports and call sites before adding a new cross-area depend
 - `test/integration/test-data.ts`: stable Nano network fixtures such as genesis/burn data.
 - `test/assert.ts`: assertion function used to narrow discriminated result types.
 - `test/integration/config.ts`: live RPC/WebSocket endpoint and timeout configuration.
-- `scripts/convert-to-lf.mjs`: repository-wide LF normalizer with a non-writing `--check` mode; exposed through
-  the `line-endings:lf` and `line-endings:check` npm scripts.
 - `examples/`: consumer-oriented examples importing from `"nano-sdk"`. They are outside `tsconfig.json`'s
   `include`; do not treat them as build inputs.
 - `images/`: README assets.
@@ -101,15 +99,19 @@ client layer.
 
 ## Public API and Exports
 
-`package.json` exposes only `"."`, backed by `dist/index.js` and `dist/index.d.ts`. The build is CommonJS targeting
-ES2020, emits declarations, and marks the package as side-effect-free. There are no supported package subpath
-exports.
+`package.json` exposes `"."`, backed by `dist/index.js` and `dist/index.d.ts`, plus domain entry points for
+`blocks`, `crypto`, `math`, `rpc`, `types`, and `web-socket`, each backed by the matching `src/nano/*/index.ts`
+barrel. The build is CommonJS targeting ES2020, emits declarations, and marks the package as side-effect-free.
 
 Consumers use:
 
 ```ts
 import { Nano } from "nano-sdk";
 ```
+
+Browser consumers that need one domain can import named exports from `nano-sdk/blocks`, `nano-sdk/crypto`,
+`nano-sdk/math`, `nano-sdk/rpc`, `nano-sdk/types`, or `nano-sdk/web-socket`. Keep the root `Nano` namespace
+backward compatible, and do not expose individual implementation files as package subpaths.
 
 When adding a public symbol:
 
@@ -141,7 +143,7 @@ The source compiler settings in `tsconfig.json` are strict: `strict`, `noImplici
 is built. The output target is ES2020/CommonJS with declaration files.
 
 `eslint.config.mjs` applies ESLint recommended and typescript-eslint recommended rules. Its repository-specific
-block covers `src`, `test`, and `scripts` and enforces:
+block covers `src` and `test` and enforces:
 
 - Prettier as an ESLint error.
 - Sorted imports and exports through `simple-import-sort`.
@@ -151,11 +153,10 @@ block covers `src`, `test`, and `scripts` and enforces:
 
 `.prettierrc` requires LF endings, two spaces, no tabs, double quotes, semicolons, bracket spacing, a 120-column
 width, and ES5-style trailing commas. **All repository text files must use Unix/Linux LF line endings; never
-introduce CRLF line endings, including when working on Windows.** Run `npm run line-endings:lf` to normalize the
-worktree (excluding `.git`, `node_modules`, `dist`, and `images`) or `npm run line-endings:check` to check without
-writing. Let the import-sort rule establish grouping/order. There is no enforced repository-wide type-only-import,
-member-ordering, explicit-return-type, or documentation-comment rule; follow the nearby file rather than imposing
-a new convention.
+introduce CRLF line endings, including when working on Windows.** Let Prettier and the import-sort rule establish
+formatting and grouping/order, and use `git diff --check` before completion. There is no enforced repository-wide
+type-only-import, member-ordering, explicit-return-type, or documentation-comment rule; follow the nearby file
+rather than imposing a new convention.
 
 Established implementation patterns:
 
@@ -299,12 +300,6 @@ npm run lint
 # Apply configured ESLint/Prettier fixes
 npm run lint:fix
 
-# Convert repository text files to Unix/Linux LF line endings
-npm run line-endings:lf
-
-# Check line endings without modifying files
-npm run line-endings:check
-
 # Type-check without emitting (there is no dedicated package script)
 npx tsc --noEmit
 
@@ -384,8 +379,8 @@ unverified.
   `Nano.WebSocket`. Keep both paths compatible.
 - Adding a WebSocket topic/ack requires synchronized manual updates in `web-socket-client.ts`; Zod barrels alone
   do not make typed dispatch work.
-- Public imports must be tested through `src`/the `Nano` namespace, not only through deep source paths. The
-  published package has no subpath exports.
+- Public root imports must be tested through `src`/the `Nano` namespace. Domain subpaths must be checked through
+  the built package and a package dry run; individual implementation files are not supported subpaths.
 - Unit tests mirror request and response schema directories, but RPC method integration tests intentionally omit
   the `methods/` directory level.
 - WebSocket client integration tests use fixed localhost ports and are distinct from live-node WebSocket topic

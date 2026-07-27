@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 export type ErrorResponse = z.infer<ReturnType<typeof ErrorResponse>>;
 export const ErrorResponse = () =>

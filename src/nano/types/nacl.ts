@@ -5,7 +5,7 @@
  */
 // originally from https://github.com/dchest/tweetnacl-js
 // adapted for Nano and TypeScript by Marvin ROGER
-import blake from "blakejs";
+import { blake2b, blake2bFinal, blake2bInit, blake2bUpdate } from "blakejs";
 
 const gf = function (init?: number[]): Float64Array {
   const r = new Float64Array(16);
@@ -633,7 +633,7 @@ export class Nacl {
     for (let i = 0; i < n; ++i) {
       input[i] = m[i];
     }
-    const hash = blake.blake2b(input);
+    const hash = blake2b(input);
     for (let i = 0; i < CRYPTO_HASH_BYTES; ++i) {
       out[i] = hash[i];
     }
@@ -753,9 +753,9 @@ export class Nacl {
   static derivePublicFromSecret(sk: Uint8Array): Uint8Array {
     const p = [gf(), gf(), gf(), gf()];
     const pk = new Uint8Array(32);
-    const context = blake.blake2bInit(64);
-    blake.blake2bUpdate(context, sk);
-    const d = blake.blake2bFinal(context);
+    const context = blake2bInit(64);
+    blake2bUpdate(context, sk);
+    const d = blake2bFinal(context);
 
     d[0] &= 248;
     d[31] &= 127;

@@ -67,6 +67,30 @@ The SDK uses a single root namespace (**Nano**), organized into sub-namespaces, 
 - `Nano.WebSocket`: Fully typed **Nano** node WebSocket request and response schemas, including acknowledgement and topic message definitions
 - `Nano.WebSocketClient`: Instantiable WebSocket client providing fully typed acknowledgement and topic-based message handling using the `Nano.WebSocket` schemas
 
+<a name="smaller-application-bundles"></a>
+## Smaller Application Bundles
+
+Applications that only use one SDK area can import that domain explicitly instead of loading the complete `Nano`
+namespace:
+
+```ts
+import { rawPlus } from "nano-sdk/math";
+import { HashString } from "nano-sdk/types";
+```
+
+These explicit module imports limit the Nano SDK code that a bundler needs to include in the compiled application.
+This can reduce the application's JavaScript bundle size and therefore its storage and download footprint. The
+actual reduction depends on the selected modules and the application's build tool.
+
+The available domain entry points are:
+
+- `nano-sdk/blocks`
+- `nano-sdk/crypto`
+- `nano-sdk/math`
+- `nano-sdk/rpc`
+- `nano-sdk/types`
+- `nano-sdk/web-socket`
+
 <a name="rpc"></a>
 ## RPC Usage
 
