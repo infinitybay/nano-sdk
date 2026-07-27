@@ -22,8 +22,8 @@ function verifySignatureThrowing(params: VerifySignatureParams & Throwing): bool
 
   try {
     return Nacl.verifyDetached(hashBytes, signatureBytes, publicKeyBytes);
-  } catch (_err) {
-    throw new Error("Failed to verify signature.");
+  } catch (err) {
+    throw new Error("Failed to verify signature.", { cause: err });
   }
 }
 

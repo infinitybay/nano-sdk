@@ -31,8 +31,8 @@ function verifyWorkThrowing(params: VerifyWorkParams & Throwing): boolean {
     const outputBytes = blake2bFinal(context).reverse();
     const outputHex = bytesToHex({ bytes: outputBytes, throwOnError: true });
     return BigInt(`0x${outputHex}`) >= BigInt(`0x${params.threshold}`);
-  } catch (_err) {
-    throw new Error("Failed to verify work.");
+  } catch (err) {
+    throw new Error("Failed to verify work.", { cause: err });
   }
 }
 

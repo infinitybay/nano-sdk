@@ -21,8 +21,8 @@ function signHashThrowing(params: SignHashParams & Throwing): SignatureString {
   try {
     const signatureBytes = Nacl.signDetached(hashBytes, privateKeyBytes);
     return bytesToSignature({ signatureBytes, throwOnError: true });
-  } catch (_err) {
-    throw new Error("Failed to create a valid signature.");
+  } catch (err) {
+    throw new Error("Failed to create a valid signature.", { cause: err });
   }
 }
 

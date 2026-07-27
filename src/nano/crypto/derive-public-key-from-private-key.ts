@@ -23,8 +23,8 @@ function derivePublicKeyFromPrivateKeyThrowing(
 
   try {
     return bytesToPublicKey({ publicKeyBytes: Nacl.derivePublicFromSecret(privateKeyBytes), throwOnError: true });
-  } catch (_err) {
-    throw new Error("Failed to derive public key from private key.");
+  } catch (err) {
+    throw new Error("Failed to derive public key from private key.", { cause: err });
   }
 }
 

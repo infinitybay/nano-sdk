@@ -76,8 +76,8 @@ function hashBlockThrowing(params: HashBlockParams & Throwing): HashString {
     blake2bUpdate(hashContext, linkBytes);
     const hashBytes = blake2bFinal(hashContext);
     return bytesToHash({ hashBytes, throwOnError: true });
-  } catch (_err) {
-    throw new Error("Failed to compute hash.");
+  } catch (err) {
+    throw new Error("Failed to compute hash.", { cause: err });
   }
 }
 

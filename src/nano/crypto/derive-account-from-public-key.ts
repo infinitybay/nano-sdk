@@ -30,8 +30,8 @@ function deriveAccountFromPublicKeyThrowing(params: DeriveAccountFromPublicKeyPa
   let checksumBytes: Uint8Array;
   try {
     checksumBytes = blake2b(publicKeyBytes, undefined, 5).reverse();
-  } catch (_err) {
-    throw new Error("Failed to determine checksum bytes.");
+  } catch (err) {
+    throw new Error("Failed to determine checksum bytes.", { cause: err });
   }
 
   const encodedPublicKey = encodeBase32({ bytes: publicKeyBytes, throwOnError: true });

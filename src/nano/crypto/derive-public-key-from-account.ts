@@ -20,8 +20,8 @@ function derivePublicKeyFromAccountThrowing(params: DerivePublicKeyFromAccountPa
 
   try {
     return bytesToPublicKey({ publicKeyBytes, throwOnError: true });
-  } catch (_err) {
-    throw new Error("Failed to derive public key from account.");
+  } catch (err) {
+    throw new Error("Failed to derive public key from account.", { cause: err });
   }
 }
 

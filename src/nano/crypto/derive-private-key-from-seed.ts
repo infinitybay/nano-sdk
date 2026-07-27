@@ -38,14 +38,14 @@ function derivePrivateKeyFromSeedThrowing(params: DerivePrivateKeyFromSeedParams
     blake2bUpdate(hashContext, indexBytes);
 
     privateKeyBytes = blake2bFinal(hashContext);
-  } catch (_err) {
-    throw new Error("Failed to derive private key bytes from seed.");
+  } catch (err) {
+    throw new Error("Failed to derive private key bytes from seed.", { cause: err });
   }
 
   try {
     return bytesToPrivateKey({ privateKeyBytes, throwOnError: true });
-  } catch (_err) {
-    throw new Error("Derived private key is invalid.");
+  } catch (err) {
+    throw new Error("Derived private key is invalid.", { cause: err });
   }
 }
 

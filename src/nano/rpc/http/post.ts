@@ -96,7 +96,8 @@ export async function post<T extends z.ZodType, U extends z.ZodType>(
     }
 
     throw new Error(
-      "An unknown error occurred. Please contact the library developer with details about your usage and environment."
+      "An unknown error occurred. Please contact the library developer with details about your usage and environment.",
+      { cause: e }
     );
   }
 }
