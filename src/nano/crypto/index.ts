@@ -8,6 +8,7 @@ export { generatePrivateKey } from "./generate-private-key";
 export { generatePublicKey } from "./generate-public-key";
 export { generateSeed } from "./generate-seed";
 export { hashBlock } from "./hash-block";
+export { signBlock } from "./sign-block";
 export { signHash } from "./sign-hash";
 export { verifyBlock } from "./verify-block";
 export { verifyHash } from "./verify-hash";
