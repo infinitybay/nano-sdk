@@ -78,7 +78,10 @@ export const defaultHttpClient: HttpClient = {
         method: "POST",
         body: JSON.stringify(body),
         signal: signal,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...config?.headers,
+        },
       });
 
       let parsed: unknown = null;

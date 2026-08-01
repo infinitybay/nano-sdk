@@ -8,7 +8,10 @@ const axiosHttpClient: Nano.RPC.HttpClient = {
   async post(url, body, config): Promise<Nano.RPC.HttpResponse> {
     try {
       const response = await axios.post(url, body, {
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...config?.headers,
+        },
         signal: config?.abortSignal,
         timeout: config?.timeoutInMs,
       });

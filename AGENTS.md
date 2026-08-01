@@ -182,7 +182,9 @@ Established implementation patterns:
 - Crypto and math functions commonly expose overloads selected by `throwOnError`: default/true throws an
   `Error`, while `false` returns the discriminated `Result<T>`.
 - RPC calls default to throwing and use `PostError`; `{ throwOnError: false }` returns `PostResult<T>`.
-  Preserve overloads and response inference when editing a method.
+  Preserve overloads and response inference when editing a method. `RequestConfig.headers` is forwarded through
+  the shared HTTP client config; the default client merges it after its JSON content type so callers can override
+  the default without mutating their header object.
 - For flag-dependent RPC responses, use the existing helpers in `methods/conditional-types/` and response schema
   patterns instead of broad union types or casts.
 - Catch unknown values safely (`e instanceof Error`) and keep error paths observable. Do not introduce silent

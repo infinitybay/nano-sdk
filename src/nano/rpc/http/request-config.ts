@@ -2,6 +2,7 @@ import { HttpClient } from "./http-client";
 
 export interface RequestConfig {
   abortSignal?: AbortSignal;
+  headers?: Record<string, string>;
   httpClient?: HttpClient;
   timeoutInMs?: number;
   throwOnError?: boolean;

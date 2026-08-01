@@ -127,9 +127,29 @@ The optional config supports:
 - `throwOnError` – true (default) throws, false returns `{ success, data / error }`
 - `timeoutInMs` – HTTP timeout
 - `abortSignal` – cancellation via AbortController
+- `headers` – custom HTTP headers merged with the default JSON content type
 - `httpClient` – custom HTTP transport
 
 By default, errors throw `Nano.RPC.PostError`.
+
+### Custom HTTP headers
+
+Custom HTTP headers, such as bearer tokens required by authenticated RPC providers, can be passed directly through the RPC request configuration:
+
+```ts
+const response = await Nano.RPC.account_balance(
+  nanoRpcUrl,
+  {
+    action: "account_balance",
+    account: account,
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+```
 
 ### Custom HTTP client
 
