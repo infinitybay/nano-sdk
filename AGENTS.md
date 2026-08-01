@@ -11,6 +11,8 @@ that makes it incomplete or inaccurate.
 - Runtime-validated and statically typed Nano RPC requests/responses over HTTP.
 - Runtime-validated Nano WebSocket requests/responses and a reconnecting, typed `WebSocketClient`.
 - Zod schemas for Nano primitives and block variants.
+- Stateless helpers that build and optionally sign state send, receive, open, and change blocks from explicitly
+  supplied prior state blocks.
 - Local cryptographic helpers for keys, accounts, hashes, signatures, blocks, and work verification.
 - Precision-safe raw/nano amount conversion, arithmetic, comparison, and formatting.
 
@@ -40,8 +42,9 @@ The areas are deliberately organized by Nano concepts:
   Some support types (`Result`, throwing-mode markers, conditional mapped types, and `Nacl`) are internal because
   they are not exported by `src/nano/types/index.ts`. Unit tests are in `test/unit/nano/types/`.
 - **Blocks — `src/nano/blocks/`:** Zod schemas for state and legacy block shapes; `block.ts` unions the variants.
-  RPC, WebSocket, and crypto code consume these shapes. Unit tests mirror the directory in
-  `test/unit/nano/blocks/`.
+  The `create-*-block.ts` functions validate an explicitly supplied state block, derive the new block fields,
+  optionally sign it, and return it without maintaining chain state. RPC, WebSocket, and crypto code consume the
+  block shapes. Unit tests mirror the directory in `test/unit/nano/blocks/`.
 - **Crypto — `src/nano/crypto/`:** Public camelCase operations for key derivation/generation, account
   conversion, hashing, signing, and verification. `conversion/` contains byte/base32/hex/key converters used
   internally; `generate-random-bytes.ts` and `src/nano/types/nacl.ts` are also implementation details. Crypto
@@ -73,6 +76,8 @@ layers, but inspect imports and call sites before adding a new cross-area depend
 - `src/nano/index.ts`: assembles `Nano.Blocks`, `Nano.Crypto`, `Nano.Math`, `Nano.RPC`, `Nano.Types`,
   `Nano.WebSocket`, and the convenience alias `Nano.WebSocketClient`.
 - `src/nano/*/index.ts`: public barrels. A file existing under `src` is not automatically public.
+- `src/nano/blocks/create-{open,send,receive,change}-block.ts`: public state-block creation helpers. Each file
+  contains its own validation, construction, optional signing, and throwing/non-throwing behavior.
 - `src/nano/rpc/methods/conditional-types/`: type-level helpers that make RPC response fields follow literal
   request flags. They are method internals, not exported from `methods/index.ts`.
 - `test/unit/test-data.ts`: shared valid and deliberately invalid primitive/block fixtures.
@@ -131,6 +136,16 @@ RPC additions require all three exports: `src/nano/rpc/requests/index.ts`,
 Do not export implementation helpers merely because a public feature uses them. Current intentional internals
 include crypto converters, random-byte generation, math comparison helpers, RPC conditional types and
 `ErrorResponse`, throwing/result helper types, and `Nacl`.
+
+The state-block creation helpers only support complete state-block inputs; legacy blocks are not supported. Send,
+receive, and change require the account's latest state block as `frontierBlock`. Open requires the funding
+`sendBlock`, while receive requires both `frontierBlock` and the complete source `sendBlock`. An explicit
+transferred amount is always required because a state send block only stores its resulting balance. Open requires
+an explicit representative; send and receive inherit the frontier representative when it is omitted. Generated
+blocks use zero work and can be signed during creation with `privateKey` or afterward with `signBlock`. Complete
+state-block inputs are checked for structural validity and for matching `link`/`link_as_account` values.
+`createChangeBlock` deliberately permits an unchanged representative. All four helpers preserve the usual
+throwing/non-throwing overloads.
 
 Treat exported schema shapes, inferred aliases, overloads, error modes, namespace names, and runtime validation
 behavior as compatibility-sensitive. Search internal use, examples, tests, and README references before changing
@@ -248,6 +263,19 @@ Nano endpoint.
 3. Update the area `index.ts` if public.
 4. Add/update the mirrored unit test and shared `test/unit/test-data.ts` only when the fixture is broadly useful.
 5. Search RPC, WebSocket, block, crypto, and example call sites for compatibility impact.
+
+### Add or change state-block creation behavior
+
+1. Keep public creation operations in their own `src/nano/blocks/create-*-block.ts` files. Keep their mechanics
+   self-contained rather than introducing a shared creation helper.
+2. Require the relevant complete state block explicitly rather than maintaining an SDK-owned chain cache:
+   `frontierBlock` for send/receive/change and `sendBlock` for open.
+3. Derive and validate all new state-block fields, optionally sign the block, initialize work to zero, and return
+   the block without mutating the supplied prior block.
+4. Preserve throwing/non-throwing overloads for `createOpenBlock`, `createSendBlock`, `createReceiveBlock`, and
+   `createChangeBlock`.
+5. Test field derivation, representative selection, optional and deferred signing, receive-from-send behavior,
+   open-from-send behavior, invalid input blocks, mismatched destinations/keys, and dependent creation calls.
 
 ### Add or change a crypto/math operation
 
@@ -379,6 +407,10 @@ unverified.
   `Nano.WebSocket`. Keep both paths compatible.
 - Adding a WebSocket topic/ack requires synchronized manual updates in `web-socket-client.ts`; Zod barrels alone
   do not make typed dispatch work.
+- A state send block contains its resulting balance, not the transferred amount. `createOpenBlock` and
+  `createReceiveBlock` therefore require an explicit amount even when the complete send block is supplied.
+- `createOpenBlock` takes the funding state block as `sendBlock`, while the generated open block's wire
+  `previous` field is the zero hash. It derives the new account from the send block link.
 - Public root imports must be tested through `src`/the `Nano` namespace. Domain subpaths must be checked through
   the built package and a package dry run; individual implementation files are not supported subpaths.
 - Unit tests mirror request and response schema directories, but RPC method integration tests intentionally omit

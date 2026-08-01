@@ -59,7 +59,7 @@ RPC requests and responses are fully typed and validated at runtime. Response ty
 
 The SDK uses a single root namespace (**Nano**), organized into sub-namespaces, each focused on a specific responsibility:
 
-- `Nano.Blocks`: Block schemas (**Zod**) for validating and composing **Nano** blocks
+- `Nano.Blocks`: Block schemas (**Zod**) and state-block creation helpers
 - `Nano.Crypto`: Key derivation, block hashing, signing, and verification utilities
 - `Nano.Math`: Raw amount conversion, formatting, and safe raw arithmetic
 - `Nano.RPC`: **Nano** node RPC methods (HTTP POST), with typed requests and typed responses
@@ -250,8 +250,26 @@ Available block schemas:
 - `LegacySendBlock`, `LegacyReceiveBlock`, `LegacyOpenBlock`, `LegacyChangeBlock`
 - `Block` as a union of all supported block variants
 
+`createOpenBlock`, `createSendBlock`, `createReceiveBlock`, and `createChangeBlock` validate and create new state
+blocks. They only support complete `StateBlock` inputs; legacy blocks are not supported.
+Send, receive, and change use the account's latest `frontierBlock`. Open uses the funding `sendBlock`, while
+receive needs both the destination `frontierBlock` and the complete source `sendBlock`.
+
+Pass `privateKey` to sign during creation or omit it and sign the returned block later with
+`Nano.Crypto.signBlock` or the lower-level `Nano.Crypto.signHash`. Open requires an explicit
+`representative`; the other helpers inherit it where possible. Pass `{ throwOnError: false }` to receive a
+`Result<StateBlock>` instead of throwing.
+
+Created blocks contain zero work so proof of work can be generated independently and assigned afterward. For
+local PoW without an external work server, install
+[`nano-pow`](https://www.npmjs.com/package/nano-pow) with `npm i nano-pow`. It supports local generation through
+WebGPU, WebGL, WASM, or CPU depending on the environment. See the NanoPow example for the different work roots
+used by open and subsequent blocks.
+
 ### Examples
 
+- [`create-state-blocks.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/blocks/create-state-blocks.example.ts)
+- [`create-state-block-with-nano-pow.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/blocks/create-state-block-with-nano-pow.example.ts)
 - [`state-block-with-hash.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/blocks/state-block-with-hash.example.ts)
 
 <a name="testing"></a>

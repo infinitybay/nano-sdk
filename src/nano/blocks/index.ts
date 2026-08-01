@@ -1,4 +1,8 @@
 export { Block } from "./block";
+export { createChangeBlock } from "./create-change-block";
+export { createOpenBlock } from "./create-open-block";
+export { createReceiveBlock } from "./create-receive-block";
+export { createSendBlock } from "./create-send-block";
 export { LegacyChangeBlock } from "./legacy-change-block";
 export { LegacyOpenBlock } from "./legacy-open-block";
 export { LegacyReceiveBlock } from "./legacy-receive-block";
