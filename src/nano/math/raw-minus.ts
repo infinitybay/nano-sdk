@@ -21,9 +21,23 @@ type RawMinusRawAmountStringParams = {
 function rawMinusThrowing(params: RawMinusRawAmountParams & Throwing): RawAmount;
 function rawMinusThrowing(params: RawMinusRawAmountStringParams & Throwing): RawAmountString;
 function rawMinusThrowing(params: RawMinusParams & Throwing) {
+  if (
+    (typeof params.raw === "bigint" && params.raw < 0n) ||
+    (typeof params.raw === "string" && params.raw.startsWith("-"))
+  ) {
+    throw new Error("Invalid raw value: negative raw amounts are not allowed.");
+  }
+
   const baseResult = RawAmount().safeParse(params.raw);
   if (!baseResult.success) {
     throw new Error("Invalid raw value.");
+  }
+
+  if (
+    (typeof params.subtrahend === "bigint" && params.subtrahend < 0n) ||
+    (typeof params.subtrahend === "string" && params.subtrahend.startsWith("-"))
+  ) {
+    throw new Error("Invalid subtrahend value: negative raw amounts are not allowed.");
   }
 
   const subtrahendResult = RawAmount().safeParse(params.subtrahend);
@@ -34,6 +48,9 @@ function rawMinusThrowing(params: RawMinusParams & Throwing) {
   const base = baseResult.data;
   const subtrahend = subtrahendResult.data;
   const difference = base - subtrahend;
+  if (difference < 0n) {
+    throw new Error("Resulting raw amount must not be negative.");
+  }
 
   const result = RawAmount().safeParse(difference);
   if (!result.success) {

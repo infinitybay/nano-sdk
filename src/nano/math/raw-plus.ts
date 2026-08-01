@@ -21,9 +21,23 @@ type RawPlusRawAmountStringParams = {
 function rawPlusThrowing(params: RawPlusRawAmountParams & Throwing): RawAmount;
 function rawPlusThrowing(params: RawPlusRawAmountStringParams & Throwing): RawAmountString;
 function rawPlusThrowing(params: RawPlusParams & Throwing) {
+  if (
+    (typeof params.raw === "bigint" && params.raw < 0n) ||
+    (typeof params.raw === "string" && params.raw.startsWith("-"))
+  ) {
+    throw new Error("Invalid raw value: negative raw amounts are not allowed.");
+  }
+
   const baseResult = RawAmount().safeParse(params.raw);
   if (!baseResult.success) {
     throw new Error("Invalid raw value.");
+  }
+
+  if (
+    (typeof params.addend === "bigint" && params.addend < 0n) ||
+    (typeof params.addend === "string" && params.addend.startsWith("-"))
+  ) {
+    throw new Error("Invalid addend value: negative raw amounts are not allowed.");
   }
 
   const addendResult = RawAmount().safeParse(params.addend);

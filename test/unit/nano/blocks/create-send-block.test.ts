@@ -125,6 +125,25 @@ describe("createSendBlock function", () => {
       }).success
     ).toBe(false);
 
+    expect(() =>
+      createSendBlock({
+        amount: "-1",
+        destination: TestData.Valid.Account2(),
+        frontierBlock: TestData.Valid.StateBlock1(),
+      })
+    ).toThrow("Invalid amount: negative raw amounts are not allowed.");
+
+    const negativeAmountResult = createSendBlock({
+      amount: -1n,
+      destination: TestData.Valid.Account2(),
+      frontierBlock: TestData.Valid.StateBlock1(),
+      throwOnError: false,
+    });
+    expect(negativeAmountResult.success).toBe(false);
+    if (!negativeAmountResult.success) {
+      expect(negativeAmountResult.error.message).toBe("Invalid amount: negative raw amounts are not allowed.");
+    }
+
     expect(
       createSendBlock({
         amount: "1000",

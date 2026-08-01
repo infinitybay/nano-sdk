@@ -42,6 +42,21 @@ describe("rawPlus", () => {
     expect(rawPlus({ raw: "abc", addend: "1", throwOnError: false }).success).toBe(false);
   });
 
+  test("explicitly rejects negative raw values", () => {
+    expect(() => rawPlus({ raw: "-1", addend: "1", throwOnError: true })).toThrow(
+      "Invalid raw value: negative raw amounts are not allowed."
+    );
+    expect(() => rawPlus({ raw: 1n, addend: -1n, throwOnError: true })).toThrow(
+      "Invalid addend value: negative raw amounts are not allowed."
+    );
+
+    const result = rawPlus({ raw: "1", addend: "-1", throwOnError: false });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.message).toBe("Invalid addend value: negative raw amounts are not allowed.");
+    }
+  });
+
   test("accepts mixed input types and returns matching output type", () => {
     expect(rawPlus({ raw: "5", addend: 3n, throwOnError: true })).toBe("8");
     expect(rawPlus({ raw: 5n, addend: "3", throwOnError: true })).toBe(8n);

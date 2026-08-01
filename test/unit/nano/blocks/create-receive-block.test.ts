@@ -134,6 +134,25 @@ describe("createReceiveBlock function", () => {
       }).success
     ).toBe(false);
 
+    expect(() =>
+      createReceiveBlock({
+        amount: "-1",
+        frontierBlock: TestData.Valid.StateBlock1(),
+        sendBlock,
+      })
+    ).toThrow("Invalid amount: negative raw amounts are not allowed.");
+
+    const negativeAmountResult = createReceiveBlock({
+      amount: -1n,
+      frontierBlock: TestData.Valid.StateBlock1(),
+      sendBlock,
+      throwOnError: false,
+    });
+    expect(negativeAmountResult.success).toBe(false);
+    if (!negativeAmountResult.success) {
+      expect(negativeAmountResult.error.message).toBe("Invalid amount: negative raw amounts are not allowed.");
+    }
+
     const incompleteSendBlock = { ...sendBlock };
     delete (incompleteSendBlock as { signature?: string }).signature;
     expect(

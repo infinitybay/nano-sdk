@@ -116,6 +116,25 @@ describe("createOpenBlock function", () => {
       }).success
     ).toBe(false);
 
+    expect(() =>
+      createOpenBlock({
+        amount: "-1",
+        representative: TestData.Valid.Representative3(),
+        sendBlock,
+      })
+    ).toThrow("Invalid amount: negative raw amounts are not allowed.");
+
+    const negativeAmountResult = createOpenBlock({
+      amount: -1n,
+      representative: TestData.Valid.Representative3(),
+      sendBlock,
+      throwOnError: false,
+    });
+    expect(negativeAmountResult.success).toBe(false);
+    if (!negativeAmountResult.success) {
+      expect(negativeAmountResult.error.message).toBe("Invalid amount: negative raw amounts are not allowed.");
+    }
+
     expect(
       createOpenBlock({
         amount: "1000",

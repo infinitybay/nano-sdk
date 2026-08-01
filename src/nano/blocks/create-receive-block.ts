@@ -32,6 +32,13 @@ function createReceiveBlockThrowing(params: CreateReceiveBlockParams & Throwing)
     throw new Error("Frontier block link and link_as_account do not match.");
   }
 
+  if (
+    (typeof params.amount === "bigint" && params.amount < 0n) ||
+    (typeof params.amount === "string" && params.amount.startsWith("-"))
+  ) {
+    throw new Error("Invalid amount: negative raw amounts are not allowed.");
+  }
+
   const amountResult = RawAmountString().safeParse(
     typeof params.amount === "bigint" ? params.amount.toString() : params.amount
   );
