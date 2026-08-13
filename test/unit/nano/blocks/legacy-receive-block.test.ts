@@ -1,10 +1,11 @@
 import { LegacyReceiveBlock } from "../../../../src/nano/blocks/legacy-receive-block";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("LegacyReceiveBlock schema", () => {
   test("validates structure for receive blocks", () => {
     const result = LegacyReceiveBlock().safeParse(TestData.Valid.LegacyReceiveBlock());
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects receive blocks with invalid data", () => {
@@ -16,7 +17,7 @@ describe("LegacyReceiveBlock schema", () => {
     ];
     for (const invalidReceiveBlock of invalidReceiveBlocks) {
       const result = LegacyReceiveBlock().safeParse(invalidReceiveBlock);
-      expect(result.success).toBe(false);
+      assert(!result.success);
     }
   });
 });

@@ -1,4 +1,5 @@
 import { BlockCountResponse } from "../../../../../src/nano/rpc/responses/block-count";
+import { assert } from "../../../../assert";
 
 describe("BlockCountResponse schema", () => {
   test("parses block count response", () => {
@@ -7,7 +8,7 @@ describe("BlockCountResponse schema", () => {
       unchecked: "5",
       cemented: "95",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   /*test("rejects block count response with non-numeric count", () => {
@@ -16,6 +17,6 @@ describe("BlockCountResponse schema", () => {
       unchecked: "5",
       cemented: "95",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });*/
 });

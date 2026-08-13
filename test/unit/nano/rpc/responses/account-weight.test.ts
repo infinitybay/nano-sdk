@@ -1,4 +1,5 @@
 import { AccountWeightResponse } from "../../../../../src/nano/rpc/responses/account-weight";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountWeightResponse schema", () => {
@@ -6,13 +7,13 @@ describe("AccountWeightResponse schema", () => {
     const result = AccountWeightResponse().safeParse({
       weight: TestData.Valid.RawAmount1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects account weight response with invalid weight", () => {
     const result = AccountWeightResponse().safeParse({
       weight: TestData.Invalid.RawAmount.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

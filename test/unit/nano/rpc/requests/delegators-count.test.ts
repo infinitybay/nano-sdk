@@ -1,4 +1,5 @@
 import { DelegatorsCountRequest } from "../../../../../src/nano/rpc/requests/delegators-count";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("DelegatorsCountRequest schema", () => {
@@ -7,7 +8,7 @@ describe("DelegatorsCountRequest schema", () => {
       action: "delegators_count",
       account: TestData.Valid.Account1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects delegators count request with invalid account", () => {
@@ -15,6 +16,6 @@ describe("DelegatorsCountRequest schema", () => {
       action: "delegators_count",
       account: TestData.Invalid.Account.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

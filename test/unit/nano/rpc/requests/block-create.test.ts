@@ -1,4 +1,5 @@
 import { BlockCreateRequest } from "../../../../../src/nano/rpc/requests/block-create";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BlockCreateRequest schema", () => {
@@ -20,7 +21,7 @@ describe("BlockCreateRequest schema", () => {
       version: "work_1",
       difficulty: TestData.Valid.WorkDifficulty1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects block creation with invalid balance", () => {
@@ -31,6 +32,6 @@ describe("BlockCreateRequest schema", () => {
       representative: TestData.Valid.Representative1(),
       previous: TestData.Valid.PrevHash1(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

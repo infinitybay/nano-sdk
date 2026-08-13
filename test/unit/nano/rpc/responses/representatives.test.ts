@@ -1,4 +1,5 @@
 import { RepresentativesResponse } from "../../../../../src/nano/rpc/responses/representatives";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("RepresentativesResponse schema", () => {
@@ -6,7 +7,7 @@ describe("RepresentativesResponse schema", () => {
     const result = RepresentativesResponse().safeParse({
       representatives: "",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses representatives map", () => {
@@ -16,7 +17,7 @@ describe("RepresentativesResponse schema", () => {
         [TestData.Valid.Representative2()]: TestData.Valid.RawAmount2(),
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects representatives response with invalid account", () => {
@@ -25,6 +26,6 @@ describe("RepresentativesResponse schema", () => {
         [TestData.Invalid.Account.InvalidCharacters()]: TestData.Valid.RawAmount1(),
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

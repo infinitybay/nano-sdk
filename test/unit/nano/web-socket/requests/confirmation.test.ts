@@ -1,4 +1,5 @@
 import { ConfirmationRequest } from "../../../../../src/nano/web-socket/requests/confirmation";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("ConfirmationRequest schema", () => {
@@ -20,7 +21,7 @@ describe("ConfirmationRequest schema", () => {
         include_sideband_info: true,
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects confirmation request with invalid account list", () => {
@@ -31,6 +32,6 @@ describe("ConfirmationRequest schema", () => {
         accounts: [TestData.Invalid.Account.InvalidCharacters()],
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

@@ -1,4 +1,5 @@
 import { DeterministicKeyResponse } from "../../../../../src/nano/rpc/responses/deterministic-key";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("DeterministicKeyResponse schema", () => {
@@ -8,7 +9,7 @@ describe("DeterministicKeyResponse schema", () => {
       public: TestData.Valid.PublicKey1(),
       account: TestData.Valid.Account1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects deterministic key response with invalid public key", () => {
@@ -17,6 +18,6 @@ describe("DeterministicKeyResponse schema", () => {
       public: TestData.Invalid.PublicKey.InvalidCharacters(),
       account: TestData.Valid.Account1(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

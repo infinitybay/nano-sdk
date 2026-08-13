@@ -1,4 +1,5 @@
 import { UnopenedResponse } from "../../../../../src/nano/rpc/responses/unopened";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("UnopenedResponse schema", () => {
@@ -6,7 +7,7 @@ describe("UnopenedResponse schema", () => {
     const result = UnopenedResponse().safeParse({
       accounts: "",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses unopened accounts map", () => {
@@ -15,7 +16,7 @@ describe("UnopenedResponse schema", () => {
         [TestData.Valid.Account1()]: TestData.Valid.RawAmount1(),
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects unopened response with invalid account key", () => {
@@ -24,6 +25,6 @@ describe("UnopenedResponse schema", () => {
         [TestData.Invalid.Account.InvalidCharacters()]: TestData.Valid.RawAmount1(),
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

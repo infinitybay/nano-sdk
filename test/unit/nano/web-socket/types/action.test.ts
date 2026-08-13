@@ -1,4 +1,5 @@
 import { Action } from "../../../../../src/nano/web-socket/types/action";
+import { assert } from "../../../../assert";
 
 describe("Action schema", () => {
   test("validates allowed actions", () => {
@@ -8,6 +9,6 @@ describe("Action schema", () => {
   });
 
   test("rejects unsupported actions", () => {
-    expect(Action().safeParse("ping").success).toBe(false);
+    assert(!Action().safeParse("ping").success);
   });
 });

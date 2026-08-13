@@ -1,4 +1,5 @@
 import { bytesToPrivateKey, privateKeyToBytes } from "../../../../../src/nano/crypto/conversion/private-key-converter";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("Private key conversion utilities", () => {
@@ -25,11 +26,11 @@ describe("Private key conversion utilities", () => {
     ];
 
     for (const invalidPrivateKey of invalidPrivateKeys) {
-      expect(privateKeyToBytes({ privateKey: invalidPrivateKey, throwOnError: false }).success).toBe(false);
+      assert(!privateKeyToBytes({ privateKey: invalidPrivateKey, throwOnError: false }).success);
     }
   });
 
   test("rejects byte arrays with incorrect length", () => {
-    expect(bytesToPrivateKey({ privateKeyBytes: new Uint8Array([1, 2]), throwOnError: false }).success).toBe(false);
+    assert(!bytesToPrivateKey({ privateKeyBytes: new Uint8Array([1, 2]), throwOnError: false }).success);
   });
 });

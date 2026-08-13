@@ -1,6 +1,9 @@
+import * as formatRawModule from "../../../../src/nano/math/format-raw";
+import { MathErrorCode } from "../../../../src/nano/math/math-error-code";
 import { rawToNano } from "../../../../src/nano/math/raw-to-nano";
 import { NanoAmountStrings, RAW_SCALE, RawAmountStrings } from "../../../../src/nano/types/amount";
 import { assert } from "../../../assert";
+import { expectErrorCode, expectToThrowErrorCode } from "../../../expect";
 
 describe("rawToNano", () => {
   test("converts smallest raw value to nano with full precision", () => {
@@ -48,17 +51,46 @@ describe("rawToNano", () => {
 
   test("returns failure result for invalid raw input without throwing", () => {
     const result = rawToNano({ raw: "-1", throwOnError: false });
-    expect(result.success).toBe(false);
+    assert(!result.success);
+    expectErrorCode(result.error, MathErrorCode.FormatRawFailed);
+    expectErrorCode(result.error.cause, MathErrorCode.InvalidRaw);
   });
 
   test("throws for invalid inputs when configured to throw", () => {
-    expect(() => rawToNano({ raw: "-1", throwOnError: true })).toThrow();
-    expect(() => rawToNano({ raw: RawAmountStrings.zero(), decimalPlaces: -1, throwOnError: true })).toThrow();
-    expect(() => rawToNano({ raw: RawAmountStrings.zero(), decimalPlaces: 31, throwOnError: true })).toThrow();
+    expectToThrowErrorCode(() => rawToNano({ raw: "-1", throwOnError: true }), MathErrorCode.FormatRawFailed);
+    expectToThrowErrorCode(
+      () => rawToNano({ raw: RawAmountStrings.zero(), decimalPlaces: -1, throwOnError: true }),
+      MathErrorCode.FormatRawFailed
+    );
+    expectToThrowErrorCode(
+      () => rawToNano({ raw: RawAmountStrings.zero(), decimalPlaces: 31, throwOnError: true }),
+      MathErrorCode.FormatRawFailed
+    );
   });
 
   test("returns failure result for invalid decimal precision without throwing", () => {
     const result = rawToNano({ raw: RawAmountStrings.zero(), decimalPlaces: 31, throwOnError: false });
-    expect(result.success).toBe(false);
+    assert(!result.success);
+    expectErrorCode(result.error, MathErrorCode.FormatRawFailed);
+    expectErrorCode(result.error.cause, MathErrorCode.InvalidDecimalPlaces);
+  });
+
+  test("converts unexpected internal exceptions according to the configured error mode", () => {
+    const cause = new Error("Unexpected internal failure");
+    const formatRawSpy = jest.spyOn(formatRawModule, "formatRaw").mockImplementation(() => {
+      throw cause;
+    });
+
+    try {
+      const result = rawToNano({ raw: "1", throwOnError: false });
+
+      assert(!result.success);
+      expectErrorCode(result.error, MathErrorCode.Unexpected);
+      expect(result.error.cause).toBe(cause);
+
+      expectToThrowErrorCode(() => rawToNano({ raw: "1", throwOnError: true }), MathErrorCode.Unexpected);
+    } finally {
+      formatRawSpy.mockRestore();
+    }
   });
 });

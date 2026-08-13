@@ -54,6 +54,24 @@ The areas are deliberately organized by Nano concepts:
   accept validated raw strings and/or `bigint`; arithmetic return type follows the first `raw` argument.
   `comparison.ts` is a shared internal helper even though it has a direct unit test. Tests are in
   `test/unit/nano/math/`.
+- **Errors:** Blocks, crypto, and math each expose their own independently implemented `*Error` class and
+  `*ErrorCode` string enum from the matching domain barrel; RPC transport failures use `PostError` and
+  `PostErrorCode` from `rpc/http/`. Do not introduce a shared generic error base class.
+  Non-throwing results and thrown errors use the same domain error object and
+  stable code. Validation codes start with `Invalid` and identify the checked value. A failed operation or
+  dependency call uses its concrete operation name followed by `Failed` (for example, `SignBlockFailed`), while
+  domain outcomes such as `InsufficientBalance` remain descriptive. The domain error classes are generic over
+  their code, and public non-throwing method signatures use
+  exported result aliases whose error types contain only the enum members that method can return. Export operation
+  parameter and result aliases from the matching domain barrel so consumers can type stored and forwarded calls.
+  Sort enum members alphabetically by member name within every `*ErrorCode` union so omissions and duplicates are
+  easy to spot during review.
+  Within one method implementation, each error branch must have its own error-code member; never reuse one code for
+  multiple branches because tests and consumers must identify the originating path unambiguously.
+  Cross-domain calls use non-throwing mode, are checked immediately at the call site, and translate any failure to
+  one operation-level caller-domain code while retaining the original error as `cause`; do not branch on a
+  dependency domain's individual codes. WebSocket errors remain native `Error` objects in `ErrorEvent` because the
+  WebSocket API has no throwing/non-throwing result mode.
 - **RPC — `src/nano/rpc/`:** A protocol method normally spans matching kebab-case files under `requests/`,
   `responses/`, and `methods/`. Request and response files define Zod schemas plus inferred types. The method
   validates the request, selects the response schema (sometimes from request flags), and delegates to `http/`.
@@ -77,7 +95,9 @@ layers, but inspect imports and call sites before adding a new cross-area depend
   `Nano.WebSocket`, and the convenience alias `Nano.WebSocketClient`.
 - `src/nano/*/index.ts`: public barrels. A file existing under `src` is not automatically public.
 - `src/nano/blocks/create-{open,send,receive,change}-block.ts`: public state-block creation helpers. Each file
-  contains its own validation, construction, optional signing, and throwing/non-throwing behavior.
+  contains its own validation, construction, optional signing, and throwing/non-throwing behavior. The public
+  implementation computes its result in an immediately invoked anonymous function assigned to `const result`;
+  do not introduce a named `create*BlockResult` function that can be confused with the exported result type.
 - `src/nano/rpc/methods/conditional-types/`: type-level helpers that make RPC response fields follow literal
   request flags. They are method internals, not exported from `methods/index.ts`.
 - `test/unit/test-data.ts`: shared valid and deliberately invalid primitive/block fixtures.
@@ -133,9 +153,21 @@ RPC additions require all three exports: `src/nano/rpc/requests/index.ts`,
 `requests/index.ts`, `responses/index.ts`, or `types/index.ts`; these roll up through
 `src/nano/web-socket/index.ts`.
 
-Do not export implementation helpers merely because a public feature uses them. Current intentional internals
-include crypto converters, random-byte generation, math comparison helpers, RPC conditional types and
-`ErrorResponse`, throwing/result helper types, and `Nacl`.
+Do not export implementation helper functions merely because a public feature uses them. Current intentional
+internals include crypto converter functions, random-byte generation, math comparison helpers, RPC conditional
+types and `ErrorResponse`, throwing/result helper types, and `Nacl`. Operation parameter and result aliases are
+public even where the corresponding low-level converter function remains internal.
+
+`BlockError`/`BlockErrorCode`, `CryptoError`/`CryptoErrorCode`, and `MathError`/`MathErrorCode` keep those explicit
+names internally. Their domain barrels and root `Nano` namespaces expose the class and enum as `Error` and
+`ErrorCode` (for example, `Nano.Crypto.Error` and `Nano.Crypto.ErrorCode`). The RPC barrel similarly exposes
+`PostError`/`PostErrorCode` as `Error`/`ErrorCode`, while also exporting their explicit names through the HTTP barrel.
+Error codes are string enums, and their backing values are stable public API: add new members when needed, but do not
+rename or reuse members or derive values from human-readable messages. Method result signatures specialize the domain
+error class with a union of only their possible enum members. Keep exported result aliases and their member unions
+synchronized with implementation branches and dependency results so consumers receive exhaustive, method-specific
+editor completion. Every method-local error branch needs a distinct member even when several branches perform the
+same broad operation, such as block creation.
 
 The state-block creation helpers only support complete state-block inputs; legacy blocks are not supported. Send,
 receive, and change require the account's latest state block as `frontierBlock`. Open requires the funding
@@ -180,11 +212,38 @@ Established implementation patterns:
 - Keep wire-format schemas explicit. Zod objects strip unrecognized keys by default; changing schema strictness
   is observable behavior.
 - Crypto and math functions commonly expose overloads selected by `throwOnError`: default/true throws an
-  `Error`, while `false` returns the discriminated `Result<T>`.
+  appropriate domain `Error`, while `false` returns a discriminated `Result<T, TError>` containing the same error
+  class and a method-specific code union.
+- Throwing/non-throwing implementations compute a `Result` inside a local anonymous function in the exported
+  operation and finish with `Result.unwrap`; do not add separate named `*Throwing`, `*NonThrowing`, or `*Result`
+  implementation helpers. Use `Result.ok` and `Result.err` for the shared result variants. Predicate operations
+  use the same internal `Result` flow, then adapt it to their compatibility-sensitive named discriminator shape.
+  RPC `PostResult` and `HttpResponse` remain distinct because they carry transport metadata and plain error
+  payloads, but `post` uses an internal `Result` to centralize throwing behavior.
+- Calls from one Result-producing operation to another throwing/non-throwing SDK operation must use
+  `throwOnError: false` and check the returned discriminator immediately. On failure, create a new operation-level
+  caller error and retain the dependency error as `cause`; never return a dependency's error object directly or
+  inspect its individual codes. Construct errors directly at each branch rather than introducing error-code guards
+  or `toUnexpected*Error` helpers. Every local Result-producing implementation must also have an outer `try`/`catch`
+  that creates the caller domain's `Unexpected` error, so non-throwing mode cannot leak an internal exception.
+- Define a method's repeated `Result` or `PredicateResult` shape once in an exported alias directly below its
+  exported parameter type, and re-export both aliases from the domain barrel. Use separate precise aliases or a
+  small generic alias where success types follow input types; do not weaken overload inference.
+- Keep operation-specific `*Params` aliases limited to operation inputs. Apply `Throwing` and `NonThrowing`
+  intersections explicitly on public overloads and implementation signatures rather than embedding the mode in
+  reusable parameter aliases.
 - RPC calls default to throwing and use `PostError`; `{ throwOnError: false }` returns `PostResult<T>`.
   Preserve overloads and response inference when editing a method. `RequestConfig.headers` is forwarded through
   the shared HTTP client config; the default client merges it after its JSON content type so callers can override
   the default without mutating their header object.
+- Error tests assert stable `error.code` values rather than human-readable `error.message` text. Keep messages
+  useful for people, but do not make their wording a compatibility or test contract. Nano node RPC errors only
+  provide free-form text and therefore use the general `PostErrorCode.NodeError` without parsing that text.
+- At a cross-domain call site, invoke the dependency with `throwOnError: false`, check its discriminant directly on
+  the following branch, and create the caller-domain error there with the dependency error as `cause`. Use a single
+  caller code describing the failed operation (for example, `BlockErrorCode.SignBlockFailed` for any `signBlock`
+  failure); do not inspect or map individual dependency error codes, and do not defer this work to `to*Error`
+  catch/mapping helpers.
 - For flag-dependent RPC responses, use the existing helpers in `methods/conditional-types/` and response schema
   patterns instead of broad union types or casts.
 - Catch unknown values safely (`e instanceof Error`) and keep error paths observable. Do not introduce silent

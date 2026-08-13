@@ -1,4 +1,5 @@
 import { RootString, RootStrings } from "../../../../src/nano/types";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("RootString schema", () => {
@@ -19,14 +20,14 @@ describe("RootString schema", () => {
   });
 
   test("rejects roots with invalid characters", () => {
-    expect(RootString().safeParse(TestData.Invalid.Root.InvalidCharacters()).success).toBe(false);
+    assert(!RootString().safeParse(TestData.Invalid.Root.InvalidCharacters()).success);
   });
 
   test("rejects roots exceeding length limit", () => {
-    expect(RootString().safeParse(TestData.Invalid.Root.TooLong()).success).toBe(false);
+    assert(!RootString().safeParse(TestData.Invalid.Root.TooLong()).success);
   });
 
   test("rejects roots below length requirement", () => {
-    expect(RootString().safeParse(TestData.Invalid.Root.TooShort()).success).toBe(false);
+    assert(!RootString().safeParse(TestData.Invalid.Root.TooShort()).success);
   });
 });

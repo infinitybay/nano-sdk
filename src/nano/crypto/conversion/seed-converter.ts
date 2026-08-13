@@ -1,82 +1,94 @@
+import { ByteArray } from "../../types/byte-array";
 import { NonThrowing } from "../../types/non-throwing";
 import { Result } from "../../types/result";
 import { SeedString } from "../../types/seed";
 import { Throwing } from "../../types/throwing";
+import { CryptoError } from "../crypto-error";
+import { CryptoErrorCode } from "../crypto-error-code";
 import { bytesToHex, hexToBytes } from "./hex-converter";
 
-type SeedToBytesParams = {
+export type SeedToBytesParams = {
   seed: SeedString;
-} & (Throwing | NonThrowing);
+};
 
-function seedToBytesThrowing(params: SeedToBytesParams & Throwing): Uint8Array {
-  const validatedSeed = SeedString().safeParse(params.seed);
-  if (!validatedSeed.success) {
-    throw new Error("Invalid seed value.");
-  }
+export type SeedToBytesResult = Result<
+  Uint8Array,
+  CryptoError<CryptoErrorCode.HexToBytesFailed | CryptoErrorCode.InvalidSeed | CryptoErrorCode.Unexpected>
+>;
 
-  return hexToBytes({ hex: validatedSeed.data, throwOnError: true });
-}
-
-function seedToBytesNonThrowing(params: SeedToBytesParams & NonThrowing): Result<Uint8Array> {
-  try {
-    return {
-      success: true,
-      data: seedToBytesThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      success: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function seedToBytes(params: SeedToBytesParams & NonThrowing): Result<Uint8Array>;
+export function seedToBytes(params: SeedToBytesParams & NonThrowing): SeedToBytesResult;
 export function seedToBytes(params: SeedToBytesParams & Throwing): Uint8Array;
-export function seedToBytes(params: SeedToBytesParams): Uint8Array | Result<Uint8Array>;
-export function seedToBytes(params: SeedToBytesParams) {
-  if (params.throwOnError === false) {
-    return seedToBytesNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return seedToBytesThrowing({ ...params, throwOnError: true });
-  }
+export function seedToBytes(params: SeedToBytesParams & (Throwing | NonThrowing)): Uint8Array | SeedToBytesResult;
+export function seedToBytes(params: SeedToBytesParams & (Throwing | NonThrowing)) {
+  const result = ((): SeedToBytesResult => {
+    try {
+      const validatedSeed = SeedString().safeParse(params.seed);
+      if (!validatedSeed.success) {
+        return Result.err(new CryptoError(CryptoErrorCode.InvalidSeed, "Invalid seed value."));
+      }
+
+      const bytesResult = hexToBytes({ hex: validatedSeed.data, throwOnError: false });
+      if (!bytesResult.success) {
+        return Result.err(
+          new CryptoError(CryptoErrorCode.HexToBytesFailed, "Failed to convert seed hex to bytes.", {
+            cause: bytesResult.error,
+          })
+        );
+      }
+
+      return Result.ok(bytesResult.data);
+    } catch (e) {
+      return Result.err(new CryptoError(CryptoErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+
+  return Result.unwrap(result, params.throwOnError);
 }
 
-type BytesToSeedParams = {
+export type BytesToSeedParams = {
   seedBytes: Uint8Array;
-} & (Throwing | NonThrowing);
+};
 
-function bytesToSeedThrowing(params: BytesToSeedParams & Throwing): SeedString {
-  const hexResult = bytesToHex({ bytes: params.seedBytes, throwOnError: true });
-  const seedResult = SeedString().safeParse(hexResult);
-  if (!seedResult.success) {
-    throw new Error("Invalid seed byte array.");
-  }
+export type BytesToSeedResult = Result<
+  SeedString,
+  CryptoError<
+    | CryptoErrorCode.BytesToHexFailed
+    | CryptoErrorCode.InvalidBytes
+    | CryptoErrorCode.InvalidSeedBytes
+    | CryptoErrorCode.Unexpected
+  >
+>;
 
-  return seedResult.data;
-}
-
-function bytesToSeedNonThrowing(params: BytesToSeedParams & NonThrowing): Result<SeedString> {
-  try {
-    return {
-      success: true,
-      data: bytesToSeedThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      success: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function bytesToSeed(params: BytesToSeedParams & NonThrowing): Result<SeedString>;
+export function bytesToSeed(params: BytesToSeedParams & NonThrowing): BytesToSeedResult;
 export function bytesToSeed(params: BytesToSeedParams & Throwing): SeedString;
-export function bytesToSeed(params: BytesToSeedParams): SeedString | Result<SeedString>;
-export function bytesToSeed(params: BytesToSeedParams) {
-  if (params.throwOnError === false) {
-    return bytesToSeedNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return bytesToSeedThrowing({ ...params, throwOnError: true });
-  }
+export function bytesToSeed(params: BytesToSeedParams & (Throwing | NonThrowing)): SeedString | BytesToSeedResult;
+export function bytesToSeed(params: BytesToSeedParams & (Throwing | NonThrowing)) {
+  const result = ((): BytesToSeedResult => {
+    try {
+      const bytesResult = ByteArray().safeParse(params.seedBytes);
+      if (!bytesResult.success) {
+        return Result.err(new CryptoError(CryptoErrorCode.InvalidBytes, "Invalid bytes value."));
+      }
+
+      const hexResult = bytesToHex({ bytes: bytesResult.data, throwOnError: false });
+      if (!hexResult.success) {
+        return Result.err(
+          new CryptoError(CryptoErrorCode.BytesToHexFailed, "Failed to convert seed bytes to hex.", {
+            cause: hexResult.error,
+          })
+        );
+      }
+
+      const seedResult = SeedString().safeParse(hexResult.data);
+      if (!seedResult.success) {
+        return Result.err(new CryptoError(CryptoErrorCode.InvalidSeedBytes, "Invalid seed byte array."));
+      }
+
+      return Result.ok(seedResult.data);
+    } catch (e) {
+      return Result.err(new CryptoError(CryptoErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+
+  return Result.unwrap(result, params.throwOnError);
 }

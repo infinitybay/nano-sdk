@@ -1,6 +1,8 @@
 import { formatRaw } from "../../../../src/nano/math/format-raw";
+import { MathErrorCode } from "../../../../src/nano/math/math-error-code";
 import { RAW_SCALE, RawAmountStrings } from "../../../../src/nano/types/amount";
 import { assert } from "../../../assert";
+import { expectErrorCode, expectToThrowErrorCode } from "../../../expect";
 
 describe("formatRaw", () => {
   test("formats raw values without grouping", () => {
@@ -57,29 +59,41 @@ describe("formatRaw", () => {
   });
 
   test("rejects invalid decimal place configuration", () => {
-    expect(() =>
-      formatRaw({ raw: RawAmountStrings.zero(), unit: "nano", decimalPlaces: -1, throwOnError: true })
-    ).toThrow();
-    expect(() =>
-      formatRaw({ raw: RawAmountStrings.zero(), unit: "nano", decimalPlaces: 31, throwOnError: true })
-    ).toThrow();
+    expectToThrowErrorCode(
+      () => formatRaw({ raw: RawAmountStrings.zero(), unit: "nano", decimalPlaces: -1, throwOnError: true }),
+      MathErrorCode.InvalidDecimalPlaces
+    );
+    expectToThrowErrorCode(
+      () => formatRaw({ raw: RawAmountStrings.zero(), unit: "nano", decimalPlaces: 31, throwOnError: true }),
+      MathErrorCode.InvalidDecimalPlaces
+    );
     const result = formatRaw({ raw: RawAmountStrings.zero(), unit: "nano", decimalPlaces: 31, throwOnError: false });
-    expect(result.success).toBe(false);
+    assert(!result.success);
+    expectErrorCode(result.error, MathErrorCode.InvalidDecimalPlaces);
   });
 
   test("rejects invalid grouping size", () => {
-    expect(() => formatRaw({ raw: "1000", groupingSize: 40, throwOnError: true })).toThrow();
-    expect(() => formatRaw({ raw: "1000", groupingSize: -1, throwOnError: true })).toThrow();
+    expectToThrowErrorCode(
+      () => formatRaw({ raw: "1000", groupingSize: 40, throwOnError: true }),
+      MathErrorCode.InvalidGroupingSize
+    );
+    expectToThrowErrorCode(
+      () => formatRaw({ raw: "1000", groupingSize: -1, throwOnError: true }),
+      MathErrorCode.InvalidGroupingSize
+    );
   });
 
   test("rejects invalid format unit", () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(() => formatRaw({ raw: RawAmountStrings.zero(), unit: "invalid" as any, throwOnError: true })).toThrow();
+    expectToThrowErrorCode(
+      () => formatRaw({ raw: RawAmountStrings.zero(), unit: "invalid" as never, throwOnError: true }),
+      MathErrorCode.InvalidFormatUnit
+    );
   });
 
   test("returns failure result when validation fails without throwing", () => {
     const invalidRaw = "-10";
     const result = formatRaw({ raw: invalidRaw, throwOnError: false });
-    expect(result.success).toBe(false);
+    assert(!result.success);
+    expectErrorCode(result.error, MathErrorCode.InvalidRaw);
   });
 });

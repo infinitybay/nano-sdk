@@ -1,4 +1,5 @@
 import { StatsRequest } from "../../../../../src/nano/rpc/requests/stats";
+import { assert } from "../../../../assert";
 
 describe("StatsRequest schema", () => {
   test("validates stats request with counters type", () => {
@@ -6,7 +7,7 @@ describe("StatsRequest schema", () => {
       action: "stats",
       type: "counters",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects stats request with unsupported type", () => {
@@ -14,6 +15,6 @@ describe("StatsRequest schema", () => {
       action: "stats",
       type: "other",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

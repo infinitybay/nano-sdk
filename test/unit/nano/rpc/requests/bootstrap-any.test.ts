@@ -1,4 +1,5 @@
 import { BootstrapAnyRequest } from "../../../../../src/nano/rpc/requests/bootstrap-any";
+import { assert } from "../../../../assert";
 
 describe("BootstrapAnyRequest schema", () => {
   test("validates bootstrap any request with optional force", () => {
@@ -6,6 +7,6 @@ describe("BootstrapAnyRequest schema", () => {
       action: "bootstrap_any",
       force: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 });

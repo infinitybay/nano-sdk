@@ -2,101 +2,98 @@ import { RawAmount, RawAmountString } from "../types/amount";
 import { NonThrowing } from "../types/non-throwing";
 import { Result } from "../types/result";
 import { Throwing } from "../types/throwing";
+import { MathError } from "./math-error";
+import { MathErrorCode } from "./math-error-code";
 
-type RawDivideParams = {
+export type RawDivideParams = {
   raw: RawAmount | RawAmountString;
   divisor: RawAmount | RawAmountString;
 };
 
-type RawDivideRawAmountParams = {
+export type RawDivideRawAmountParams = {
   raw: RawAmount;
   divisor: RawAmount | RawAmountString;
 };
 
-type RawDivideRawAmountStringParams = {
+export type RawDivideRawAmountStringParams = {
   raw: RawAmountString;
   divisor: RawAmount | RawAmountString;
 };
 
-function rawDivideThrowing(params: RawDivideRawAmountParams & Throwing): RawAmount;
-function rawDivideThrowing(params: RawDivideRawAmountStringParams & Throwing): RawAmountString;
-function rawDivideThrowing(params: RawDivideParams & Throwing) {
-  const dividendResult = RawAmount().safeParse(params.raw);
-  if (!dividendResult.success) {
-    throw new Error("Invalid raw value.");
-  }
+export type RawDivideRawAmountResult = Result<
+  RawAmount,
+  MathError<
+    | MathErrorCode.DivisionByZero
+    | MathErrorCode.InvalidDivisor
+    | MathErrorCode.InvalidRaw
+    | MathErrorCode.NonIntegerResult
+    | MathErrorCode.ResultOutOfRange
+    | MathErrorCode.Unexpected
+  >
+>;
+export type RawDivideRawAmountStringResult = Result<
+  RawAmountString,
+  MathError<
+    | MathErrorCode.DivisionByZero
+    | MathErrorCode.InvalidDivisor
+    | MathErrorCode.InvalidRaw
+    | MathErrorCode.NonIntegerResult
+    | MathErrorCode.ResultOutOfRange
+    | MathErrorCode.Unexpected
+  >
+>;
 
-  const divisorResult = RawAmount().safeParse(params.divisor);
-  if (!divisorResult.success) {
-    throw new Error("Invalid divisor value.");
-  }
-
-  const dividend = dividendResult.data;
-  const divisor = divisorResult.data;
-
-  if (divisor === 0n) {
-    throw new Error("Division by zero is not allowed.");
-  }
-
-  const quotient = dividend / divisor;
-  const remainder = dividend % divisor;
-
-  if (remainder !== 0n) {
-    throw new Error("Resulting amount must be an integer.");
-  }
-
-  const result = RawAmount().safeParse(quotient);
-  if (!result.success) {
-    throw new Error("Resulting amount is no valid raw amount.");
-  }
-
-  if (typeof params.raw === "bigint") {
-    return result.data;
-  } else {
-    return result.data.toString();
-  }
-}
-
-function rawDivideNonThrowing(params: RawDivideRawAmountParams & NonThrowing): Result<RawAmount>;
-function rawDivideNonThrowing(params: RawDivideRawAmountStringParams & NonThrowing): Result<RawAmountString>;
-function rawDivideNonThrowing(params: RawDivideParams & NonThrowing) {
-  try {
-    let result;
-    if (typeof params.raw === "bigint") {
-      result = rawDivideThrowing({ raw: params.raw, divisor: params.divisor, throwOnError: true });
-    } else {
-      result = rawDivideThrowing({ raw: params.raw, divisor: params.divisor, throwOnError: true });
-    }
-    return {
-      success: true,
-      data: result,
-    };
-  } catch (e) {
-    return {
-      success: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function rawDivide(params: RawDivideRawAmountParams & NonThrowing): Result<RawAmount>;
+export function rawDivide(params: RawDivideRawAmountParams & NonThrowing): RawDivideRawAmountResult;
 export function rawDivide(params: RawDivideRawAmountParams & Throwing): RawAmount;
-export function rawDivide(params: RawDivideRawAmountParams): RawAmount | Result<RawAmount>;
-export function rawDivide(params: RawDivideRawAmountStringParams & NonThrowing): Result<RawAmountString>;
+export function rawDivide(
+  params: RawDivideRawAmountParams & (Throwing | NonThrowing)
+): RawAmount | RawDivideRawAmountResult;
+export function rawDivide(params: RawDivideRawAmountStringParams & NonThrowing): RawDivideRawAmountStringResult;
 export function rawDivide(params: RawDivideRawAmountStringParams & Throwing): RawAmountString;
-export function rawDivide(params: RawDivideRawAmountStringParams): RawAmountString | Result<RawAmountString>;
+export function rawDivide(
+  params: RawDivideRawAmountStringParams & (Throwing | NonThrowing)
+): RawAmountString | RawDivideRawAmountStringResult;
 export function rawDivide(params: RawDivideParams & (Throwing | NonThrowing)) {
-  if (params.throwOnError === false) {
-    if (typeof params.raw === "bigint") {
-      return rawDivideNonThrowing({ raw: params.raw, divisor: params.divisor, throwOnError: false });
-    } else {
-      return rawDivideNonThrowing({ raw: params.raw, divisor: params.divisor, throwOnError: false });
+  const result = (() => {
+    try {
+      const dividendResult = RawAmount().safeParse(params.raw);
+      if (!dividendResult.success) {
+        return Result.err(new MathError(MathErrorCode.InvalidRaw, "Invalid raw value."));
+      }
+
+      const divisorResult = RawAmount().safeParse(params.divisor);
+      if (!divisorResult.success) {
+        return Result.err(new MathError(MathErrorCode.InvalidDivisor, "Invalid divisor value."));
+      }
+
+      const dividend = dividendResult.data;
+      const divisor = divisorResult.data;
+
+      if (divisor === 0n) {
+        return Result.err(new MathError(MathErrorCode.DivisionByZero, "Division by zero is not allowed."));
+      }
+
+      const quotient = dividend / divisor;
+      const remainder = dividend % divisor;
+
+      if (remainder !== 0n) {
+        return Result.err(new MathError(MathErrorCode.NonIntegerResult, "Resulting amount must be an integer."));
+      }
+
+      const result = RawAmount().safeParse(quotient);
+      if (!result.success) {
+        return Result.err(new MathError(MathErrorCode.ResultOutOfRange, "Resulting amount is no valid raw amount."));
+      }
+
+      if (typeof params.raw === "bigint") {
+        return Result.ok(result.data);
+      } else {
+        return Result.ok(result.data.toString());
+      }
+    } catch (e) {
+      return Result.err(new MathError(MathErrorCode.Unexpected, "Unexpected error.", { cause: e }));
     }
-  } else {
-    if (typeof params.raw === "bigint") {
-      return rawDivideThrowing({ raw: params.raw, divisor: params.divisor, throwOnError: true });
-    } else {
-      return rawDivideThrowing({ raw: params.raw, divisor: params.divisor, throwOnError: true });
-    }
-  }
+  })();
+
+  return Result.unwrap(result, params.throwOnError);
 }

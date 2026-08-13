@@ -1,4 +1,5 @@
 import { TelemetryResponse } from "../../../../../src/nano/web-socket/responses/telemetry";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("TelemetryResponse schema", () => {
@@ -29,7 +30,7 @@ describe("TelemetryResponse schema", () => {
         port: "7076",
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects telemetry response with invalid port", () => {
@@ -59,6 +60,6 @@ describe("TelemetryResponse schema", () => {
         port: "99999",
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

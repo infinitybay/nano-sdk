@@ -1,17 +1,18 @@
 import { PopulateBacklogRequest } from "../../../../../src/nano/rpc/requests/populate-backlog";
+import { assert } from "../../../../assert";
 
 describe("PopulateBacklogRequest schema", () => {
   test("validates populate backlog request", () => {
     const result = PopulateBacklogRequest().safeParse({
       action: "populate_backlog",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects populate backlog request with invalid action", () => {
     const result = PopulateBacklogRequest().safeParse({
       action: "populate_backlog_invalid",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

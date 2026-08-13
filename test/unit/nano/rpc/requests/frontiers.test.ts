@@ -1,4 +1,5 @@
 import { FrontiersRequest } from "../../../../../src/nano/rpc/requests/frontiers";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("FrontiersRequest schema", () => {
@@ -8,7 +9,7 @@ describe("FrontiersRequest schema", () => {
       account: TestData.Valid.Account1(),
       count: 10,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects frontiers request with invalid account", () => {
@@ -17,6 +18,6 @@ describe("FrontiersRequest schema", () => {
       account: TestData.Invalid.Account.InvalidCharacters(),
       count: 1,
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

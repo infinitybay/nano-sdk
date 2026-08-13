@@ -2,10 +2,12 @@ import { RAW_SCALE, RawAmount, RawAmountString } from "../types/amount";
 import { NonThrowing } from "../types/non-throwing";
 import { Result } from "../types/result";
 import { Throwing } from "../types/throwing";
+import { MathError } from "./math-error";
+import { MathErrorCode } from "./math-error-code";
 
 function addGrouping(params: { integerPart: string; groupingSize: number; groupingSeparator: string }): string {
   if (params.groupingSize < 0 || params.groupingSize > 39) {
-    throw new Error("Invalid grouping size value.");
+    throw new MathError(MathErrorCode.InvalidGroupingSize, "Invalid grouping size value.");
   }
 
   if (!params.groupingSize) {
@@ -36,7 +38,7 @@ function formatNanoFromRaw(params: {
   groupingSeparator: string;
 }): string {
   if (params.decimalPlaces < 0 || params.decimalPlaces > 30) {
-    throw new Error("Invalid decimal places value.");
+    throw new MathError(MathErrorCode.InvalidDecimalPlaces, "Invalid decimal places value.");
   }
 
   let integerPart = (params.rawValue / RAW_SCALE).toString();
@@ -62,69 +64,82 @@ function formatNanoFromRaw(params: {
 
 type FormatUnit = "raw" | "nano";
 
-type FormatRawParams = {
+export type FormatRawParams = {
   raw: RawAmount | RawAmountString;
   unit?: FormatUnit;
   decimalPlaces?: number;
   decimalSeparator?: "." | ",";
   groupingSize?: number;
   groupingSeparator?: "," | "." | " ";
-} & (Throwing | NonThrowing);
+};
 
-function formatRawThrowing(params: FormatRawParams & Throwing): string {
-  const rawResult = RawAmount().safeParse(params.raw);
-  if (!rawResult.success) {
-    throw new Error("Invalid raw value.");
-  }
+export type FormatRawResult = Result<
+  string,
+  MathError<
+    | MathErrorCode.InvalidDecimalPlaces
+    | MathErrorCode.InvalidFormatUnit
+    | MathErrorCode.InvalidGroupingSize
+    | MathErrorCode.InvalidRaw
+    | MathErrorCode.Unexpected
+  >
+>;
 
-  const unit = params.unit ?? "raw";
+export function formatRaw(params: FormatRawParams & NonThrowing): FormatRawResult;
+export function formatRaw(params: FormatRawParams & Throwing): string;
+export function formatRaw(params: FormatRawParams & (Throwing | NonThrowing)): string | FormatRawResult;
+export function formatRaw(params: FormatRawParams & (Throwing | NonThrowing)) {
+  const result = ((): FormatRawResult => {
+    try {
+      const rawResult = RawAmount().safeParse(params.raw);
+      if (!rawResult.success) {
+        return Result.err(new MathError(MathErrorCode.InvalidRaw, "Invalid raw value."));
+      }
 
-  if (unit !== "raw" && unit !== "nano") {
-    throw new Error("Invalid format unit.");
-  }
+      const unit = params.unit ?? "raw";
 
-  const rawValue = rawResult.data;
+      if (unit !== "raw" && unit !== "nano") {
+        return Result.err(new MathError(MathErrorCode.InvalidFormatUnit, "Invalid format unit."));
+      }
 
-  if (unit === "raw") {
-    return params.groupingSize
-      ? addGrouping({
-          integerPart: rawValue.toString(),
-          groupingSize: params.groupingSize,
+      if (params.groupingSize !== undefined && (params.groupingSize < 0 || params.groupingSize > 39)) {
+        return Result.err(new MathError(MathErrorCode.InvalidGroupingSize, "Invalid grouping size value."));
+      }
+
+      if (
+        unit === "nano" &&
+        params.decimalPlaces !== undefined &&
+        (params.decimalPlaces < 0 || params.decimalPlaces > 30)
+      ) {
+        return Result.err(new MathError(MathErrorCode.InvalidDecimalPlaces, "Invalid decimal places value."));
+      }
+
+      const rawValue = rawResult.data;
+
+      if (unit === "raw") {
+        return Result.ok(
+          params.groupingSize
+            ? addGrouping({
+                integerPart: rawValue.toString(),
+                groupingSize: params.groupingSize,
+                groupingSeparator: params.groupingSeparator ?? ",",
+              })
+            : rawValue.toString()
+        );
+      }
+
+      return Result.ok(
+        formatNanoFromRaw({
+          rawValue: rawValue,
+          decimalPlaces: params.decimalPlaces ?? 30,
+          decimalSeparator: params.decimalSeparator ?? ".",
+          groupingSize: params.groupingSize ?? 0,
           groupingSeparator: params.groupingSeparator ?? ",",
         })
-      : rawValue.toString();
-  }
+      );
+    } catch (e) {
+      return Result.err(new MathError(MathErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
 
-  return formatNanoFromRaw({
-    rawValue: rawValue,
-    decimalPlaces: params.decimalPlaces ?? 30,
-    decimalSeparator: params.decimalSeparator ?? ".",
-    groupingSize: params.groupingSize ?? 0,
-    groupingSeparator: params.groupingSeparator ?? ",",
-  });
-}
-
-function formatRawNonThrowing(params: FormatRawParams & NonThrowing): Result<string> {
-  try {
-    return {
-      success: true,
-      data: formatRawThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      success: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function formatRaw(params: FormatRawParams & NonThrowing): Result<string>;
-export function formatRaw(params: FormatRawParams & Throwing): string;
-export function formatRaw(params: FormatRawParams): string | Result<string>;
-export function formatRaw(params: FormatRawParams) {
-  if (params.throwOnError === false) {
-    return formatRawNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return formatRawThrowing({ ...params, throwOnError: true });
-  }
+  return Result.unwrap(result, params.throwOnError);
 }

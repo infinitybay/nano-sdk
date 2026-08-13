@@ -1,4 +1,5 @@
 import { AccountsBalancesRequest } from "../../../../../src/nano/rpc/requests/accounts-balances";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountsBalancesRequest schema", () => {
@@ -8,7 +9,7 @@ describe("AccountsBalancesRequest schema", () => {
       accounts: [TestData.Valid.Account1(), TestData.Valid.Account2()],
       include_only_confirmed: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects accounts balances request with invalid account list", () => {
@@ -16,6 +17,6 @@ describe("AccountsBalancesRequest schema", () => {
       action: "accounts_balances",
       accounts: [TestData.Invalid.Account.InvalidCharacters()],
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

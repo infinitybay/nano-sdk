@@ -1,6 +1,8 @@
+import { MathErrorCode } from "../../../../src/nano/math/math-error-code";
 import { rawIsZero } from "../../../../src/nano/math/raw-is-zero";
 import { RawAmountStrings } from "../../../../src/nano/types/amount";
 import { assert } from "../../../assert";
+import { expectErrorCode, expectToThrowErrorCode } from "../../../expect";
 
 describe("rawIsZero", () => {
   test("identifies zero raw amounts", () => {
@@ -37,15 +39,15 @@ describe("rawIsZero", () => {
   test("returns predicate error for invalid values without throwing", () => {
     const emptyResult = rawIsZero({ raw: "", throwOnError: false });
     assert(!emptyResult.checked);
-    expect(emptyResult.error).toBeInstanceOf(Error);
+    expectErrorCode(emptyResult.error, MathErrorCode.InvalidRaw);
 
     const negativeResult = rawIsZero({ raw: "-1", throwOnError: false });
     assert(!negativeResult.checked);
-    expect(negativeResult.error).toBeInstanceOf(Error);
+    expectErrorCode(negativeResult.error, MathErrorCode.InvalidRaw);
   });
 
   test("throws for invalid values when throwOnError is true", () => {
-    expect(() => rawIsZero({ raw: "", throwOnError: true })).toThrow();
-    expect(() => rawIsZero({ raw: "1.0", throwOnError: true })).toThrow();
+    expectToThrowErrorCode(() => rawIsZero({ raw: "", throwOnError: true }), MathErrorCode.InvalidRaw);
+    expectToThrowErrorCode(() => rawIsZero({ raw: "1.0", throwOnError: true }), MathErrorCode.InvalidRaw);
   });
 });

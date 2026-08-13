@@ -1,12 +1,16 @@
-export class PostError extends Error {
+import { PostErrorCode } from "./post-error-code";
+
+export class PostError<TCode extends PostErrorCode = PostErrorCode> extends Error {
+  readonly code: TCode;
   readonly status?: number;
   readonly statusText?: string;
 
-  constructor(message: string, meta?: { status?: number; statusText?: string; cause?: unknown }) {
-    super(message, { cause: meta?.cause });
+  constructor(code: TCode, message: string, options?: { cause?: unknown; status?: number; statusText?: string }) {
+    super(message, { cause: options?.cause });
 
     this.name = "PostError";
-    this.status = meta?.status;
-    this.statusText = meta?.statusText;
+    this.code = code;
+    this.status = options?.status;
+    this.statusText = options?.statusText;
   }
 }

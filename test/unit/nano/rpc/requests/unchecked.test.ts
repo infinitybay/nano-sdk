@@ -1,4 +1,5 @@
 import { UncheckedRequest } from "../../../../../src/nano/rpc/requests/unchecked";
+import { assert } from "../../../../assert";
 
 describe("UncheckedRequest schema", () => {
   test("validates unchecked request with optional options", () => {
@@ -7,13 +8,13 @@ describe("UncheckedRequest schema", () => {
       count: 5,
       json_block: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects unchecked request with invalid action", () => {
     const result = UncheckedRequest().safeParse({
       action: "unchecked_invalid",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

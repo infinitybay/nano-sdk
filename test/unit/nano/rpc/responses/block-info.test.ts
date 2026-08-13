@@ -1,4 +1,5 @@
 import { BlockInfo } from "../../../../../src/nano/rpc/responses/block-info";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BlockInfo schema", () => {
@@ -25,7 +26,7 @@ describe("BlockInfo schema", () => {
       receive_hash: TestData.Valid.Hash3(),
       source_account: TestData.Valid.Account3(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses block info with all options disabled", () => {
@@ -66,6 +67,6 @@ describe("BlockInfo schema", () => {
       linked_account: TestData.Invalid.Account.InvalidCharacters(),
       contents: TestData.Valid.StateBlock1(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

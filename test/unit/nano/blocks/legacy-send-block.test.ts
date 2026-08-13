@@ -1,10 +1,11 @@
 import { LegacySendBlock } from "../../../../src/nano/blocks/legacy-send-block";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("LegacySendBlock schema", () => {
   test("validates structure for send blocks", () => {
     const result = LegacySendBlock().safeParse(TestData.Valid.LegacySendBlock());
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects send blocks with invalid data", () => {
@@ -17,7 +18,7 @@ describe("LegacySendBlock schema", () => {
     ];
     for (const invalidSendBlock of invalidSendBlocks) {
       const result = LegacySendBlock().safeParse(invalidSendBlock);
-      expect(result.success).toBe(false);
+      assert(!result.success);
     }
   });
 });

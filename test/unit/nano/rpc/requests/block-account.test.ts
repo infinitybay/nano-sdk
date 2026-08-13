@@ -1,4 +1,5 @@
 import { BlockAccountRequest } from "../../../../../src/nano/rpc/requests/block-account";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BlockAccountRequest schema", () => {
@@ -7,7 +8,7 @@ describe("BlockAccountRequest schema", () => {
       action: "block_account",
       hash: TestData.Valid.Hash1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects block account request with invalid hash", () => {
@@ -15,6 +16,6 @@ describe("BlockAccountRequest schema", () => {
       action: "block_account",
       hash: TestData.Invalid.Hash.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

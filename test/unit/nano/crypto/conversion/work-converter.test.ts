@@ -1,4 +1,5 @@
 import { bytesToWork, workToBytes } from "../../../../../src/nano/crypto/conversion/work-converter";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("Work conversion utilities", () => {
@@ -25,11 +26,11 @@ describe("Work conversion utilities", () => {
     ];
 
     for (const invalidWork of invalidWorks) {
-      expect(workToBytes({ work: invalidWork, throwOnError: false }).success).toBe(false);
+      assert(!workToBytes({ work: invalidWork, throwOnError: false }).success);
     }
   });
 
   test("rejects byte arrays with incorrect length", () => {
-    expect(bytesToWork({ workBytes: new Uint8Array([1, 2]), throwOnError: false }).success).toBe(false);
+    assert(!bytesToWork({ workBytes: new Uint8Array([1, 2]), throwOnError: false }).success);
   });
 });

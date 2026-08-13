@@ -1,4 +1,5 @@
 import { UncheckedGetRequest } from "../../../../../src/nano/rpc/requests/unchecked-get";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("UncheckedGetRequest schema", () => {
@@ -8,7 +9,7 @@ describe("UncheckedGetRequest schema", () => {
       hash: TestData.Valid.Hash1(),
       json_block: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects unchecked get request with invalid hash", () => {
@@ -16,6 +17,6 @@ describe("UncheckedGetRequest schema", () => {
       action: "unchecked_get",
       hash: TestData.Invalid.Hash.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

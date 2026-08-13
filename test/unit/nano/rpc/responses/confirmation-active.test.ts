@@ -1,4 +1,5 @@
 import { ConfirmationActiveResponse } from "../../../../../src/nano/rpc/responses/confirmation-active";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("ConfirmationActiveResponse schema", () => {
@@ -8,7 +9,7 @@ describe("ConfirmationActiveResponse schema", () => {
       unconfirmed: "3",
       confirmed: "2",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses confirmation active response", () => {
@@ -17,7 +18,7 @@ describe("ConfirmationActiveResponse schema", () => {
       unconfirmed: "3",
       confirmed: "2",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects confirmation active response with invalid confirmations type", () => {
@@ -26,6 +27,6 @@ describe("ConfirmationActiveResponse schema", () => {
       unconfirmed: "0",
       confirmed: "0",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

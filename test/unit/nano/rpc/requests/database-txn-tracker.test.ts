@@ -1,4 +1,5 @@
 import { DatabaseTxnTrackerRequest } from "../../../../../src/nano/rpc/requests/database-txn-tracker";
+import { assert } from "../../../../assert";
 
 describe("DatabaseTxnTrackerRequest schema", () => {
   test("validates database transaction tracker request", () => {
@@ -7,7 +8,7 @@ describe("DatabaseTxnTrackerRequest schema", () => {
       min_read_time: 0,
       min_write_time: 1,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects database transaction tracker request with negative timings", () => {
@@ -16,6 +17,6 @@ describe("DatabaseTxnTrackerRequest schema", () => {
       min_read_time: -1,
       min_write_time: 1,
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

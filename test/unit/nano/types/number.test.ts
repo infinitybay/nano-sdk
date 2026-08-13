@@ -1,4 +1,5 @@
 import { NumberString } from "../../../../src/nano/types/number";
+import { assert } from "../../../assert";
 
 describe("NumberString schema", () => {
   test("validates valid number strings", () => {
@@ -28,14 +29,14 @@ describe("NumberString schema", () => {
   test("rejects strings with leading or trailing spaces", () => {
     const invalid = [" 1", "1 ", " 1 ", "\t5", "\n3"];
     for (const value of invalid) {
-      expect(NumberString().safeParse(value).success).toBe(false);
+      assert(!NumberString().safeParse(value).success);
     }
   });
 
   test("rejects empty or whitespace-only strings", () => {
     const invalid = ["", " ", "   "];
     for (const value of invalid) {
-      expect(NumberString().safeParse(value).success).toBe(false);
+      assert(!NumberString().safeParse(value).success);
     }
   });
 
@@ -52,21 +53,21 @@ describe("NumberString schema", () => {
       "1e+",
     ];
     for (const value of invalid) {
-      expect(NumberString().safeParse(value).success).toBe(false);
+      assert(!NumberString().safeParse(value).success);
     }
   });
 
   test("rejects non-numeric strings", () => {
     const invalid = ["abc", "one", "NaNish", "ten", "null", "undefined"];
     for (const value of invalid) {
-      expect(NumberString().safeParse(value).success).toBe(false);
+      assert(!NumberString().safeParse(value).success);
     }
   });
 
   test("rejects Infinity or NaN literals", () => {
     const invalid = ["Infinity", "-Infinity", "NaN"];
     for (const value of invalid) {
-      expect(NumberString().safeParse(value).success).toBe(false);
+      assert(!NumberString().safeParse(value).success);
     }
   });
 });

@@ -1,4 +1,5 @@
 import { BlockInfoRequest } from "../../../../../src/nano/rpc/requests/block-info";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BlockInfoRequest schema", () => {
@@ -9,7 +10,7 @@ describe("BlockInfoRequest schema", () => {
       include_linked_account: true,
       json_block: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects block info request with invalid hash", () => {
@@ -17,6 +18,6 @@ describe("BlockInfoRequest schema", () => {
       action: "block_info",
       hash: TestData.Invalid.Hash.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

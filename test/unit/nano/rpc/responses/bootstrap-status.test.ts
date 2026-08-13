@@ -1,4 +1,5 @@
 import { BootstrapStatusResponse } from "../../../../../src/nano/rpc/responses/bootstrap-status";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BootstrapStatusResponse schema", () => {
@@ -7,7 +8,7 @@ describe("BootstrapStatusResponse schema", () => {
       priorities: "0",
       blocking: "0",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   // Disabled: Legacy
@@ -58,6 +59,6 @@ describe("BootstrapStatusResponse schema", () => {
         },
       ],
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 });

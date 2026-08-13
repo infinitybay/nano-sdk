@@ -19,18 +19,21 @@ const axiosHttpClient: Nano.RPC.HttpClient = {
         success: true,
         data: response.data,
         status: response.status,
-        statusText: response.statusText
+        statusText: response.statusText,
       };
     } catch (err) {
       if (axios.isAxiosError(err)) {
         return {
           success: false,
-          error: { message: err.message },
+          error: { code: Nano.RPC.ErrorCode.TransportError, message: err.message },
           status: err.response?.status,
           statusText: err.response?.statusText,
         };
       }
-      return { success: false, error: { message: "Unknown axios error" } };
+      return {
+        success: false,
+        error: { code: Nano.RPC.ErrorCode.TransportError, message: "Unknown axios error" },
+      };
     }
   },
 };
@@ -52,7 +55,7 @@ async function fetchAccountBalance() {
   if (response.success) {
     console.log("Balance:", response.data.balance);
   } else {
-    console.error("RPC Error:", response.error.message);
+    console.error("RPC Error:", response.error.code, response.error.message);
   }
 }
 

@@ -1,4 +1,5 @@
 import { NanoToRawRequest } from "../../../../../src/nano/rpc/requests/nano-to-raw";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("NanoToRawRequest schema", () => {
@@ -7,7 +8,7 @@ describe("NanoToRawRequest schema", () => {
       action: "nano_to_raw",
       amount: TestData.Valid.NanoAmount1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects nano to raw request with invalid amount", () => {
@@ -15,6 +16,6 @@ describe("NanoToRawRequest schema", () => {
       action: "nano_to_raw",
       amount: TestData.Invalid.NanoAmount.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

@@ -1,10 +1,11 @@
 import { BootstrapMessage, BootstrapResponse } from "../../../../../src/nano/web-socket/responses/bootstrap";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BootstrapMessage schema", () => {
   test("validates bootstrap started message", () => {
     const result = BootstrapMessage().safeParse({ reason: "started", id: "abc", mode: "legacy" });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("validates bootstrap exited message", () => {
@@ -15,7 +16,7 @@ describe("BootstrapMessage schema", () => {
       total_blocks: "10",
       duration: TestData.Valid.Timestamp1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects bootstrap message with invalid total blocks", () => {
@@ -26,7 +27,7 @@ describe("BootstrapMessage schema", () => {
       total_blocks: "-1",
       duration: TestData.Valid.Timestamp1(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });
 
@@ -37,7 +38,7 @@ describe("BootstrapResponse schema", () => {
       time: TestData.Valid.Timestamp1(),
       message: { reason: "started", id: "id-1", mode: "bulk" },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects bootstrap response with invalid time", () => {
@@ -46,6 +47,6 @@ describe("BootstrapResponse schema", () => {
       time: "-1",
       message: { reason: "started", id: "id-1", mode: "bulk" },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

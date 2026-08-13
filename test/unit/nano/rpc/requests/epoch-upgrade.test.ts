@@ -1,4 +1,5 @@
 import { EpochUpgradeRequest } from "../../../../../src/nano/rpc/requests/epoch-upgrade";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("EpochUpgradeRequest schema", () => {
@@ -10,7 +11,7 @@ describe("EpochUpgradeRequest schema", () => {
       count: 2,
       threads: 4,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects epoch upgrade request with invalid key", () => {
@@ -19,6 +20,6 @@ describe("EpochUpgradeRequest schema", () => {
       epoch: 2,
       key: TestData.Invalid.PrivateKey.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

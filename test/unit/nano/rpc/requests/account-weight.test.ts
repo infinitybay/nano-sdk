@@ -1,4 +1,5 @@
 import { AccountWeightRequest } from "../../../../../src/nano/rpc/requests/account-weight";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountWeightRequest schema", () => {
@@ -7,7 +8,7 @@ describe("AccountWeightRequest schema", () => {
       action: "account_weight",
       account: TestData.Valid.Account1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects account weight request with invalid account", () => {
@@ -15,6 +16,6 @@ describe("AccountWeightRequest schema", () => {
       action: "account_weight",
       account: TestData.Invalid.Account.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

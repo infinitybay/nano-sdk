@@ -1,4 +1,5 @@
 import { BlockHashResponse } from "../../../../../src/nano/rpc/responses/block-hash";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BlockHashResponse schema", () => {
@@ -6,13 +7,13 @@ describe("BlockHashResponse schema", () => {
     const result = BlockHashResponse().safeParse({
       hash: TestData.Valid.Hash1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects block hash response with invalid hash", () => {
     const result = BlockHashResponse().safeParse({
       hash: TestData.Invalid.Hash.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

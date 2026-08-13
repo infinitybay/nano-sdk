@@ -1,4 +1,5 @@
 import { AccountRepresentativeResponse } from "../../../../../src/nano/rpc/responses/account-representative";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountRepresentativeResponse schema", () => {
@@ -6,13 +7,13 @@ describe("AccountRepresentativeResponse schema", () => {
     const result = AccountRepresentativeResponse().safeParse({
       representative: TestData.Valid.Representative1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects account representative response with invalid representative", () => {
     const result = AccountRepresentativeResponse().safeParse({
       representative: TestData.Invalid.Account.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

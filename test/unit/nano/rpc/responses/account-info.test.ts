@@ -1,4 +1,5 @@
 import { AccountInfoResponse } from "../../../../../src/nano/rpc/responses/account-info";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountInfoResponse schema", () => {
@@ -26,13 +27,11 @@ describe("AccountInfoResponse schema", () => {
       confirmed_representative: TestData.Valid.Representative2(),
       confirmed_receivable: TestData.Valid.RawAmount1(),
     });
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.representative).toBe(TestData.Valid.Representative1());
-      expect(result.data.weight).toBe(TestData.Valid.RawAmount2());
-      expect(result.data.receivable).toBe(TestData.Valid.RawAmount3());
-      expect(result.data.confirmed_balance).toBe(TestData.Valid.RawAmount4());
-    }
+    assert(result.success);
+    expect(result.data.representative).toBe(TestData.Valid.Representative1());
+    expect(result.data.weight).toBe(TestData.Valid.RawAmount2());
+    expect(result.data.receivable).toBe(TestData.Valid.RawAmount3());
+    expect(result.data.confirmed_balance).toBe(TestData.Valid.RawAmount4());
   });
 
   test("parses account info response with all optional fields disabled", () => {
@@ -51,7 +50,7 @@ describe("AccountInfoResponse schema", () => {
       block_count: "5",
       account_version: "1",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects account info response with invalid frontier", () => {
@@ -70,7 +69,7 @@ describe("AccountInfoResponse schema", () => {
       block_count: "5",
       account_version: "1",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects account info response with invalid balance", () => {
@@ -89,6 +88,6 @@ describe("AccountInfoResponse schema", () => {
       block_count: "5",
       account_version: "1",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

@@ -1,4 +1,5 @@
 import { AccountKeyRequest } from "../../../../../src/nano/rpc/requests/account-key";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountKeyRequest schema", () => {
@@ -7,7 +8,7 @@ describe("AccountKeyRequest schema", () => {
       action: "account_key",
       account: TestData.Valid.Account1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects account key request with invalid account", () => {
@@ -15,6 +16,6 @@ describe("AccountKeyRequest schema", () => {
       action: "account_key",
       account: TestData.Invalid.Account.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

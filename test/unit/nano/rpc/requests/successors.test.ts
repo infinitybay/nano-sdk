@@ -1,4 +1,5 @@
 import { SuccessorsRequest } from "../../../../../src/nano/rpc/requests/successors";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("SuccessorsRequest schema", () => {
@@ -10,7 +11,7 @@ describe("SuccessorsRequest schema", () => {
       offset: 1,
       reverse: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects successors request with invalid block hash", () => {
@@ -19,6 +20,6 @@ describe("SuccessorsRequest schema", () => {
       block: TestData.Invalid.Hash.InvalidCharacters(),
       count: 1,
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

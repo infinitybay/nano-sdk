@@ -1,4 +1,5 @@
 import { AccountBalanceResponse } from "../../../../../src/nano/rpc/responses/account-balance";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountBalanceResponse schema", () => {
@@ -8,7 +9,7 @@ describe("AccountBalanceResponse schema", () => {
       pending: TestData.Valid.RawAmount2(),
       receivable: TestData.Valid.RawAmount3(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects account balance response with invalid balance", () => {
@@ -17,7 +18,7 @@ describe("AccountBalanceResponse schema", () => {
       pending: TestData.Valid.RawAmount1(),
       receivable: TestData.Valid.RawAmount2(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects account balance response with invalid pending amount", () => {
@@ -26,7 +27,7 @@ describe("AccountBalanceResponse schema", () => {
       pending: TestData.Invalid.RawAmount.InvalidCharacters(),
       receivable: TestData.Valid.RawAmount2(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects account balance response with invalid receivable amount", () => {
@@ -35,6 +36,6 @@ describe("AccountBalanceResponse schema", () => {
       pending: TestData.Valid.RawAmount2(),
       receivable: TestData.Invalid.RawAmount.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

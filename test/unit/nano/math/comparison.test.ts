@@ -1,5 +1,7 @@
 import { compareRawValues } from "../../../../src/nano/math/comparison";
+import { MathErrorCode } from "../../../../src/nano/math/math-error-code";
 import { RawAmountStrings } from "../../../../src/nano/types/amount";
+import { expectToThrowErrorCode } from "../../../expect";
 
 describe("compareRawValues", () => {
   test("returns 0 when both values are equal", () => {
@@ -28,14 +30,17 @@ describe("compareRawValues", () => {
   test("throws when raw value is invalid", () => {
     const invalidRawValues = ["", " ", "-1", "abc", (BigInt(RawAmountStrings.max()) + 1n).toString(), "1.0"];
     for (const raw of invalidRawValues) {
-      expect(() => compareRawValues(raw, RawAmountStrings.zero())).toThrow();
+      expectToThrowErrorCode(() => compareRawValues(raw, RawAmountStrings.zero()), MathErrorCode.InvalidRaw);
     }
   });
 
   test("throws when compareTo value is invalid", () => {
     const invalidCompareToValues = ["", " ", "-5", "xyz", (BigInt(RawAmountStrings.max()) + 1n).toString(), "2.5"];
     for (const compareTo of invalidCompareToValues) {
-      expect(() => compareRawValues(RawAmountStrings.zero(), compareTo)).toThrow();
+      expectToThrowErrorCode(
+        () => compareRawValues(RawAmountStrings.zero(), compareTo),
+        MathErrorCode.InvalidCompareTo
+      );
     }
   });
 });

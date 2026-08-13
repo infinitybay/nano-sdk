@@ -1,4 +1,5 @@
 import { AccountHistoryRequest } from "../../../../../src/nano/rpc/requests/account-history";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountHistoryRequest schema", () => {
@@ -14,7 +15,7 @@ describe("AccountHistoryRequest schema", () => {
       raw: true,
       reverse: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects account history request with invalid head hash", () => {
@@ -24,6 +25,6 @@ describe("AccountHistoryRequest schema", () => {
       count: 1,
       head: TestData.Invalid.Hash.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

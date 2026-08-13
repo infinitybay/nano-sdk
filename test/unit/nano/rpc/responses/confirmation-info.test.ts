@@ -98,6 +98,6 @@ describe("ConfirmationInfoResponse schema", () => {
         },
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

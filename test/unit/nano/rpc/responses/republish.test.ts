@@ -1,4 +1,5 @@
 import { RepublishResponse } from "../../../../../src/nano/rpc/responses/republish";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("RepublishResponse schema", () => {
@@ -7,7 +8,7 @@ describe("RepublishResponse schema", () => {
       success: "",
       blocks: [TestData.Valid.Hash1(), TestData.Valid.Hash2()],
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects republish response with invalid block hash", () => {
@@ -15,6 +16,6 @@ describe("RepublishResponse schema", () => {
       success: "",
       blocks: [TestData.Invalid.Hash.InvalidCharacters()],
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

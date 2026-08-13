@@ -1,4 +1,5 @@
 import { ConfirmationActiveRequest } from "../../../../../src/nano/rpc/requests/confirmation-active";
+import { assert } from "../../../../assert";
 
 describe("ConfirmationActiveRequest schema", () => {
   test("validates confirmation active request with announcements", () => {
@@ -6,7 +7,7 @@ describe("ConfirmationActiveRequest schema", () => {
       action: "confirmation_active",
       announcements: 0,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects confirmation active request with negative announcements", () => {
@@ -14,6 +15,6 @@ describe("ConfirmationActiveRequest schema", () => {
       action: "confirmation_active",
       announcements: -1,
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

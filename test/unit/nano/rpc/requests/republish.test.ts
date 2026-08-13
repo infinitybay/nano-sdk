@@ -1,4 +1,5 @@
 import { RepublishRequest } from "../../../../../src/nano/rpc/requests/republish";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("RepublishRequest schema", () => {
@@ -10,7 +11,7 @@ describe("RepublishRequest schema", () => {
       sources: 1,
       destinations: 1,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects republish request with invalid hash", () => {
@@ -18,7 +19,7 @@ describe("RepublishRequest schema", () => {
       action: "republish",
       hash: TestData.Invalid.Hash.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects republish request with invalid count", () => {
@@ -27,6 +28,6 @@ describe("RepublishRequest schema", () => {
       hash: TestData.Valid.Hash1(),
       count: -1,
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

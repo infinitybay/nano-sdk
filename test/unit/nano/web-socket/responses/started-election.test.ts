@@ -2,17 +2,18 @@ import {
   StartedElectionMessage,
   StartedElectionResponse,
 } from "../../../../../src/nano/web-socket/responses/started-election";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("StartedElectionMessage schema", () => {
   test("validates started election message", () => {
     const result = StartedElectionMessage().safeParse({ hash: TestData.Valid.Hash1() });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects started election message with invalid hash", () => {
     const result = StartedElectionMessage().safeParse({ hash: TestData.Invalid.Hash.InvalidCharacters() });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });
 
@@ -23,7 +24,7 @@ describe("StartedElectionResponse schema", () => {
       time: TestData.Valid.Timestamp1(),
       message: { hash: TestData.Valid.Hash2() },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects started election response with invalid time", () => {
@@ -32,6 +33,6 @@ describe("StartedElectionResponse schema", () => {
       time: "-1",
       message: { hash: TestData.Valid.Hash2() },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

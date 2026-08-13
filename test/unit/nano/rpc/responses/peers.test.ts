@@ -1,4 +1,5 @@
 import { PeersResponse } from "../../../../../src/nano/rpc/responses/peers";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("PeersResponse schema", () => {
@@ -7,7 +8,7 @@ describe("PeersResponse schema", () => {
     const result = schema.safeParse({
       peers: "",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses peers response with detailed entries when peer_details is true", () => {
@@ -22,7 +23,7 @@ describe("PeersResponse schema", () => {
         },
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses peers response with detailed entries when peer_details is true and node_id is empty", () => {
@@ -37,7 +38,7 @@ describe("PeersResponse schema", () => {
         },
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses peers response with string entries when peer_details is false", () => {
@@ -47,7 +48,7 @@ describe("PeersResponse schema", () => {
         "[::ffff:2.59.133.106]:7075": "21",
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects peers response missing detail fields when peer_details is true", () => {
@@ -60,6 +61,6 @@ describe("PeersResponse schema", () => {
         },
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

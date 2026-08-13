@@ -1,4 +1,5 @@
 import { BlockCreateResponse } from "../../../../../src/nano/rpc/responses/block-create";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BlockCreateResponse schema", () => {
@@ -8,7 +9,7 @@ describe("BlockCreateResponse schema", () => {
       difficulty: TestData.Valid.WorkDifficulty1(),
       block: TestData.Valid.StateBlock1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses block create response with string block", () => {
@@ -17,7 +18,7 @@ describe("BlockCreateResponse schema", () => {
       difficulty: TestData.Valid.WorkDifficulty2(),
       block: "block-string",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects block create response with invalid hash", () => {
@@ -26,6 +27,6 @@ describe("BlockCreateResponse schema", () => {
       difficulty: TestData.Valid.WorkDifficulty1(),
       block: TestData.Valid.StateBlock1(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

@@ -1,4 +1,5 @@
 import { UncheckedGetResponse } from "../../../../../src/nano/rpc/responses/unchecked-get";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("UncheckedGetResponse schema", () => {
@@ -8,7 +9,7 @@ describe("UncheckedGetResponse schema", () => {
       modified_timestamp: TestData.Valid.Timestamp1(),
       contents: TestData.Valid.StateBlock1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses unchecked get response with string contents when json flag is false", () => {
@@ -17,7 +18,7 @@ describe("UncheckedGetResponse schema", () => {
       modified_timestamp: TestData.Valid.Timestamp1(),
       contents: "block-data",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects unchecked get response with invalid block contents when json flag is true", () => {
@@ -26,6 +27,6 @@ describe("UncheckedGetResponse schema", () => {
       modified_timestamp: TestData.Valid.Timestamp1(),
       contents: "block-data",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

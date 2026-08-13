@@ -1,4 +1,5 @@
 import { AccountKeyResponse } from "../../../../../src/nano/rpc/responses/account-key";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountKeyResponse schema", () => {
@@ -6,13 +7,13 @@ describe("AccountKeyResponse schema", () => {
     const result = AccountKeyResponse().safeParse({
       key: TestData.Valid.PublicKey1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects account key response with invalid key", () => {
     const result = AccountKeyResponse().safeParse({
       key: TestData.Invalid.PublicKey.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

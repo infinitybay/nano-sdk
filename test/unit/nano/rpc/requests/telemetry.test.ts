@@ -1,4 +1,5 @@
 import { TelemetryRequest } from "../../../../../src/nano/rpc/requests/telemetry";
+import { assert } from "../../../../assert";
 
 describe("TelemetryRequest schema", () => {
   test("validates telemetry request with optional address and port", () => {
@@ -8,7 +9,7 @@ describe("TelemetryRequest schema", () => {
       port: 7075,
       raw: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects telemetry request with out of range port", () => {
@@ -16,6 +17,6 @@ describe("TelemetryRequest schema", () => {
       action: "telemetry",
       port: 70000,
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

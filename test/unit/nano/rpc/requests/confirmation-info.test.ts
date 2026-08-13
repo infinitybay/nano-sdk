@@ -1,4 +1,5 @@
 import { ConfirmationInfoRequest } from "../../../../../src/nano/rpc/requests/confirmation-info";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("ConfirmationInfoRequest schema", () => {
@@ -10,14 +11,14 @@ describe("ConfirmationInfoRequest schema", () => {
       json_block: true,
       representatives: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects confirmation info request with missing root", () => {
     const result = ConfirmationInfoRequest().safeParse({
       action: "confirmation_info",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects confirmation info request with invalid root", () => {
@@ -25,6 +26,6 @@ describe("ConfirmationInfoRequest schema", () => {
       action: "confirmation_info",
       root: TestData.Invalid.Root.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

@@ -1,4 +1,5 @@
 import { AccountsRepresentativesRequest } from "../../../../../src/nano/rpc/requests/accounts-representatives";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountsRepresentativesRequest schema", () => {
@@ -7,7 +8,7 @@ describe("AccountsRepresentativesRequest schema", () => {
       action: "accounts_representatives",
       accounts: [TestData.Valid.Account1(), TestData.Valid.Account2()],
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects accounts representatives request with invalid account entry", () => {
@@ -15,6 +16,6 @@ describe("AccountsRepresentativesRequest schema", () => {
       action: "accounts_representatives",
       accounts: [TestData.Invalid.Account.InvalidCharacters()],
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

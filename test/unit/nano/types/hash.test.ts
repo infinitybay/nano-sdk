@@ -1,4 +1,5 @@
 import { HashString, HashStrings } from "../../../../src/nano/types/hash";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("HashString schema", () => {
@@ -24,14 +25,14 @@ describe("HashString schema", () => {
   });
 
   test("rejects hashes with invalid characters", () => {
-    expect(HashString().safeParse(TestData.Invalid.Hash.InvalidCharacters()).success).toBe(false);
+    assert(!HashString().safeParse(TestData.Invalid.Hash.InvalidCharacters()).success);
   });
 
   test("rejects hashes exceeding length limit", () => {
-    expect(HashString().safeParse(TestData.Invalid.Hash.TooLong()).success).toBe(false);
+    assert(!HashString().safeParse(TestData.Invalid.Hash.TooLong()).success);
   });
 
   test("rejects hashes below length requirement", () => {
-    expect(HashString().safeParse(TestData.Invalid.Hash.TooShort()).success).toBe(false);
+    assert(!HashString().safeParse(TestData.Invalid.Hash.TooShort()).success);
   });
 });

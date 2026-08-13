@@ -1,6 +1,8 @@
+import { MathErrorCode } from "../../../../src/nano/math/math-error-code";
 import { nanoToRaw } from "../../../../src/nano/math/nano-to-raw";
 import { NanoAmountStrings, RAW_SCALE, RawAmountStrings } from "../../../../src/nano/types/amount";
 import { assert } from "../../../assert";
+import { expectErrorCode, expectToThrowErrorCode } from "../../../expect";
 
 describe("nanoToRaw", () => {
   test("converts nano amounts to raw strings", () => {
@@ -21,22 +23,33 @@ describe("nanoToRaw", () => {
   });
 
   test("returns failure result when validation fails without throwing", () => {
-    expect(nanoToRaw({ nano: "", throwOnError: false }).success).toBe(false);
-    expect(nanoToRaw({ nano: " 0", throwOnError: false }).success).toBe(false);
-    expect(nanoToRaw({ nano: "0 ", throwOnError: false }).success).toBe(false);
-    expect(nanoToRaw({ nano: ".", throwOnError: false }).success).toBe(false);
-    expect(nanoToRaw({ nano: ".0", throwOnError: false }).success).toBe(false);
-    expect(nanoToRaw({ nano: "0.", throwOnError: false }).success).toBe(false);
-    expect(nanoToRaw({ nano: "00", throwOnError: false }).success).toBe(false);
-    expect(nanoToRaw({ nano: "00.0", throwOnError: false }).success).toBe(false);
-    expect(nanoToRaw({ nano: "01.0", throwOnError: false }).success).toBe(false);
-    expect(nanoToRaw({ nano: "0.0000000000000000000000000000001", throwOnError: false }).success).toBe(false);
-    expect(nanoToRaw({ nano: "0.1234567890123456789012345678901", throwOnError: false }).success).toBe(false);
+    const invalidNanoValues = [
+      "",
+      " 0",
+      "0 ",
+      ".",
+      ".0",
+      "0.",
+      "00",
+      "00.0",
+      "01.0",
+      "0.0000000000000000000000000000001",
+      "0.1234567890123456789012345678901",
+    ];
+
+    for (const nano of invalidNanoValues) {
+      const result = nanoToRaw({ nano, throwOnError: false });
+      assert(!result.success);
+      expectErrorCode(result.error, MathErrorCode.InvalidNano);
+    }
   });
 
   test("throws on invalid nano input when configured to throw", () => {
-    expect(() => nanoToRaw({ nano: "", throwOnError: true })).toThrow();
-    expect(() => nanoToRaw({ nano: "0.1234567890123456789012345678901", throwOnError: true })).toThrow();
-    expect(() => nanoToRaw({ nano: "-1", throwOnError: true })).toThrow();
+    expectToThrowErrorCode(() => nanoToRaw({ nano: "", throwOnError: true }), MathErrorCode.InvalidNano);
+    expectToThrowErrorCode(
+      () => nanoToRaw({ nano: "0.1234567890123456789012345678901", throwOnError: true }),
+      MathErrorCode.InvalidNano
+    );
+    expectToThrowErrorCode(() => nanoToRaw({ nano: "-1", throwOnError: true }), MathErrorCode.InvalidNano);
   });
 });

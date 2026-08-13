@@ -2,61 +2,99 @@ import { blake2bFinal, blake2bInit, blake2bUpdate } from "blakejs";
 
 import { HashString } from "../types/hash";
 import { NonThrowing } from "../types/non-throwing";
-import { PredicateResult } from "../types/result";
+import { PredicateResult, Result } from "../types/result";
 import { Throwing } from "../types/throwing";
 import { WorkString } from "../types/work";
 import { WorkDifficultyString } from "../types/work-difficulty";
 import { hashToBytes } from "./conversion/hash-converter";
 import { bytesToHex } from "./conversion/hex-converter";
 import { workToBytes } from "./conversion/work-converter";
+import { CryptoError } from "./crypto-error";
+import { CryptoErrorCode } from "./crypto-error-code";
 
-type VerifyWorkParams = {
+export type VerifyWorkParams = {
   hash: HashString;
   work: WorkString;
   threshold: string;
-} & (Throwing | NonThrowing);
+};
 
-function verifyWorkThrowing(params: VerifyWorkParams & Throwing): boolean {
-  const hashBytes = hashToBytes({ hash: params.hash, throwOnError: true });
-  const workBytes = workToBytes({ work: params.work, throwOnError: true });
+export type VerifyWorkResult = PredicateResult<
+  "checked",
+  "validWork",
+  CryptoError<
+    | CryptoErrorCode.BytesToHexFailed
+    | CryptoErrorCode.ComputeWorkDifficultyFailed
+    | CryptoErrorCode.HashToBytesFailed
+    | CryptoErrorCode.InvalidWorkThreshold
+    | CryptoErrorCode.Unexpected
+    | CryptoErrorCode.WorkToBytesFailed
+  >
+>;
 
-  if (!WorkDifficultyString().safeParse(params.threshold).success) {
-    throw new Error("Invalid work threshold.");
-  }
-
-  try {
-    const context = blake2bInit(8);
-    blake2bUpdate(context, workBytes.reverse());
-    blake2bUpdate(context, hashBytes);
-    const outputBytes = blake2bFinal(context).reverse();
-    const outputHex = bytesToHex({ bytes: outputBytes, throwOnError: true });
-    return BigInt(`0x${outputHex}`) >= BigInt(`0x${params.threshold}`);
-  } catch (err) {
-    throw new Error("Failed to verify work.", { cause: err });
-  }
-}
-
-function verifyWorkNonThrowing(params: VerifyWorkParams & NonThrowing): PredicateResult<"checked", "validWork"> {
-  try {
-    return {
-      checked: true,
-      validWork: verifyWorkThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      checked: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function verifyWork(params: VerifyWorkParams & NonThrowing): PredicateResult<"checked", "validWork">;
+export function verifyWork(params: VerifyWorkParams & NonThrowing): VerifyWorkResult;
 export function verifyWork(params: VerifyWorkParams & Throwing): boolean;
-export function verifyWork(params: VerifyWorkParams): PredicateResult<"checked", "validWork"> | boolean;
-export function verifyWork(params: VerifyWorkParams) {
+export function verifyWork(params: VerifyWorkParams & (Throwing | NonThrowing)): VerifyWorkResult | boolean;
+export function verifyWork(params: VerifyWorkParams & (Throwing | NonThrowing)) {
+  const result = ((): Result<boolean, Extract<VerifyWorkResult, { checked: false }>["error"]> => {
+    try {
+      const hashBytes = hashToBytes({ hash: params.hash, throwOnError: false });
+      if (!hashBytes.success) {
+        return Result.err(
+          new CryptoError(CryptoErrorCode.HashToBytesFailed, "Failed to convert hash to bytes.", {
+            cause: hashBytes.error,
+          })
+        );
+      }
+
+      const workBytes = workToBytes({ work: params.work, throwOnError: false });
+      if (!workBytes.success) {
+        return Result.err(
+          new CryptoError(CryptoErrorCode.WorkToBytesFailed, "Failed to convert work to bytes.", {
+            cause: workBytes.error,
+          })
+        );
+      }
+
+      if (!WorkDifficultyString().safeParse(params.threshold).success) {
+        return Result.err(new CryptoError(CryptoErrorCode.InvalidWorkThreshold, "Invalid work threshold."));
+      }
+
+      let outputBytes: Uint8Array;
+      try {
+        const context = blake2bInit(8);
+        blake2bUpdate(context, workBytes.data.reverse());
+        blake2bUpdate(context, hashBytes.data);
+        outputBytes = blake2bFinal(context).reverse();
+      } catch (err) {
+        return Result.err(
+          new CryptoError(CryptoErrorCode.ComputeWorkDifficultyFailed, "Failed to compute work difficulty.", {
+            cause: err,
+          })
+        );
+      }
+
+      const outputHexResult = bytesToHex({ bytes: outputBytes, throwOnError: false });
+      if (!outputHexResult.success) {
+        return Result.err(
+          new CryptoError(CryptoErrorCode.BytesToHexFailed, "Failed to convert work result to hex.", {
+            cause: outputHexResult.error,
+          })
+        );
+      }
+
+      return Result.ok(BigInt(`0x${outputHexResult.data}`) >= BigInt(`0x${params.threshold}`));
+    } catch (e) {
+      return Result.err(new CryptoError(CryptoErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+
   if (params.throwOnError === false) {
-    return verifyWorkNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return verifyWorkThrowing({ ...params, throwOnError: true });
+    if (result.success) {
+      return { checked: true, validWork: result.data };
+    }
+
+    return { checked: false, error: result.error };
   }
+
+  return Result.unwrap(result, params.throwOnError);
 }

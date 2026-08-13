@@ -1,4 +1,5 @@
 import { LedgerRequest } from "../../../../../src/nano/rpc/requests/ledger";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("LedgerRequest schema", () => {
@@ -14,7 +15,7 @@ describe("LedgerRequest schema", () => {
       sorting: true,
       threshold: TestData.Valid.RawAmount1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects ledger request with invalid account", () => {
@@ -23,7 +24,7 @@ describe("LedgerRequest schema", () => {
       account: TestData.Invalid.Account.InvalidCharacters(),
       count: 1,
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects ledger request with invalid threshold", () => {
@@ -33,6 +34,6 @@ describe("LedgerRequest schema", () => {
       count: 1,
       threshold: TestData.Invalid.RawAmount.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

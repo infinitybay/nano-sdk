@@ -1,8 +1,14 @@
+import { BlockErrorCode } from "../../../../src/nano/blocks/block-error-code";
 import { createReceiveBlock } from "../../../../src/nano/blocks/create-receive-block";
 import { createSendBlock } from "../../../../src/nano/blocks/create-send-block";
+import { CryptoErrorCode } from "../../../../src/nano/crypto/crypto-error-code";
 import { deriveAccountFromLink } from "../../../../src/nano/crypto/derive-account-from-link";
 import { hashBlock } from "../../../../src/nano/crypto/hash-block";
 import { verifyBlock } from "../../../../src/nano/crypto/verify-block";
+import { MathErrorCode } from "../../../../src/nano/math/math-error-code";
+import { RawAmounts } from "../../../../src/nano/types/amount";
+import { assert } from "../../../assert";
+import { expectErrorCode, expectToThrowErrorCode } from "../../../expect";
 import { TestData } from "../../test-data";
 
 describe("createReceiveBlock function", () => {
@@ -65,7 +71,25 @@ describe("createReceiveBlock function", () => {
       throwOnError: false,
     });
 
-    expect(result.success).toBe(true);
+    assert(result.success);
+  });
+
+  test("wraps balance calculation errors as their own block error", () => {
+    const frontierBlock = {
+      ...TestData.Valid.StateBlock1(),
+      balance: RawAmounts.max().toString(),
+    };
+    const sendBlock = createSendBlock({
+      amount: "1",
+      destination: frontierBlock.account,
+      frontierBlock: TestData.Valid.StateBlock2(),
+    });
+
+    const result = createReceiveBlock({ amount: "1", frontierBlock, sendBlock, throwOnError: false });
+
+    assert(!result.success);
+    expectErrorCode(result.error, BlockErrorCode.BalanceOutOfRange);
+    expectErrorCode(result.error.cause, MathErrorCode.ResultOutOfRange);
   });
 
   test("rejects a send block for another account or with an inconsistent link", () => {
@@ -80,19 +104,22 @@ describe("createReceiveBlock function", () => {
       sendBlock: wrongDestinationBlock,
       throwOnError: false,
     });
-    expect(wrongDestinationResult.success).toBe(false);
+    assert(!wrongDestinationResult.success);
+    expectErrorCode(wrongDestinationResult.error, BlockErrorCode.SendDestinationMismatch);
 
     const inconsistentSendBlock = {
       ...wrongDestinationBlock,
       link_as_account: TestData.Valid.Account2(),
     };
-    expect(() =>
-      createReceiveBlock({
-        amount: "1000",
-        frontierBlock: TestData.Valid.StateBlock2(),
-        sendBlock: inconsistentSendBlock,
-      })
-    ).toThrow("Send block link and link_as_account do not match.");
+    expectToThrowErrorCode(
+      () =>
+        createReceiveBlock({
+          amount: "1000",
+          frontierBlock: TestData.Valid.StateBlock2(),
+          sendBlock: inconsistentSendBlock,
+        }),
+      BlockErrorCode.SendLinkMismatch
+    );
   });
 
   test("rejects invalid frontier blocks, amounts, send blocks, and signing keys", () => {
@@ -104,43 +131,47 @@ describe("createReceiveBlock function", () => {
     const incompleteFrontierBlock = TestData.Valid.StateBlock1();
     delete (incompleteFrontierBlock as { work?: string }).work;
 
-    expect(
-      createReceiveBlock({
-        amount: "1000",
-        frontierBlock: incompleteFrontierBlock,
-        sendBlock,
-        throwOnError: false,
-      }).success
-    ).toBe(false);
+    const incompleteFrontierResult = createReceiveBlock({
+      amount: "1000",
+      frontierBlock: incompleteFrontierBlock,
+      sendBlock,
+      throwOnError: false,
+    });
+    assert(!incompleteFrontierResult.success);
+    expectErrorCode(incompleteFrontierResult.error, BlockErrorCode.InvalidFrontierBlock);
 
     const inconsistentFrontierBlock = {
       ...TestData.Valid.StateBlock1(),
       link_as_account: TestData.Valid.Account2(),
     };
-    expect(() =>
-      createReceiveBlock({
-        amount: "1000",
-        frontierBlock: inconsistentFrontierBlock,
-        sendBlock,
-      })
-    ).toThrow("Frontier block link and link_as_account do not match.");
+    expectToThrowErrorCode(
+      () =>
+        createReceiveBlock({
+          amount: "1000",
+          frontierBlock: inconsistentFrontierBlock,
+          sendBlock,
+        }),
+      BlockErrorCode.FrontierLinkMismatch
+    );
 
-    expect(
-      createReceiveBlock({
-        amount: "0",
-        frontierBlock: TestData.Valid.StateBlock1(),
-        sendBlock,
-        throwOnError: false,
-      }).success
-    ).toBe(false);
+    const zeroAmountResult = createReceiveBlock({
+      amount: "0",
+      frontierBlock: TestData.Valid.StateBlock1(),
+      sendBlock,
+      throwOnError: false,
+    });
+    assert(!zeroAmountResult.success);
+    expectErrorCode(zeroAmountResult.error, BlockErrorCode.InvalidAmount);
 
-    expect(() =>
-      createReceiveBlock({
-        amount: "-1",
-        frontierBlock: TestData.Valid.StateBlock1(),
-        sendBlock,
-      })
-    ).toThrow("Invalid amount: negative raw amounts are not allowed.");
+    expectToThrowErrorCode(
+      () =>
+        createReceiveBlock({
+          amount: "-1",
+          frontierBlock: TestData.Valid.StateBlock1(),
+          sendBlock,
+        }),
+      BlockErrorCode.NegativeAmount
+    );
 
     const negativeAmountResult = createReceiveBlock({
       amount: -1n,
@@ -148,30 +179,29 @@ describe("createReceiveBlock function", () => {
       sendBlock,
       throwOnError: false,
     });
-    expect(negativeAmountResult.success).toBe(false);
-    if (!negativeAmountResult.success) {
-      expect(negativeAmountResult.error.message).toBe("Invalid amount: negative raw amounts are not allowed.");
-    }
+    assert(!negativeAmountResult.success);
+    expectErrorCode(negativeAmountResult.error, BlockErrorCode.NegativeAmount);
 
     const incompleteSendBlock = { ...sendBlock };
     delete (incompleteSendBlock as { signature?: string }).signature;
-    expect(
-      createReceiveBlock({
-        amount: "1000",
-        frontierBlock: TestData.Valid.StateBlock1(),
-        sendBlock: incompleteSendBlock,
-        throwOnError: false,
-      }).success
-    ).toBe(false);
+    const incompleteSendResult = createReceiveBlock({
+      amount: "1000",
+      frontierBlock: TestData.Valid.StateBlock1(),
+      sendBlock: incompleteSendBlock,
+      throwOnError: false,
+    });
+    assert(!incompleteSendResult.success);
+    expectErrorCode(incompleteSendResult.error, BlockErrorCode.InvalidSendBlock);
 
-    expect(
-      createReceiveBlock({
-        amount: "1000",
-        frontierBlock: TestData.Valid.StateBlock1(),
-        sendBlock,
-        privateKey: TestData.Valid.PrivateKey2(),
-        throwOnError: false,
-      }).success
-    ).toBe(false);
+    const mismatchedKeyResult = createReceiveBlock({
+      amount: "1000",
+      frontierBlock: TestData.Valid.StateBlock1(),
+      sendBlock,
+      privateKey: TestData.Valid.PrivateKey2(),
+      throwOnError: false,
+    });
+    assert(!mismatchedKeyResult.success);
+    expectErrorCode(mismatchedKeyResult.error, BlockErrorCode.SignBlockFailed);
+    expectErrorCode(mismatchedKeyResult.error.cause, CryptoErrorCode.KeyAccountMismatch);
   });
 });

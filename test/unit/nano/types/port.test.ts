@@ -1,4 +1,5 @@
 import { Port, PortBounds, PortString } from "../../../../src/nano/types/port";
+import { assert } from "../../../assert";
 
 describe("Port schema", () => {
   test("validates ports within allowed bounds", () => {
@@ -9,13 +10,13 @@ describe("Port schema", () => {
   });
 
   test("rejects ports outside allowed bounds", () => {
-    expect(Port().safeParse(PortBounds.min() - 1).success).toBe(false);
-    expect(Port().safeParse(PortBounds.max() + 1).success).toBe(false);
+    assert(!Port().safeParse(PortBounds.min() - 1).success);
+    assert(!Port().safeParse(PortBounds.max() + 1).success);
   });
 
   test("rejects non-integer ports", () => {
-    expect(Port().safeParse(8080.5).success).toBe(false);
-    expect(Port().safeParse("8080").success).toBe(false);
+    assert(!Port().safeParse(8080.5).success);
+    assert(!Port().safeParse("8080").success);
   });
 });
 
@@ -28,12 +29,12 @@ describe("PortString schema", () => {
   });
 
   test("rejects string ports outside allowed bounds", () => {
-    expect(PortString().safeParse(String(PortBounds.max() + 1)).success).toBe(false);
-    expect(PortString().safeParse(String(-1)).success).toBe(false);
+    assert(!PortString().safeParse(String(PortBounds.max() + 1)).success);
+    assert(!PortString().safeParse(String(-1)).success);
   });
 
   test("rejects non-numeric port strings", () => {
-    expect(PortString().safeParse("eighty").success).toBe(false);
-    expect(PortString().safeParse("8080.5").success).toBe(false);
+    assert(!PortString().safeParse("eighty").success);
+    assert(!PortString().safeParse("8080.5").success);
   });
 });

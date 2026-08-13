@@ -1,82 +1,98 @@
+import { ByteArray } from "../../types/byte-array";
 import { NonThrowing } from "../../types/non-throwing";
 import { PrivateKeyString } from "../../types/private-key";
 import { Result } from "../../types/result";
 import { Throwing } from "../../types/throwing";
+import { CryptoError } from "../crypto-error";
+import { CryptoErrorCode } from "../crypto-error-code";
 import { bytesToHex, hexToBytes } from "./hex-converter";
 
-type PrivateKeyToBytesParams = {
+export type PrivateKeyToBytesParams = {
   privateKey: PrivateKeyString;
-} & (Throwing | NonThrowing);
+};
 
-function privateKeyToBytesThrowing(params: PrivateKeyToBytesParams & Throwing): Uint8Array {
-  const validatedPrivateKey = PrivateKeyString().safeParse(params.privateKey);
-  if (!validatedPrivateKey.success) {
-    throw new Error("Invalid private key value.");
-  }
+export type PrivateKeyToBytesResult = Result<
+  Uint8Array,
+  CryptoError<CryptoErrorCode.HexToBytesFailed | CryptoErrorCode.InvalidPrivateKey | CryptoErrorCode.Unexpected>
+>;
 
-  return hexToBytes({ hex: validatedPrivateKey.data, throwOnError: true });
-}
-
-function privateKeyToBytesNonThrowing(params: PrivateKeyToBytesParams & NonThrowing): Result<Uint8Array> {
-  try {
-    return {
-      success: true,
-      data: privateKeyToBytesThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      success: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function privateKeyToBytes(params: PrivateKeyToBytesParams & NonThrowing): Result<Uint8Array>;
+export function privateKeyToBytes(params: PrivateKeyToBytesParams & NonThrowing): PrivateKeyToBytesResult;
 export function privateKeyToBytes(params: PrivateKeyToBytesParams & Throwing): Uint8Array;
-export function privateKeyToBytes(params: PrivateKeyToBytesParams): Uint8Array | Result<Uint8Array>;
-export function privateKeyToBytes(params: PrivateKeyToBytesParams) {
-  if (params.throwOnError === false) {
-    return privateKeyToBytesNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return privateKeyToBytesThrowing({ ...params, throwOnError: true });
-  }
+export function privateKeyToBytes(
+  params: PrivateKeyToBytesParams & (Throwing | NonThrowing)
+): Uint8Array | PrivateKeyToBytesResult;
+export function privateKeyToBytes(params: PrivateKeyToBytesParams & (Throwing | NonThrowing)) {
+  const result = ((): PrivateKeyToBytesResult => {
+    try {
+      const validatedPrivateKey = PrivateKeyString().safeParse(params.privateKey);
+      if (!validatedPrivateKey.success) {
+        return Result.err(new CryptoError(CryptoErrorCode.InvalidPrivateKey, "Invalid private key value."));
+      }
+
+      const bytesResult = hexToBytes({ hex: validatedPrivateKey.data, throwOnError: false });
+      if (!bytesResult.success) {
+        return Result.err(
+          new CryptoError(CryptoErrorCode.HexToBytesFailed, "Failed to convert private key hex to bytes.", {
+            cause: bytesResult.error,
+          })
+        );
+      }
+
+      return Result.ok(bytesResult.data);
+    } catch (e) {
+      return Result.err(new CryptoError(CryptoErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+
+  return Result.unwrap(result, params.throwOnError);
 }
 
-type BytesToPrivateKeyParams = {
+export type BytesToPrivateKeyParams = {
   privateKeyBytes: Uint8Array;
-} & (Throwing | NonThrowing);
+};
 
-function bytesToPrivateKeyThrowing(params: BytesToPrivateKeyParams & Throwing): PrivateKeyString {
-  const hexResult = bytesToHex({ bytes: params.privateKeyBytes, throwOnError: true });
-  const privateKeyResult = PrivateKeyString().safeParse(hexResult);
-  if (!privateKeyResult.success) {
-    throw new Error("Invalid private key byte array.");
-  }
+export type BytesToPrivateKeyResult = Result<
+  PrivateKeyString,
+  CryptoError<
+    | CryptoErrorCode.BytesToHexFailed
+    | CryptoErrorCode.InvalidBytes
+    | CryptoErrorCode.InvalidPrivateKeyBytes
+    | CryptoErrorCode.Unexpected
+  >
+>;
 
-  return privateKeyResult.data;
-}
-
-function bytesToPrivateKeyNonThrowing(params: BytesToPrivateKeyParams & NonThrowing): Result<PrivateKeyString> {
-  try {
-    return {
-      success: true,
-      data: bytesToPrivateKeyThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      success: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function bytesToPrivateKey(params: BytesToPrivateKeyParams & NonThrowing): Result<PrivateKeyString>;
+export function bytesToPrivateKey(params: BytesToPrivateKeyParams & NonThrowing): BytesToPrivateKeyResult;
 export function bytesToPrivateKey(params: BytesToPrivateKeyParams & Throwing): PrivateKeyString;
-export function bytesToPrivateKey(params: BytesToPrivateKeyParams): PrivateKeyString | Result<PrivateKeyString>;
-export function bytesToPrivateKey(params: BytesToPrivateKeyParams) {
-  if (params.throwOnError === false) {
-    return bytesToPrivateKeyNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return bytesToPrivateKeyThrowing({ ...params, throwOnError: true });
-  }
+export function bytesToPrivateKey(
+  params: BytesToPrivateKeyParams & (Throwing | NonThrowing)
+): PrivateKeyString | BytesToPrivateKeyResult;
+export function bytesToPrivateKey(params: BytesToPrivateKeyParams & (Throwing | NonThrowing)) {
+  const result = ((): BytesToPrivateKeyResult => {
+    try {
+      const bytesResult = ByteArray().safeParse(params.privateKeyBytes);
+      if (!bytesResult.success) {
+        return Result.err(new CryptoError(CryptoErrorCode.InvalidBytes, "Invalid bytes value."));
+      }
+
+      const hexResult = bytesToHex({ bytes: bytesResult.data, throwOnError: false });
+      if (!hexResult.success) {
+        return Result.err(
+          new CryptoError(CryptoErrorCode.BytesToHexFailed, "Failed to convert private key bytes to hex.", {
+            cause: hexResult.error,
+          })
+        );
+      }
+
+      const privateKeyResult = PrivateKeyString().safeParse(hexResult.data);
+      if (!privateKeyResult.success) {
+        return Result.err(new CryptoError(CryptoErrorCode.InvalidPrivateKeyBytes, "Invalid private key byte array."));
+      }
+
+      return Result.ok(privateKeyResult.data);
+    } catch (e) {
+      return Result.err(new CryptoError(CryptoErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+
+  return Result.unwrap(result, params.throwOnError);
 }

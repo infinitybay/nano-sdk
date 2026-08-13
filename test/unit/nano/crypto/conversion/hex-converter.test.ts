@@ -1,4 +1,5 @@
 import { bytesToHex, hexToBytes } from "../../../../../src/nano/crypto/conversion/hex-converter";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("Hex conversion utilities", () => {
@@ -22,7 +23,7 @@ describe("Hex conversion utilities", () => {
     const invalidHexs = [TestData.Invalid.Hash.InvalidCharacters(), "ZZZ"];
 
     for (const invalidHex of invalidHexs) {
-      expect(hexToBytes({ hex: invalidHex, throwOnError: false }).success).toBe(false);
+      assert(!hexToBytes({ hex: invalidHex, throwOnError: false }).success);
     }
   });
 });

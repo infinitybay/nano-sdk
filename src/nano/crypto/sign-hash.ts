@@ -8,45 +8,74 @@ import { Throwing } from "../types/throwing";
 import { hashToBytes } from "./conversion/hash-converter";
 import { privateKeyToBytes } from "./conversion/private-key-converter";
 import { bytesToSignature } from "./conversion/signature-converter";
+import { CryptoError } from "./crypto-error";
+import { CryptoErrorCode } from "./crypto-error-code";
 
-type SignHashParams = {
+export type SignHashParams = {
   hash: HashString;
   privateKey: PrivateKeyString;
-} & (Throwing | NonThrowing);
+};
 
-function signHashThrowing(params: SignHashParams & Throwing): SignatureString {
-  const hashBytes = hashToBytes({ hash: params.hash, throwOnError: true });
-  const privateKeyBytes = privateKeyToBytes({ privateKey: params.privateKey, throwOnError: true });
+export type SignHashResult = Result<
+  SignatureString,
+  CryptoError<
+    | CryptoErrorCode.BytesToSignatureFailed
+    | CryptoErrorCode.CreateSignatureFailed
+    | CryptoErrorCode.HashToBytesFailed
+    | CryptoErrorCode.PrivateKeyToBytesFailed
+    | CryptoErrorCode.Unexpected
+  >
+>;
 
-  try {
-    const signatureBytes = Nacl.signDetached(hashBytes, privateKeyBytes);
-    return bytesToSignature({ signatureBytes, throwOnError: true });
-  } catch (err) {
-    throw new Error("Failed to create a valid signature.", { cause: err });
-  }
-}
-
-function signHashNonThrowing(params: SignHashParams & NonThrowing): Result<SignatureString> {
-  try {
-    return {
-      success: true,
-      data: signHashThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      success: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function signHash(params: SignHashParams & NonThrowing): Result<SignatureString>;
+export function signHash(params: SignHashParams & NonThrowing): SignHashResult;
 export function signHash(params: SignHashParams & Throwing): SignatureString;
-export function signHash(params: SignHashParams): SignatureString | Result<SignatureString>;
-export function signHash(params: SignHashParams) {
-  if (params.throwOnError === false) {
-    return signHashNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return signHashThrowing({ ...params, throwOnError: true });
-  }
+export function signHash(params: SignHashParams & (Throwing | NonThrowing)): SignatureString | SignHashResult;
+export function signHash(params: SignHashParams & (Throwing | NonThrowing)) {
+  const result = ((): SignHashResult => {
+    try {
+      const hashBytes = hashToBytes({ hash: params.hash, throwOnError: false });
+      if (!hashBytes.success) {
+        return Result.err(
+          new CryptoError(CryptoErrorCode.HashToBytesFailed, "Failed to convert hash to bytes.", {
+            cause: hashBytes.error,
+          })
+        );
+      }
+
+      const privateKeyBytes = privateKeyToBytes({ privateKey: params.privateKey, throwOnError: false });
+      if (!privateKeyBytes.success) {
+        return Result.err(
+          new CryptoError(CryptoErrorCode.PrivateKeyToBytesFailed, "Failed to convert private key to bytes.", {
+            cause: privateKeyBytes.error,
+          })
+        );
+      }
+
+      let signatureBytes: Uint8Array;
+      try {
+        signatureBytes = Nacl.signDetached(hashBytes.data, privateKeyBytes.data);
+      } catch (err) {
+        return Result.err(
+          new CryptoError(CryptoErrorCode.CreateSignatureFailed, "Failed to create a valid signature.", {
+            cause: err,
+          })
+        );
+      }
+
+      const signatureResult = bytesToSignature({ signatureBytes, throwOnError: false });
+      if (!signatureResult.success) {
+        return Result.err(
+          new CryptoError(CryptoErrorCode.BytesToSignatureFailed, "Failed to convert signature bytes.", {
+            cause: signatureResult.error,
+          })
+        );
+      }
+
+      return Result.ok(signatureResult.data);
+    } catch (e) {
+      return Result.err(new CryptoError(CryptoErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+
+  return Result.unwrap(result, params.throwOnError);
 }

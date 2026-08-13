@@ -1,4 +1,5 @@
 import { hashBlock } from "../../../../src/nano/crypto/hash-block";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("hashBlock function", () => {
@@ -28,7 +29,7 @@ describe("hashBlock function", () => {
     invalidBlocks[3].balance = TestData.Invalid.RawAmount.InvalidCharacters();
     invalidBlocks[4].link = TestData.Invalid.Link.TooLong();
     for (let i = 0; i < invalidBlocks.length; i++) {
-      expect(hashBlock({ block: invalidBlocks[i], throwOnError: false }).success).toBe(false);
+      assert(!hashBlock({ block: invalidBlocks[i], throwOnError: false }).success);
     }
   });
 });

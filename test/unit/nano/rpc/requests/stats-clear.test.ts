@@ -1,17 +1,18 @@
 import { StatsClearRequest } from "../../../../../src/nano/rpc/requests/stats-clear";
+import { assert } from "../../../../assert";
 
 describe("StatsClearRequest schema", () => {
   test("validates stats clear request", () => {
     const result = StatsClearRequest().safeParse({
       action: "stats_clear",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects stats clear request with invalid action", () => {
     const result = StatsClearRequest().safeParse({
       action: "stats_clear_invalid",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

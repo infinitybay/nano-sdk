@@ -1,4 +1,5 @@
 import { VoteResponse } from "../../../../../src/nano/web-socket/responses/vote";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("VoteResponse schema", () => {
@@ -16,7 +17,7 @@ describe("VoteResponse schema", () => {
         type: "vote",
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects vote response with invalid account", () => {
@@ -33,6 +34,6 @@ describe("VoteResponse schema", () => {
         type: "vote",
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

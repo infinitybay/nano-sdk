@@ -1,10 +1,15 @@
+import { BlockErrorCode } from "../../../../src/nano/blocks/block-error-code";
 import { createSendBlock } from "../../../../src/nano/blocks/create-send-block";
+import { CryptoErrorCode } from "../../../../src/nano/crypto/crypto-error-code";
 import { derivePublicKeyFromAccount } from "../../../../src/nano/crypto/derive-public-key-from-account";
 import { hashBlock } from "../../../../src/nano/crypto/hash-block";
 import { signBlock } from "../../../../src/nano/crypto/sign-block";
 import { verifyBlock } from "../../../../src/nano/crypto/verify-block";
+import { MathErrorCode } from "../../../../src/nano/math/math-error-code";
 import { SignatureStrings } from "../../../../src/nano/types/signature";
 import { WorkStrings } from "../../../../src/nano/types/work";
+import { assert } from "../../../assert";
+import { expectErrorCode, expectToThrowErrorCode } from "../../../expect";
 import { TestData } from "../../test-data";
 
 describe("createSendBlock function", () => {
@@ -72,7 +77,7 @@ describe("createSendBlock function", () => {
       frontierBlock: TestData.Valid.StateBlock1(),
       throwOnError: false,
     });
-    expect(successResult.success).toBe(true);
+    assert(successResult.success);
 
     const insufficientBalanceResult = createSendBlock({
       amount: (BigInt(TestData.Valid.StateBlock1().balance) + 1n).toString(),
@@ -80,7 +85,9 @@ describe("createSendBlock function", () => {
       frontierBlock: TestData.Valid.StateBlock1(),
       throwOnError: false,
     });
-    expect(insufficientBalanceResult.success).toBe(false);
+    assert(!insufficientBalanceResult.success);
+    expectErrorCode(insufficientBalanceResult.error, BlockErrorCode.InsufficientBalance);
+    expectErrorCode(insufficientBalanceResult.error.cause, MathErrorCode.NegativeResult);
 
     const mismatchedKeyResult = createSendBlock({
       amount: "1000",
@@ -89,49 +96,57 @@ describe("createSendBlock function", () => {
       privateKey: TestData.Valid.PrivateKey2(),
       throwOnError: false,
     });
-    expect(mismatchedKeyResult.success).toBe(false);
+    assert(!mismatchedKeyResult.success);
+    expectErrorCode(mismatchedKeyResult.error, BlockErrorCode.SignBlockFailed);
+    expectErrorCode(mismatchedKeyResult.error.cause, CryptoErrorCode.KeyAccountMismatch);
   });
 
   test("rejects invalid inputs in throwing and non-throwing modes", () => {
     const incompleteFrontierBlock = TestData.Valid.StateBlock1();
     delete (incompleteFrontierBlock as { signature?: string }).signature;
 
-    expect(() =>
-      createSendBlock({
-        amount: "1000",
-        destination: TestData.Valid.Account2(),
-        frontierBlock: incompleteFrontierBlock,
-      })
-    ).toThrow("Invalid frontier state block.");
+    expectToThrowErrorCode(
+      () =>
+        createSendBlock({
+          amount: "1000",
+          destination: TestData.Valid.Account2(),
+          frontierBlock: incompleteFrontierBlock,
+        }),
+      BlockErrorCode.InvalidFrontierBlock
+    );
 
     const inconsistentFrontierBlock = {
       ...TestData.Valid.StateBlock1(),
       link_as_account: TestData.Valid.Account2(),
     };
-    expect(() =>
-      createSendBlock({
-        amount: "1000",
-        destination: TestData.Valid.Account2(),
-        frontierBlock: inconsistentFrontierBlock,
-      })
-    ).toThrow("Frontier block link and link_as_account do not match.");
+    expectToThrowErrorCode(
+      () =>
+        createSendBlock({
+          amount: "1000",
+          destination: TestData.Valid.Account2(),
+          frontierBlock: inconsistentFrontierBlock,
+        }),
+      BlockErrorCode.FrontierLinkMismatch
+    );
 
-    expect(
-      createSendBlock({
-        amount: "0",
-        destination: TestData.Valid.Account2(),
-        frontierBlock: TestData.Valid.StateBlock1(),
-        throwOnError: false,
-      }).success
-    ).toBe(false);
+    const zeroAmountResult = createSendBlock({
+      amount: "0",
+      destination: TestData.Valid.Account2(),
+      frontierBlock: TestData.Valid.StateBlock1(),
+      throwOnError: false,
+    });
+    assert(!zeroAmountResult.success);
+    expectErrorCode(zeroAmountResult.error, BlockErrorCode.InvalidAmount);
 
-    expect(() =>
-      createSendBlock({
-        amount: "-1",
-        destination: TestData.Valid.Account2(),
-        frontierBlock: TestData.Valid.StateBlock1(),
-      })
-    ).toThrow("Invalid amount: negative raw amounts are not allowed.");
+    expectToThrowErrorCode(
+      () =>
+        createSendBlock({
+          amount: "-1",
+          destination: TestData.Valid.Account2(),
+          frontierBlock: TestData.Valid.StateBlock1(),
+        }),
+      BlockErrorCode.NegativeAmount
+    );
 
     const negativeAmountResult = createSendBlock({
       amount: -1n,
@@ -139,18 +154,16 @@ describe("createSendBlock function", () => {
       frontierBlock: TestData.Valid.StateBlock1(),
       throwOnError: false,
     });
-    expect(negativeAmountResult.success).toBe(false);
-    if (!negativeAmountResult.success) {
-      expect(negativeAmountResult.error.message).toBe("Invalid amount: negative raw amounts are not allowed.");
-    }
+    assert(!negativeAmountResult.success);
+    expectErrorCode(negativeAmountResult.error, BlockErrorCode.NegativeAmount);
 
-    expect(
-      createSendBlock({
-        amount: "1000",
-        destination: TestData.Invalid.Account.ChecksumMismatch(),
-        frontierBlock: TestData.Valid.StateBlock1(),
-        throwOnError: false,
-      }).success
-    ).toBe(false);
+    const invalidDestinationResult = createSendBlock({
+      amount: "1000",
+      destination: TestData.Invalid.Account.ChecksumMismatch(),
+      frontierBlock: TestData.Valid.StateBlock1(),
+      throwOnError: false,
+    });
+    assert(!invalidDestinationResult.success);
+    expectErrorCode(invalidDestinationResult.error, BlockErrorCode.InvalidDestination);
   });
 });

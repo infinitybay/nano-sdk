@@ -1,4 +1,5 @@
 import { SeedIndex, SeedIndexBounds, SeedString } from "../../../../src/nano/types/seed";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("SeedString schema", () => {
@@ -15,15 +16,15 @@ describe("SeedString schema", () => {
   });
 
   test("rejects seeds with invalid characters", () => {
-    expect(SeedString().safeParse(TestData.Invalid.Seed.InvalidCharacters()).success).toBe(false);
+    assert(!SeedString().safeParse(TestData.Invalid.Seed.InvalidCharacters()).success);
   });
 
   test("rejects seeds exceeding length limit", () => {
-    expect(SeedString().safeParse(TestData.Invalid.Seed.TooLong()).success).toBe(false);
+    assert(!SeedString().safeParse(TestData.Invalid.Seed.TooLong()).success);
   });
 
   test("rejects seeds below length requirement", () => {
-    expect(SeedString().safeParse(TestData.Invalid.Seed.TooShort()).success).toBe(false);
+    assert(!SeedString().safeParse(TestData.Invalid.Seed.TooShort()).success);
   });
 });
 
@@ -41,12 +42,12 @@ describe("SeedIndex schema", () => {
   });
 
   test("rejects seed indices outside bounds", () => {
-    expect(SeedIndex().safeParse(SeedIndexBounds.min() - 1).success).toBe(false);
-    expect(SeedIndex().safeParse(SeedIndexBounds.max() + 1).success).toBe(false);
+    assert(!SeedIndex().safeParse(SeedIndexBounds.min() - 1).success);
+    assert(!SeedIndex().safeParse(SeedIndexBounds.max() + 1).success);
   });
 
   test("rejects non-numeric seed indices", () => {
-    expect(SeedIndex().safeParse("5").success).toBe(false);
-    expect(SeedIndex().safeParse("A").success).toBe(false);
+    assert(!SeedIndex().safeParse("5").success);
+    assert(!SeedIndex().safeParse("A").success);
   });
 });

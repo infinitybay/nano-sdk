@@ -1,4 +1,5 @@
 import { ConfirmationHistoryRequest } from "../../../../../src/nano/rpc/requests/confirmation-history";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("ConfirmationHistoryRequest schema", () => {
@@ -7,7 +8,7 @@ describe("ConfirmationHistoryRequest schema", () => {
       action: "confirmation_history",
       hash: TestData.Valid.Hash1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects confirmation history request with invalid hash", () => {
@@ -15,6 +16,6 @@ describe("ConfirmationHistoryRequest schema", () => {
       action: "confirmation_history",
       hash: TestData.Invalid.Hash.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

@@ -1,4 +1,5 @@
 import { derivePrivateKeyFromSeed } from "../../../../src/nano/crypto/derive-private-key-from-seed";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("derivePrivateKeyFromSeed function", () => {
@@ -30,7 +31,7 @@ describe("derivePrivateKeyFromSeed function", () => {
       TestData.Invalid.Seed.TooShort(),
     ];
     for (const invalidSeed of invalidSeeds) {
-      expect(derivePrivateKeyFromSeed({ seed: invalidSeed, seedIndex: 0, throwOnError: false }).success).toBe(false);
+      assert(!derivePrivateKeyFromSeed({ seed: invalidSeed, seedIndex: 0, throwOnError: false }).success);
     }
   });
 });

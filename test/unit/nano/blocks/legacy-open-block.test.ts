@@ -1,10 +1,11 @@
 import { LegacyOpenBlock } from "../../../../src/nano/blocks/legacy-open-block";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("LegacyOpenBlock schema", () => {
   test("validates structure for open blocks", () => {
     const result = LegacyOpenBlock().safeParse(TestData.Valid.LegacyOpenBlock());
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects open blocks with invalid data", () => {
@@ -17,7 +18,7 @@ describe("LegacyOpenBlock schema", () => {
     ];
     for (const invalidOpenBlock of invalidOpenBlocks) {
       const result = LegacyOpenBlock().safeParse(invalidOpenBlock);
-      expect(result.success).toBe(false);
+      assert(!result.success);
     }
   });
 });

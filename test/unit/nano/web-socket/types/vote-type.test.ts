@@ -1,4 +1,5 @@
 import { VoteType } from "../../../../../src/nano/web-socket/types/vote-type";
+import { assert } from "../../../../assert";
 
 describe("VoteType schema", () => {
   test("validates known vote types", () => {
@@ -8,6 +9,6 @@ describe("VoteType schema", () => {
   });
 
   test("rejects unknown vote types", () => {
-    expect(VoteType().safeParse("unknown").success).toBe(false);
+    assert(!VoteType().safeParse("unknown").success);
   });
 });

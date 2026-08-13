@@ -1,4 +1,5 @@
 import { SubtypeString } from "../../../../src/nano/types/subtype";
+import { assert } from "../../../assert";
 
 describe("SubtypeString schema", () => {
   test("validates allowed subtype values", () => {
@@ -9,6 +10,6 @@ describe("SubtypeString schema", () => {
   });
 
   test("rejects unknown subtype values", () => {
-    expect(SubtypeString().safeParse("other").success).toBe(false);
+    assert(!SubtypeString().safeParse("other").success);
   });
 });

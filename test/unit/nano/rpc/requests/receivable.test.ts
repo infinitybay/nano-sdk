@@ -1,4 +1,5 @@
 import { ReceivableRequest } from "../../../../../src/nano/rpc/requests/receivable";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("ReceivableRequest schema", () => {
@@ -15,7 +16,7 @@ describe("ReceivableRequest schema", () => {
       min_version: true,
       sorting: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects receivable request with invalid account", () => {
@@ -23,7 +24,7 @@ describe("ReceivableRequest schema", () => {
       action: "receivable",
       account: TestData.Invalid.Account.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects receivable request with invalid threshold", () => {
@@ -32,6 +33,6 @@ describe("ReceivableRequest schema", () => {
       account: TestData.Valid.Account1(),
       threshold: TestData.Invalid.RawAmount.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

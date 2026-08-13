@@ -1,4 +1,5 @@
 import { AccountGetRequest } from "../../../../../src/nano/rpc/requests/account-get";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountGetRequest schema", () => {
@@ -7,7 +8,7 @@ describe("AccountGetRequest schema", () => {
       action: "account_get",
       key: TestData.Valid.PublicKey1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects account get request with invalid public key", () => {
@@ -15,6 +16,6 @@ describe("AccountGetRequest schema", () => {
       action: "account_get",
       key: TestData.Invalid.PublicKey.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

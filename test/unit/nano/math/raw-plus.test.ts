@@ -1,6 +1,9 @@
-import { rawPlus } from "../../../../src/nano/math/raw-plus";
+import { MathErrorCode } from "../../../../src/nano/math/math-error-code";
+import { rawPlus, RawPlusRawAmountResult, RawPlusRawAmountStringResult } from "../../../../src/nano/math/raw-plus";
+import { RawAmount, RawAmountString } from "../../../../src/nano/types/amount";
 import { RawAmountStrings } from "../../../../src/nano/types/amount";
 import { assert } from "../../../assert";
+import { expectErrorCode, expectToThrowErrorCode } from "../../../expect";
 
 describe("rawPlus", () => {
   test("adds raw values correctly (string inputs)", () => {
@@ -23,38 +26,54 @@ describe("rawPlus", () => {
     expect(bigintResult.data).toBe(9n);
   });
 
+  test("preserves default and explicit throwing overload inference", () => {
+    const defaultString: RawAmountString = rawPlus({ raw: "5", addend: "4" });
+    const throwingString: RawAmountString = rawPlus({ raw: "5", addend: "4", throwOnError: true });
+    const nonThrowingString: RawPlusRawAmountStringResult = rawPlus({
+      raw: "5",
+      addend: "4",
+      throwOnError: false,
+    });
+    const defaultBigint: RawAmount = rawPlus({ raw: 5n, addend: 4n });
+    const throwingBigint: RawAmount = rawPlus({ raw: 5n, addend: 4n, throwOnError: true });
+    const nonThrowingBigint: RawPlusRawAmountResult = rawPlus({ raw: 5n, addend: 4n, throwOnError: false });
+
+    expect(defaultString).toBe("9");
+    expect(throwingString).toBe("9");
+    assert(nonThrowingString.success);
+    expect(defaultBigint).toBe(9n);
+    expect(throwingBigint).toBe(9n);
+    assert(nonThrowingBigint.success);
+  });
+
   test("handles additions near the maximum boundary", () => {
     const nearMax = (BigInt(RawAmountStrings.max()) - 1n).toString();
     expect(rawPlus({ raw: nearMax, addend: "1", throwOnError: true })).toBe(RawAmountStrings.max());
   });
 
   test("throws when the result exceeds the maximum", () => {
-    expect(rawPlus({ raw: RawAmountStrings.max(), addend: "1", throwOnError: false }).success).toBe(false);
+    const result = rawPlus({ raw: RawAmountStrings.max(), addend: "1", throwOnError: false });
+    assert(!result.success);
+    expectErrorCode(result.error, MathErrorCode.ResultOutOfRange);
   });
 
   test("returns failure result when addition would overflow without throwing", () => {
-    expect(rawPlus({ raw: RawAmountStrings.max(), addend: "1", throwOnError: false }).success).toBe(false);
+    assert(!rawPlus({ raw: RawAmountStrings.max(), addend: "1", throwOnError: false }).success);
   });
 
   test("rejects invalid inputs", () => {
-    expect(rawPlus({ raw: "", addend: "1", throwOnError: false }).success).toBe(false);
-    expect(rawPlus({ raw: "1", addend: "-5", throwOnError: false }).success).toBe(false);
-    expect(rawPlus({ raw: "abc", addend: "1", throwOnError: false }).success).toBe(false);
+    assert(!rawPlus({ raw: "", addend: "1", throwOnError: false }).success);
+    assert(!rawPlus({ raw: "1", addend: "-5", throwOnError: false }).success);
+    assert(!rawPlus({ raw: "abc", addend: "1", throwOnError: false }).success);
   });
 
   test("explicitly rejects negative raw values", () => {
-    expect(() => rawPlus({ raw: "-1", addend: "1", throwOnError: true })).toThrow(
-      "Invalid raw value: negative raw amounts are not allowed."
-    );
-    expect(() => rawPlus({ raw: 1n, addend: -1n, throwOnError: true })).toThrow(
-      "Invalid addend value: negative raw amounts are not allowed."
-    );
+    expectToThrowErrorCode(() => rawPlus({ raw: "-1", addend: "1", throwOnError: true }), MathErrorCode.NegativeRaw);
+    expectToThrowErrorCode(() => rawPlus({ raw: 1n, addend: -1n, throwOnError: true }), MathErrorCode.NegativeAddend);
 
     const result = rawPlus({ raw: "1", addend: "-1", throwOnError: false });
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.message).toBe("Invalid addend value: negative raw amounts are not allowed.");
-    }
+    assert(!result.success);
+    expectErrorCode(result.error, MathErrorCode.NegativeAddend);
   });
 
   test("accepts mixed input types and returns matching output type", () => {

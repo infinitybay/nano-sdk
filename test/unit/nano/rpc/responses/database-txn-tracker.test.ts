@@ -1,4 +1,5 @@
 import { DatabaseTxnTrackerResponse } from "../../../../../src/nano/rpc/responses/database-txn-tracker";
+import { assert } from "../../../../assert";
 
 describe("DatabaseTxnTrackerResponse schema", () => {
   test("parses database transaction tracker response", () => {
@@ -19,6 +20,6 @@ describe("DatabaseTxnTrackerResponse schema", () => {
         },
       ],
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 });

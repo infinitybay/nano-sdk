@@ -111,14 +111,31 @@ All RPC methods follow a consistent signature:
 
 ### Error Handling
 
-By default, RPC calls throw `Nano.RPC.PostError` for:
+By default, RPC calls throw `Nano.RPC.Error` for:
 
 - Invalid request payloads
 - HTTP or transport errors
 - **Nano** node error responses
 - Invalid or unexpected response data
 
-If `throwOnError` is set to false, the method instead returns a structured result object indicating success or failure.
+Blocks, crypto, and math use the same throwing/non-throwing pattern with their own error types. Every domain exposes
+its error class as `Error` and its stable string enum as `ErrorCode` (for example, `Nano.Crypto.Error` and
+`Nano.Crypto.ErrorCode`).
+
+Set `throwOnError: false` to receive a discriminated result instead. Successful results contain `data`; failures
+contain an error with the same `code` and `message` as the thrown error (RPC results use
+`{ success: false, error: { code, message } }`). TypeScript narrows both the result and the method-specific set of
+possible codes. Messages are intended for people and may change, so application logic should compare enum members:
+
+```ts
+const result = Nano.Math.rawMinus({ raw: "1", subtrahend: "2", throwOnError: false });
+if (!result.success && result.error.code === Nano.Math.ErrorCode.NegativeResult) {
+  // Handle underflow.
+}
+```
+
+Nano node error responses use `Nano.RPC.ErrorCode.NodeError` and preserve the node's free-form message. If one SDK
+domain wraps a failure from another, its operation-level error retains the original error as `cause`.
 
 ### Request config
 
@@ -130,7 +147,7 @@ The optional config supports:
 - `headers` – custom HTTP headers merged with the default JSON content type
 - `httpClient` – custom HTTP transport
 
-By default, errors throw `Nano.RPC.PostError`.
+By default, errors throw `Nano.RPC.Error`.
 
 ### Custom HTTP headers
 
@@ -278,7 +295,7 @@ receive needs both the destination `frontierBlock` and the complete source `send
 Pass `privateKey` to sign during creation or omit it and sign the returned block later with
 `Nano.Crypto.signBlock` or the lower-level `Nano.Crypto.signHash`. Open requires an explicit
 `representative`; the other helpers inherit it where possible. Pass `{ throwOnError: false }` to receive a
-`Result<StateBlock>` instead of throwing.
+`Result<StateBlock, Nano.Blocks.Error>` instead of throwing.
 
 Created blocks contain zero work so proof of work can be generated independently and assigned afterward. For
 local PoW without an external work server, install

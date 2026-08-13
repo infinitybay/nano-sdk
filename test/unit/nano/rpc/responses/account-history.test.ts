@@ -1,4 +1,5 @@
 import { AccountHistoryResponse } from "../../../../../src/nano/rpc/responses/account-history";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountHistoryResponse schema", () => {
@@ -24,10 +25,8 @@ describe("AccountHistoryResponse schema", () => {
       ],
       previous: TestData.Valid.PrevHash1(),
     });
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.previous).toBe(TestData.Valid.PrevHash1());
-    }
+    assert(result.success);
+    expect(result.data.previous).toBe(TestData.Valid.PrevHash1());
   });
 
   test("parses account history response with linked account and raw", () => {
@@ -52,10 +51,8 @@ describe("AccountHistoryResponse schema", () => {
       ],
       previous: TestData.Valid.PrevHash1(),
     });
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.previous).toBe(TestData.Valid.PrevHash1());
-    }
+    assert(result.success);
+    expect(result.data.previous).toBe(TestData.Valid.PrevHash1());
   });
 
   test("parses account history response without linked account and with raw", () => {
@@ -79,7 +76,7 @@ describe("AccountHistoryResponse schema", () => {
       ],
       previous: TestData.Valid.PrevHash1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses account history response with reverse flag and raw", () => {
@@ -103,7 +100,7 @@ describe("AccountHistoryResponse schema", () => {
       ],
       next: TestData.Valid.Hash1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects account history response with invalid history entry", () => {
@@ -127,7 +124,7 @@ describe("AccountHistoryResponse schema", () => {
       ],
       previous: TestData.Valid.PrevHash1(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects account history response with missing linked account", () => {
@@ -151,6 +148,6 @@ describe("AccountHistoryResponse schema", () => {
       ],
       previous: TestData.Valid.PrevHash1(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

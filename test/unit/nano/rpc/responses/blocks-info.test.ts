@@ -1,4 +1,5 @@
 import { BlocksInfoResponse } from "../../../../../src/nano/rpc/responses/blocks-info";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BlocksInfoResponse schema", () => {
@@ -13,7 +14,7 @@ describe("BlocksInfoResponse schema", () => {
     }).safeParse({
       blocks: "",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses blocks info response with all optional properties", () => {
@@ -45,7 +46,7 @@ describe("BlocksInfoResponse schema", () => {
       },
       blocks_not_found: [TestData.Valid.Hash4()],
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses blocks info response with all options disabled", () => {
@@ -70,7 +71,7 @@ describe("BlocksInfoResponse schema", () => {
         },
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects blocks info response with invalid block account entry", () => {
@@ -95,6 +96,6 @@ describe("BlocksInfoResponse schema", () => {
         },
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

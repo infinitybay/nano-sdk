@@ -1,4 +1,5 @@
 import { WorkResponse } from "../../../../../src/nano/web-socket/responses/work";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("WorkResponse schema", () => {
@@ -25,7 +26,7 @@ describe("WorkResponse schema", () => {
         bad_peers: "",
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects work response with invalid difficulty", () => {
@@ -44,6 +45,6 @@ describe("WorkResponse schema", () => {
         bad_peers: "",
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

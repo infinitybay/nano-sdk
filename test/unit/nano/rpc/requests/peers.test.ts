@@ -1,4 +1,5 @@
 import { PeersRequest } from "../../../../../src/nano/rpc/requests/peers";
+import { assert } from "../../../../assert";
 
 describe("PeersRequest schema", () => {
   test("validates peers request with optional peer details", () => {
@@ -6,13 +7,13 @@ describe("PeersRequest schema", () => {
       action: "peers",
       peer_details: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects peers request with invalid action", () => {
     const result = PeersRequest().safeParse({
       action: "peers_invalid",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

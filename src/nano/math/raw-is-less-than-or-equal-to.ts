@@ -1,41 +1,52 @@
+import { RawAmount } from "../types/amount";
 import { NonThrowing } from "../types/non-throwing";
-import { PredicateResult } from "../types/result";
+import { PredicateResult, Result } from "../types/result";
 import { Throwing } from "../types/throwing";
-import { compareRawValues, RawComparisonInputs } from "./comparison";
+import { RawComparisonInputs } from "./comparison";
+import { MathError } from "./math-error";
+import { MathErrorCode } from "./math-error-code";
 
-type RawIsLessThanOrEqualToParams = RawComparisonInputs & (Throwing | NonThrowing);
+export type RawIsLessThanOrEqualToParams = RawComparisonInputs;
 
-function rawIsLessThanOrEqualToThrowing(params: RawIsLessThanOrEqualToParams & Throwing): boolean {
-  return compareRawValues(params.raw, params.compareTo) <= 0;
-}
-
-function rawIsLessThanOrEqualToNonThrowing(
-  params: RawIsLessThanOrEqualToParams & NonThrowing
-): PredicateResult<"checked", "lessOrEqual"> {
-  try {
-    return {
-      checked: true,
-      lessOrEqual: rawIsLessThanOrEqualToThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      checked: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
+export type RawIsLessThanOrEqualToResult = PredicateResult<
+  "checked",
+  "lessOrEqual",
+  MathError<MathErrorCode.InvalidCompareTo | MathErrorCode.InvalidRaw | MathErrorCode.Unexpected>
+>;
 
 export function rawIsLessThanOrEqualTo(
   params: RawIsLessThanOrEqualToParams & NonThrowing
-): PredicateResult<"checked", "lessOrEqual">;
+): RawIsLessThanOrEqualToResult;
 export function rawIsLessThanOrEqualTo(params: RawIsLessThanOrEqualToParams & Throwing): boolean;
 export function rawIsLessThanOrEqualTo(
-  params: RawIsLessThanOrEqualToParams
-): PredicateResult<"checked", "lessOrEqual"> | boolean;
-export function rawIsLessThanOrEqualTo(params: RawIsLessThanOrEqualToParams) {
+  params: RawIsLessThanOrEqualToParams & (Throwing | NonThrowing)
+): RawIsLessThanOrEqualToResult | boolean;
+export function rawIsLessThanOrEqualTo(params: RawIsLessThanOrEqualToParams & (Throwing | NonThrowing)) {
+  const result = ((): Result<boolean, Extract<RawIsLessThanOrEqualToResult, { checked: false }>["error"]> => {
+    try {
+      const rawResult = RawAmount().safeParse(params.raw);
+      if (!rawResult.success) {
+        return Result.err(new MathError(MathErrorCode.InvalidRaw, "Invalid raw value."));
+      }
+
+      const compareToResult = RawAmount().safeParse(params.compareTo);
+      if (!compareToResult.success) {
+        return Result.err(new MathError(MathErrorCode.InvalidCompareTo, "Invalid compareTo value."));
+      }
+
+      return Result.ok(rawResult.data <= compareToResult.data);
+    } catch (e) {
+      return Result.err(new MathError(MathErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+
   if (params.throwOnError === false) {
-    return rawIsLessThanOrEqualToNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return rawIsLessThanOrEqualToThrowing({ ...params, throwOnError: true });
+    if (result.success) {
+      return { checked: true, lessOrEqual: result.data };
+    }
+
+    return { checked: false, error: result.error };
   }
+
+  return Result.unwrap(result, params.throwOnError);
 }

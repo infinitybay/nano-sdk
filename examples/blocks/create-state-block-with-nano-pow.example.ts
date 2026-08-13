@@ -23,35 +23,6 @@ const sourceFrontierBlock: Nano.Blocks.StateBlock = {
   work: "7b7ca1f0bf86cee4",
 };
 
-type SendParams = {
-  amount: Nano.Types.RawAmount | Nano.Types.RawAmountString;
-  destination: Nano.Types.AccountString;
-  frontierBlock: Nano.Blocks.StateBlock;
-  privateKey: Nano.Types.PrivateKeyString;
-  representative?: Nano.Types.AccountString;
-};
-
-type OpenParams = {
-  amount: Nano.Types.RawAmount | Nano.Types.RawAmountString;
-  privateKey: Nano.Types.PrivateKeyString;
-  representative: Nano.Types.AccountString;
-  sendBlock: Nano.Blocks.StateBlock;
-};
-
-type ChangeParams = {
-  frontierBlock: Nano.Blocks.StateBlock;
-  privateKey: Nano.Types.PrivateKeyString;
-  representative: Nano.Types.AccountString;
-};
-
-type ReceiveParams = {
-  amount: Nano.Types.RawAmount | Nano.Types.RawAmountString;
-  frontierBlock: Nano.Blocks.StateBlock;
-  privateKey: Nano.Types.PrivateKeyString;
-  representative?: Nano.Types.AccountString;
-  sendBlock: Nano.Blocks.StateBlock;
-};
-
 async function generateWork(
   workRoot: Nano.Types.HashString | Nano.Types.PublicKeyString,
   difficulty: Nano.Types.WorkDifficultyString
@@ -66,14 +37,14 @@ async function generateWork(
   return validatedWork;
 }
 
-async function send(params: SendParams): Promise<Nano.Blocks.StateBlock> {
+async function send(params: Nano.Blocks.CreateSendBlockParams): Promise<Nano.Blocks.StateBlock> {
   const block = Nano.Blocks.createSendBlock(params);
   const workRoot = Nano.Crypto.hashBlock({ block: params.frontierBlock });
   block.work = await generateWork(workRoot, sendChangeDifficulty);
   return block;
 }
 
-async function open(params: OpenParams): Promise<Nano.Blocks.StateBlock> {
+async function open(params: Nano.Blocks.CreateOpenBlockParams): Promise<Nano.Blocks.StateBlock> {
   const block = Nano.Blocks.createOpenBlock(params);
   // An open block has no frontier, so its account public key is the work root.
   const workRoot = Nano.Crypto.derivePublicKeyFromAccount({ account: block.account });
@@ -81,14 +52,14 @@ async function open(params: OpenParams): Promise<Nano.Blocks.StateBlock> {
   return block;
 }
 
-async function change(params: ChangeParams): Promise<Nano.Blocks.StateBlock> {
+async function change(params: Nano.Blocks.CreateChangeBlockParams): Promise<Nano.Blocks.StateBlock> {
   const block = Nano.Blocks.createChangeBlock(params);
   const workRoot = Nano.Crypto.hashBlock({ block: params.frontierBlock });
   block.work = await generateWork(workRoot, sendChangeDifficulty);
   return block;
 }
 
-async function receive(params: ReceiveParams): Promise<Nano.Blocks.StateBlock> {
+async function receive(params: Nano.Blocks.CreateReceiveBlockParams): Promise<Nano.Blocks.StateBlock> {
   const block = Nano.Blocks.createReceiveBlock(params);
   const workRoot = Nano.Crypto.hashBlock({ block: params.frontierBlock });
   block.work = await generateWork(workRoot, openReceiveDifficulty);

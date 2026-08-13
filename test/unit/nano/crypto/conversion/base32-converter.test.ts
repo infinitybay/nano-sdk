@@ -1,4 +1,5 @@
 import { decodeBase32, encodeBase32 } from "../../../../../src/nano/crypto/conversion/base32-converter";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 const encodedPublicKeyLength = 52;
@@ -24,6 +25,6 @@ describe("Base32 conversion utilities", () => {
   });
 
   test("rejects base32 strings with invalid characters", () => {
-    expect(decodeBase32({ encoded: "invalid*", throwOnError: false }).success).toBe(false);
+    assert(!decodeBase32({ encoded: "invalid*", throwOnError: false }).success);
   });
 });

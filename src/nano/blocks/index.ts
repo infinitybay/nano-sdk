@@ -1,8 +1,10 @@
 export { Block } from "./block";
-export { createChangeBlock } from "./create-change-block";
-export { createOpenBlock } from "./create-open-block";
-export { createReceiveBlock } from "./create-receive-block";
-export { createSendBlock } from "./create-send-block";
+export { BlockError as Error } from "./block-error";
+export { BlockErrorCode as ErrorCode } from "./block-error-code";
+export { createChangeBlock, CreateChangeBlockParams, CreateChangeBlockResult } from "./create-change-block";
+export { createOpenBlock, CreateOpenBlockParams, CreateOpenBlockResult } from "./create-open-block";
+export { createReceiveBlock, CreateReceiveBlockParams, CreateReceiveBlockResult } from "./create-receive-block";
+export { createSendBlock, CreateSendBlockParams, CreateSendBlockResult } from "./create-send-block";
 export { LegacyChangeBlock } from "./legacy-change-block";
 export { LegacyOpenBlock } from "./legacy-open-block";
 export { LegacyReceiveBlock } from "./legacy-receive-block";

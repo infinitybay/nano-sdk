@@ -1,6 +1,8 @@
+import { MathErrorCode } from "../../../../src/nano/math/math-error-code";
 import { rawMinus } from "../../../../src/nano/math/raw-minus";
 import { RawAmountStrings } from "../../../../src/nano/types/amount";
 import { assert } from "../../../assert";
+import { expectErrorCode, expectToThrowErrorCode } from "../../../expect";
 
 describe("rawMinus", () => {
   test("subtracts raw values correctly (string inputs)", () => {
@@ -24,36 +26,34 @@ describe("rawMinus", () => {
   });
 
   test("handles subtraction at the minimum boundary", () => {
-    expect(rawMinus({ raw: RawAmountStrings.min(), subtrahend: "1", throwOnError: false }).success).toBe(false);
+    assert(!rawMinus({ raw: RawAmountStrings.min(), subtrahend: "1", throwOnError: false }).success);
   });
 
   test("returns failure result when subtraction would underflow without throwing", () => {
     const result = rawMinus({ raw: RawAmountStrings.min(), subtrahend: "1", throwOnError: false });
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.message).toBe("Resulting raw amount must not be negative.");
-    }
+    assert(!result.success);
+    expectErrorCode(result.error, MathErrorCode.NegativeResult);
   });
 
   test("rejects invalid inputs", () => {
-    expect(rawMinus({ raw: "", subtrahend: "1", throwOnError: false }).success).toBe(false);
-    expect(rawMinus({ raw: "1", subtrahend: "-5", throwOnError: false }).success).toBe(false);
-    expect(rawMinus({ raw: "abc", subtrahend: "1", throwOnError: false }).success).toBe(false);
+    assert(!rawMinus({ raw: "", subtrahend: "1", throwOnError: false }).success);
+    assert(!rawMinus({ raw: "1", subtrahend: "-5", throwOnError: false }).success);
+    assert(!rawMinus({ raw: "abc", subtrahend: "1", throwOnError: false }).success);
   });
 
   test("explicitly rejects negative raw values", () => {
-    expect(() => rawMinus({ raw: "-1", subtrahend: "1", throwOnError: true })).toThrow(
-      "Invalid raw value: negative raw amounts are not allowed."
+    expectToThrowErrorCode(
+      () => rawMinus({ raw: "-1", subtrahend: "1", throwOnError: true }),
+      MathErrorCode.NegativeRaw
     );
-    expect(() => rawMinus({ raw: 1n, subtrahend: -1n, throwOnError: true })).toThrow(
-      "Invalid subtrahend value: negative raw amounts are not allowed."
+    expectToThrowErrorCode(
+      () => rawMinus({ raw: 1n, subtrahend: -1n, throwOnError: true }),
+      MathErrorCode.NegativeSubtrahend
     );
 
     const result = rawMinus({ raw: "1", subtrahend: "-1", throwOnError: false });
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.message).toBe("Invalid subtrahend value: negative raw amounts are not allowed.");
-    }
+    assert(!result.success);
+    expectErrorCode(result.error, MathErrorCode.NegativeSubtrahend);
   });
 
   test("accepts mixed input types and returns matching output type", () => {

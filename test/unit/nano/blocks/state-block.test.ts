@@ -1,4 +1,5 @@
 import { StateBlock } from "../../../../src/nano/blocks/state-block";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("StateBlock schema", () => {
@@ -11,7 +12,7 @@ describe("StateBlock schema", () => {
     ];
     for (const validStateBlock of validStateBlocks) {
       const result = StateBlock().safeParse(validStateBlock);
-      expect(result.success).toBe(true);
+      assert(result.success);
     }
   });
 
@@ -28,7 +29,7 @@ describe("StateBlock schema", () => {
     ];
     for (const invalidStateBlock of invalidStateBlocks) {
       const result = StateBlock().safeParse(invalidStateBlock);
-      expect(result.success).toBe(false);
+      assert(!result.success);
     }
   });
 });

@@ -1,4 +1,5 @@
 import { AccountBlockCountRequest } from "../../../../../src/nano/rpc/requests/account-block-count";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountBlockCountRequest schema", () => {
@@ -7,7 +8,7 @@ describe("AccountBlockCountRequest schema", () => {
       action: "account_block_count",
       account: TestData.Valid.Account1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects account block count request with invalid account", () => {
@@ -15,6 +16,6 @@ describe("AccountBlockCountRequest schema", () => {
       action: "account_block_count",
       account: TestData.Invalid.Account.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

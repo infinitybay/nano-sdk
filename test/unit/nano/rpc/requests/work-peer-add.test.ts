@@ -1,4 +1,5 @@
 import { WorkPeerAddRequest } from "../../../../../src/nano/rpc/requests/work-peer-add";
+import { assert } from "../../../../assert";
 
 describe("WorkPeerAddRequest schema", () => {
   test("validates work peer add request", () => {
@@ -7,7 +8,7 @@ describe("WorkPeerAddRequest schema", () => {
       address: "127.0.0.1",
       port: "7075",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects work peer add request with missing port", () => {
@@ -15,6 +16,6 @@ describe("WorkPeerAddRequest schema", () => {
       action: "work_peer_add",
       address: "127.0.0.1",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

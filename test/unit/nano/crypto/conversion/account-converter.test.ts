@@ -1,4 +1,5 @@
 import { accountToBytes, bytesToAccount } from "../../../../../src/nano/crypto/conversion/account-converter";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("Account conversion utilities", () => {
@@ -28,11 +29,11 @@ describe("Account conversion utilities", () => {
     ];
 
     for (const invalidAccount of invalidAccounts) {
-      expect(accountToBytes({ account: invalidAccount, throwOnError: false }).success).toBe(false);
+      assert(!accountToBytes({ account: invalidAccount, throwOnError: false }).success);
     }
   });
 
   test("rejects byte arrays with incorrect length", () => {
-    expect(bytesToAccount({ publicKeyBytes: new Uint8Array([1, 2]), throwOnError: false }).success).toBe(false);
+    assert(!bytesToAccount({ publicKeyBytes: new Uint8Array([1, 2]), throwOnError: false }).success);
   });
 });

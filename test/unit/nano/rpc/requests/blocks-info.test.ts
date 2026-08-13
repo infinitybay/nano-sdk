@@ -1,4 +1,5 @@
 import { BlocksInfoRequest } from "../../../../../src/nano/rpc/requests/blocks-info";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BlocksInfoRequest schema", () => {
@@ -13,7 +14,7 @@ describe("BlocksInfoRequest schema", () => {
       receive_hash: true,
       source: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects blocks info request with invalid hash entry", () => {
@@ -21,6 +22,6 @@ describe("BlocksInfoRequest schema", () => {
       action: "blocks_info",
       hashes: [TestData.Invalid.Hash.InvalidCharacters()],
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

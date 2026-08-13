@@ -1,4 +1,5 @@
 import { ElectionStatisticsResponse } from "../../../../../src/nano/rpc/responses/election-statistics";
+import { assert } from "../../../../assert";
 
 describe("ElectionStatisticsResponse schema", () => {
   test("parses election statistics response", () => {
@@ -12,6 +13,6 @@ describe("ElectionStatisticsResponse schema", () => {
       max_election_age: "5493",
       average_election_age: "421",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 });

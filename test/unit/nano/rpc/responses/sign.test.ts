@@ -1,4 +1,5 @@
 import { SignResponse } from "../../../../../src/nano/rpc/responses/sign";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("SignResponse schema", () => {
@@ -8,7 +9,7 @@ describe("SignResponse schema", () => {
       signature: TestData.Valid.Signature1(),
       block: TestData.Valid.StateBlock1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses sign response without block when flag is false", () => {
@@ -16,7 +17,7 @@ describe("SignResponse schema", () => {
     const result = schema.safeParse({
       signature: TestData.Valid.Signature2(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects sign response with invalid signature", () => {
@@ -24,6 +25,6 @@ describe("SignResponse schema", () => {
     const result = schema.safeParse({
       signature: TestData.Invalid.Signature.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

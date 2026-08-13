@@ -6,6 +6,7 @@ import {
   StateTypeString,
   TypeString,
 } from "../../../../src/nano/types/type";
+import { assert } from "../../../assert";
 
 describe("TypeString schema", () => {
   test("validates allowed block type values including legacy forms", () => {
@@ -21,6 +22,6 @@ describe("TypeString schema", () => {
   });
 
   test("rejects unknown block types", () => {
-    expect(TypeString().safeParse("other").success).toBe(false);
+    assert(!TypeString().safeParse("other").success);
   });
 });

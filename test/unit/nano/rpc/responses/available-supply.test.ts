@@ -1,4 +1,5 @@
 import { AvailableSupplyResponse } from "../../../../../src/nano/rpc/responses/available-supply";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AvailableSupplyResponse schema", () => {
@@ -6,13 +7,13 @@ describe("AvailableSupplyResponse schema", () => {
     const result = AvailableSupplyResponse().safeParse({
       available: TestData.Valid.RawAmount1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects available supply response with invalid amount", () => {
     const result = AvailableSupplyResponse().safeParse({
       available: TestData.Invalid.RawAmount.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

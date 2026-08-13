@@ -1,4 +1,5 @@
 import { LinkString } from "../../../../src/nano/types/link";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("LinkString schema", () => {
@@ -15,14 +16,14 @@ describe("LinkString schema", () => {
   });
 
   test("rejects links with invalid characters", () => {
-    expect(LinkString().safeParse(TestData.Invalid.Link.InvalidCharacters()).success).toBe(false);
+    assert(!LinkString().safeParse(TestData.Invalid.Link.InvalidCharacters()).success);
   });
 
   test("rejects links exceeding length limit", () => {
-    expect(LinkString().safeParse(TestData.Invalid.Link.TooLong()).success).toBe(false);
+    assert(!LinkString().safeParse(TestData.Invalid.Link.TooLong()).success);
   });
 
   test("rejects links below length requirement", () => {
-    expect(LinkString().safeParse(TestData.Invalid.Link.TooShort()).success).toBe(false);
+    assert(!LinkString().safeParse(TestData.Invalid.Link.TooShort()).success);
   });
 });

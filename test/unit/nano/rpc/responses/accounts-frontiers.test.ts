@@ -1,4 +1,5 @@
 import { AccountsFrontiersResponse } from "../../../../../src/nano/rpc/responses/accounts-frontiers";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountsFrontiersResponse schema", () => {
@@ -9,7 +10,7 @@ describe("AccountsFrontiersResponse schema", () => {
         [TestData.Valid.Account2()]: TestData.Valid.Hash2(),
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects frontiers map with invalid account key", () => {
@@ -18,7 +19,7 @@ describe("AccountsFrontiersResponse schema", () => {
         [TestData.Invalid.Account.InvalidCharacters()]: TestData.Valid.Hash1(),
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects frontiers map with invalid hash value", () => {
@@ -27,6 +28,6 @@ describe("AccountsFrontiersResponse schema", () => {
         [TestData.Valid.Account1()]: TestData.Invalid.Hash.InvalidCharacters(),
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

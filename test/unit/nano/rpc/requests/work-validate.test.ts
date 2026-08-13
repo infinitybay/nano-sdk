@@ -1,4 +1,5 @@
 import { WorkValidateRequest } from "../../../../../src/nano/rpc/requests/work-validate";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("WorkValidateRequest schema", () => {
@@ -9,7 +10,7 @@ describe("WorkValidateRequest schema", () => {
       hash: TestData.Valid.Hash1(),
       version: "work_1",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects work validate request with invalid work value", () => {
@@ -18,7 +19,7 @@ describe("WorkValidateRequest schema", () => {
       work: TestData.Invalid.Work.InvalidCharacters(),
       hash: TestData.Valid.Hash1(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects work validate request with invalid hash", () => {
@@ -27,6 +28,6 @@ describe("WorkValidateRequest schema", () => {
       work: TestData.Valid.Work1(),
       hash: TestData.Invalid.Hash.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

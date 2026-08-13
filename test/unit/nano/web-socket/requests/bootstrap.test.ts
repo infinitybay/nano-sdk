@@ -1,13 +1,14 @@
 import { BootstrapRequest } from "../../../../../src/nano/web-socket/requests/bootstrap";
+import { assert } from "../../../../assert";
 
 describe("BootstrapRequest schema", () => {
   test("validates bootstrap request", () => {
     const result = BootstrapRequest().safeParse({ action: "subscribe", topic: "bootstrap", ack: true, id: "1" });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects bootstrap request with invalid action", () => {
     const result = BootstrapRequest().safeParse({ action: "ping", topic: "bootstrap" });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

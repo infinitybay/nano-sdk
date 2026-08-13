@@ -1,4 +1,5 @@
 import { ConfirmationType } from "../../../../../src/nano/web-socket/types/confirmation-type";
+import { assert } from "../../../../assert";
 
 describe("ConfirmationType schema", () => {
   test("validates allowed confirmation types", () => {
@@ -10,6 +11,6 @@ describe("ConfirmationType schema", () => {
   });
 
   test("rejects unsupported confirmation types", () => {
-    expect(ConfirmationType().safeParse("other").success).toBe(false);
+    assert(!ConfirmationType().safeParse("other").success);
   });
 });

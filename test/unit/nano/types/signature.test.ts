@@ -1,4 +1,5 @@
 import { SignatureString, SignatureStrings } from "../../../../src/nano/types/signature";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("SignatureString schema", () => {
@@ -28,14 +29,14 @@ describe("SignatureString schema", () => {
   });
 
   test("rejects signatures with invalid characters", () => {
-    expect(SignatureString().safeParse(TestData.Invalid.Signature.InvalidCharacters()).success).toBe(false);
+    assert(!SignatureString().safeParse(TestData.Invalid.Signature.InvalidCharacters()).success);
   });
 
   test("rejects signatures exceeding length limit", () => {
-    expect(SignatureString().safeParse(TestData.Invalid.Signature.TooLong()).success).toBe(false);
+    assert(!SignatureString().safeParse(TestData.Invalid.Signature.TooLong()).success);
   });
 
   test("rejects signatures below length requirement", () => {
-    expect(SignatureString().safeParse(TestData.Invalid.Signature.TooShort()).success).toBe(false);
+    assert(!SignatureString().safeParse(TestData.Invalid.Signature.TooShort()).success);
   });
 });

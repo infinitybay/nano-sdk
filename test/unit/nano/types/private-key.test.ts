@@ -1,4 +1,5 @@
 import { PrivateKeyString, PrivateKeyStrings } from "../../../../src/nano/types/private-key";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("PrivateKeyString schema", () => {
@@ -28,14 +29,14 @@ describe("PrivateKeyString schema", () => {
   });
 
   test("rejects private keys with invalid characters", () => {
-    expect(PrivateKeyString().safeParse(TestData.Invalid.PrivateKey.InvalidCharacters()).success).toBe(false);
+    assert(!PrivateKeyString().safeParse(TestData.Invalid.PrivateKey.InvalidCharacters()).success);
   });
 
   test("rejects private keys exceeding length limit", () => {
-    expect(PrivateKeyString().safeParse(TestData.Invalid.PrivateKey.TooLong()).success).toBe(false);
+    assert(!PrivateKeyString().safeParse(TestData.Invalid.PrivateKey.TooLong()).success);
   });
 
   test("rejects private keys below length requirement", () => {
-    expect(PrivateKeyString().safeParse(TestData.Invalid.PrivateKey.TooShort()).success).toBe(false);
+    assert(!PrivateKeyString().safeParse(TestData.Invalid.PrivateKey.TooShort()).success);
   });
 });

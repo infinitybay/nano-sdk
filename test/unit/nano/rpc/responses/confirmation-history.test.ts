@@ -1,4 +1,5 @@
 import { ConfirmationHistoryResponse } from "../../../../../src/nano/rpc/responses/confirmation-history";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("ConfirmationHistoryResponse schema", () => {
@@ -9,7 +10,7 @@ describe("ConfirmationHistoryResponse schema", () => {
       },
       confirmations: "",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses confirmation history response", () => {
@@ -31,7 +32,7 @@ describe("ConfirmationHistoryResponse schema", () => {
         },
       ],
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects confirmation history response with invalid hash", () => {
@@ -53,6 +54,6 @@ describe("ConfirmationHistoryResponse schema", () => {
         },
       ],
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

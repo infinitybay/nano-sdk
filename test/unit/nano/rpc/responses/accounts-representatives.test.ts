@@ -1,4 +1,5 @@
 import { AccountsRepresentativesResponse } from "../../../../../src/nano/rpc/responses/accounts-representatives";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountsRepresentativesResponse schema", () => {
@@ -8,7 +9,7 @@ describe("AccountsRepresentativesResponse schema", () => {
         [TestData.Valid.Account1()]: TestData.Valid.Account2(),
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects representatives map with invalid account key", () => {
@@ -17,7 +18,7 @@ describe("AccountsRepresentativesResponse schema", () => {
         [TestData.Invalid.Account.InvalidCharacters()]: TestData.Valid.Account2(),
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects representatives map with invalid account value", () => {
@@ -26,6 +27,6 @@ describe("AccountsRepresentativesResponse schema", () => {
         [TestData.Valid.Account1()]: TestData.Invalid.Account.InvalidCharacters(),
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

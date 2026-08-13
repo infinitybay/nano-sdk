@@ -1,4 +1,5 @@
 import { WorkDifficultyString } from "../../../../src/nano/types";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("WorkDifficultyString schema", () => {
@@ -24,14 +25,14 @@ describe("WorkDifficultyString schema", () => {
   });
 
   test("rejects work difficulty with invalid characters", () => {
-    expect(WorkDifficultyString().safeParse(TestData.Invalid.WorkDifficulty.InvalidCharacters()).success).toBe(false);
+    assert(!WorkDifficultyString().safeParse(TestData.Invalid.WorkDifficulty.InvalidCharacters()).success);
   });
 
   test("rejects work difficulty exceeding length limit", () => {
-    expect(WorkDifficultyString().safeParse(TestData.Invalid.WorkDifficulty.TooLong()).success).toBe(false);
+    assert(!WorkDifficultyString().safeParse(TestData.Invalid.WorkDifficulty.TooLong()).success);
   });
 
   test("rejects work difficulty below length requirement", () => {
-    expect(WorkDifficultyString().safeParse(TestData.Invalid.WorkDifficulty.TooShort()).success).toBe(false);
+    assert(!WorkDifficultyString().safeParse(TestData.Invalid.WorkDifficulty.TooShort()).success);
   });
 });

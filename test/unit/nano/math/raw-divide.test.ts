@@ -1,6 +1,8 @@
+import { MathErrorCode } from "../../../../src/nano/math/math-error-code";
 import { rawDivide } from "../../../../src/nano/math/raw-divide";
 import { RawAmountStrings } from "../../../../src/nano/types/amount";
 import { assert } from "../../../assert";
+import { expectErrorCode } from "../../../expect";
 
 describe("rawDivide", () => {
   test("divides raw values exactly (string inputs)", () => {
@@ -25,22 +27,31 @@ describe("rawDivide", () => {
   });
 
   test("throws when divisor is zero", () => {
-    expect(rawDivide({ raw: "10", divisor: "0", throwOnError: false }).success).toBe(false);
+    assert(!rawDivide({ raw: "10", divisor: "0", throwOnError: false }).success);
   });
 
   test("throws when division leaves a remainder", () => {
-    expect(rawDivide({ raw: "10", divisor: "3", throwOnError: false }).success).toBe(false);
+    assert(!rawDivide({ raw: "10", divisor: "3", throwOnError: false }).success);
   });
 
   test("returns failure result instead of throwing when errors occur without throwOnError", () => {
-    expect(rawDivide({ raw: "10", divisor: "0", throwOnError: false }).success).toBe(false);
-    expect(rawDivide({ raw: "10", divisor: "3", throwOnError: false }).success).toBe(false);
+    const zeroDivisorResult = rawDivide({ raw: "10", divisor: "0", throwOnError: false });
+    const remainderResult = rawDivide({ raw: "10", divisor: "3", throwOnError: false });
+
+    assert(!zeroDivisorResult.success);
+    expectErrorCode(zeroDivisorResult.error, MathErrorCode.DivisionByZero);
+    assert(!remainderResult.success);
+    expectErrorCode(remainderResult.error, MathErrorCode.NonIntegerResult);
   });
 
   test("rejects invalid inputs", () => {
-    expect(rawDivide({ raw: "", divisor: "1", throwOnError: false }).success).toBe(false);
-    expect(rawDivide({ raw: "1", divisor: "abc", throwOnError: false }).success).toBe(false);
-    expect(rawDivide({ raw: "abc", divisor: "1", throwOnError: false }).success).toBe(false);
+    const rawResult = rawDivide({ raw: "", divisor: "1", throwOnError: false });
+    const divisorResult = rawDivide({ raw: "1", divisor: "abc", throwOnError: false });
+
+    assert(!rawResult.success);
+    expectErrorCode(rawResult.error, MathErrorCode.InvalidRaw);
+    assert(!divisorResult.success);
+    expectErrorCode(divisorResult.error, MathErrorCode.InvalidDivisor);
   });
 
   test("accepts mixed input types and returns matching output type", () => {

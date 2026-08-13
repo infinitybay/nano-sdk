@@ -1,13 +1,14 @@
 import { ReceivableExistsResponse } from "../../../../../src/nano/rpc/responses/receivable-exists";
+import { assert } from "../../../../assert";
 
 describe("ReceivableExistsResponse schema", () => {
   test("parses receivable exists positive response", () => {
     const result = ReceivableExistsResponse().safeParse({ exists: "1" });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects receivable exists response with invalid flag", () => {
     const result = ReceivableExistsResponse().safeParse({ exists: "2" });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

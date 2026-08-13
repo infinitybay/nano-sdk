@@ -1,4 +1,5 @@
 import { WorkValidateResponse } from "../../../../../src/nano/rpc/responses/work-validate";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("WorkValidateResponse schema", () => {
@@ -9,7 +10,7 @@ describe("WorkValidateResponse schema", () => {
       difficulty: TestData.Valid.WorkDifficulty1(),
       multiplier: "1.0",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses work validate response with optional valid flag", () => {
@@ -20,6 +21,6 @@ describe("WorkValidateResponse schema", () => {
       difficulty: TestData.Valid.WorkDifficulty1(),
       multiplier: "1.0",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 });

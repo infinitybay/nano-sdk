@@ -1,4 +1,5 @@
 import { derivePublicKeyFromAccount } from "../../../../src/nano/crypto/derive-public-key-from-account";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("derivePublicKeyFromAccount function", () => {
@@ -30,7 +31,7 @@ describe("derivePublicKeyFromAccount function", () => {
       TestData.Invalid.Account.TooShort(),
     ];
     for (const invalidAccount of invalidAccounts) {
-      expect(derivePublicKeyFromAccount({ account: invalidAccount, throwOnError: false }).success).toBe(false);
+      assert(!derivePublicKeyFromAccount({ account: invalidAccount, throwOnError: false }).success);
     }
   });
 });

@@ -3,8 +3,10 @@ import { RawAmountString } from "../types/amount";
 import { HashString } from "../types/hash";
 import { LinkString } from "../types/link";
 import { NonThrowing } from "../types/non-throwing";
-import { PredicateResult } from "../types/result";
+import { PredicateResult, Result } from "../types/result";
 import { Throwing } from "../types/throwing";
+import { CryptoError } from "./crypto-error";
+import { CryptoErrorCode } from "./crypto-error-code";
 import { hashBlock } from "./hash-block";
 
 type BlockInput = {
@@ -15,42 +17,48 @@ type BlockInput = {
   link: LinkString;
 };
 
-type VerifyHashParams = {
+export type VerifyHashParams = {
   hash: HashString;
   block: BlockInput;
-} & (Throwing | NonThrowing);
+};
 
-function verifyHashThrowing(params: VerifyHashParams & Throwing): boolean {
-  const validatedHash = HashString().safeParse(params.hash);
-  if (!validatedHash.success) {
-    throw new Error("Invalid hash value.");
-  }
+export type VerifyHashResult = PredicateResult<
+  "checked",
+  "validHash",
+  CryptoError<CryptoErrorCode.HashBlockFailed | CryptoErrorCode.InvalidHash | CryptoErrorCode.Unexpected>
+>;
 
-  const blockHash = hashBlock({ block: params.block, throwOnError: true });
-  return validatedHash.data === blockHash;
-}
-
-function verifyHashNonThrowing(params: VerifyHashParams & NonThrowing): PredicateResult<"checked", "validHash"> {
-  try {
-    return {
-      checked: true,
-      validHash: verifyHashThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      checked: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function verifyHash(params: VerifyHashParams & NonThrowing): PredicateResult<"checked", "validHash">;
+export function verifyHash(params: VerifyHashParams & NonThrowing): VerifyHashResult;
 export function verifyHash(params: VerifyHashParams & Throwing): boolean;
-export function verifyHash(params: VerifyHashParams): PredicateResult<"checked", "validHash"> | boolean;
-export function verifyHash(params: VerifyHashParams) {
+export function verifyHash(params: VerifyHashParams & (Throwing | NonThrowing)): VerifyHashResult | boolean;
+export function verifyHash(params: VerifyHashParams & (Throwing | NonThrowing)) {
+  const result = ((): Result<boolean, Extract<VerifyHashResult, { checked: false }>["error"]> => {
+    try {
+      const validatedHash = HashString().safeParse(params.hash);
+      if (!validatedHash.success) {
+        return Result.err(new CryptoError(CryptoErrorCode.InvalidHash, "Invalid hash value."));
+      }
+
+      const blockHash = hashBlock({ block: params.block, throwOnError: false });
+      if (!blockHash.success) {
+        return Result.err(
+          new CryptoError(CryptoErrorCode.HashBlockFailed, "Failed to hash block.", { cause: blockHash.error })
+        );
+      }
+
+      return Result.ok(validatedHash.data === blockHash.data);
+    } catch (e) {
+      return Result.err(new CryptoError(CryptoErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+
   if (params.throwOnError === false) {
-    return verifyHashNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return verifyHashThrowing({ ...params, throwOnError: true });
+    if (result.success) {
+      return { checked: true, validHash: result.data };
+    }
+
+    return { checked: false, error: result.error };
   }
+
+  return Result.unwrap(result, params.throwOnError);
 }

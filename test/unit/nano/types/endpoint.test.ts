@@ -1,4 +1,5 @@
 import { EndpointString } from "../../../../src/nano/types/endpoint";
+import { assert } from "../../../assert";
 
 describe("EndpointString schema", () => {
   test("validates ipv4, ipv6, and hostnames with optional ports", () => {
@@ -30,19 +31,19 @@ describe("EndpointString schema", () => {
   });
 
   test("rejects endpoints with invalid ports", () => {
-    expect(EndpointString().safeParse("[::ffff:3.112.16.241]:70000").success).toBe(false);
-    expect(EndpointString().safeParse("127.0.0.1:99999").success).toBe(false);
-    expect(EndpointString().safeParse("localhost:-1").success).toBe(false);
+    assert(!EndpointString().safeParse("[::ffff:3.112.16.241]:70000").success);
+    assert(!EndpointString().safeParse("127.0.0.1:99999").success);
+    assert(!EndpointString().safeParse("localhost:-1").success);
   });
 
   test("rejects endpoints with invalid hosts", () => {
-    expect(EndpointString().safeParse("256.256.256.256").success).toBe(false);
-    expect(EndpointString().safeParse("[::ffff:3.112.16.241").success).toBe(false);
-    expect(EndpointString().safeParse("example..com").success).toBe(false);
-    expect(EndpointString().safeParse("2001::0::1").success).toBe(false);
-    expect(EndpointString().safeParse("2001:").success).toBe(false);
-    expect(EndpointString().safeParse(":8080").success).toBe(false);
-    expect(EndpointString().safeParse(" ").success).toBe(false);
-    expect(EndpointString().safeParse("").success).toBe(false);
+    assert(!EndpointString().safeParse("256.256.256.256").success);
+    assert(!EndpointString().safeParse("[::ffff:3.112.16.241").success);
+    assert(!EndpointString().safeParse("example..com").success);
+    assert(!EndpointString().safeParse("2001::0::1").success);
+    assert(!EndpointString().safeParse("2001:").success);
+    assert(!EndpointString().safeParse(":8080").success);
+    assert(!EndpointString().safeParse(" ").success);
+    assert(!EndpointString().safeParse("").success);
   });
 });

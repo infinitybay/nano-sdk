@@ -1,4 +1,5 @@
 import { WorkGenerateRequest } from "../../../../../src/nano/rpc/requests/work-generate";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("WorkGenerateRequest schema", () => {
@@ -12,7 +13,7 @@ describe("WorkGenerateRequest schema", () => {
       account: TestData.Valid.Account1(),
       version: "work_1",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("validates work generate request with string block", () => {
@@ -22,7 +23,7 @@ describe("WorkGenerateRequest schema", () => {
       json_block: false,
       block: "block-string",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects work generate request with invalid hash", () => {
@@ -30,7 +31,7 @@ describe("WorkGenerateRequest schema", () => {
       action: "work_generate",
       hash: TestData.Invalid.Hash.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects work generate request with invalid account", () => {
@@ -39,6 +40,6 @@ describe("WorkGenerateRequest schema", () => {
       hash: TestData.Valid.Hash1(),
       account: TestData.Invalid.Account.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

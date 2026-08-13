@@ -1,4 +1,5 @@
 import { BlockConfirmRequest } from "../../../../../src/nano/rpc/requests/block-confirm";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BlockConfirmRequest schema", () => {
@@ -7,7 +8,7 @@ describe("BlockConfirmRequest schema", () => {
       action: "block_confirm",
       hash: TestData.Valid.Hash1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects block confirm request with invalid hash", () => {
@@ -15,6 +16,6 @@ describe("BlockConfirmRequest schema", () => {
       action: "block_confirm",
       hash: TestData.Invalid.Hash.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

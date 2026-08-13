@@ -1,4 +1,5 @@
 import { bytesToHash, hashToBytes } from "../../../../../src/nano/crypto/conversion/hash-converter";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("Hash conversion utilities", () => {
@@ -20,11 +21,11 @@ describe("Hash conversion utilities", () => {
     ];
 
     for (const invalidHash of invalidHashs) {
-      expect(hashToBytes({ hash: invalidHash, throwOnError: false }).success).toBe(false);
+      assert(!hashToBytes({ hash: invalidHash, throwOnError: false }).success);
     }
   });
 
   test("rejects byte arrays with incorrect length", () => {
-    expect(bytesToHash({ hashBytes: new Uint8Array([1, 2]), throwOnError: false }).success).toBe(false);
+    assert(!bytesToHash({ hashBytes: new Uint8Array([1, 2]), throwOnError: false }).success);
   });
 });

@@ -1,4 +1,5 @@
 import { TelemetryResponse } from "../../../../../src/nano/rpc/responses/telemetry";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("TelemetryResponse schema", () => {
@@ -24,7 +25,7 @@ describe("TelemetryResponse schema", () => {
       node_id: TestData.Valid.NodeId1(),
       signature: TestData.Valid.Signature1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses telemetry metrics with address and port", () => {
@@ -49,7 +50,7 @@ describe("TelemetryResponse schema", () => {
       node_id: TestData.Valid.NodeId1(),
       signature: TestData.Valid.Signature1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses telemetry metrics array when raw is true", () => {
@@ -80,16 +81,16 @@ describe("TelemetryResponse schema", () => {
         },
       ],
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses telemetry error when address flag mismatches port flag", () => {
     const schema = TelemetryResponse({ address: true, port: false, raw: false });
     const result = schema.safeParse({ error: "mismatch" });
-    expect(result.success).toBe(true);
+    assert(result.success);
 
     const schema2 = TelemetryResponse({ address: false, port: true, raw: false });
     const result2 = schema2.safeParse({ error: "mismatch" });
-    expect(result2.success).toBe(true);
+    assert(result2.success);
   });
 });

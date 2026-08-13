@@ -1,4 +1,5 @@
 import { BlockAccountResponse } from "../../../../../src/nano/rpc/responses/block-account";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BlockAccountResponse schema", () => {
@@ -6,13 +7,13 @@ describe("BlockAccountResponse schema", () => {
     const result = BlockAccountResponse().safeParse({
       account: TestData.Valid.Account1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects block account response with invalid account", () => {
     const result = BlockAccountResponse().safeParse({
       account: TestData.Invalid.Account.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

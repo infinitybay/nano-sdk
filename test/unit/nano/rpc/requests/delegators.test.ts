@@ -1,4 +1,5 @@
 import { DelegatorsRequest } from "../../../../../src/nano/rpc/requests/delegators";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("DelegatorsRequest schema", () => {
@@ -10,7 +11,7 @@ describe("DelegatorsRequest schema", () => {
       start: TestData.Valid.Account1(),
       count: 3,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects delegators request with invalid threshold", () => {
@@ -19,6 +20,6 @@ describe("DelegatorsRequest schema", () => {
       account: TestData.Valid.Account1(),
       threshold: TestData.Invalid.RawAmount.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

@@ -1,4 +1,5 @@
 import { Timestamp, TimestampBounds, TimestampString } from "../../../../src/nano/types/timestamp";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("Timestamp schema", () => {
@@ -10,13 +11,13 @@ describe("Timestamp schema", () => {
   });
 
   test("rejects timestamps outside allowed bounds", () => {
-    expect(Timestamp().safeParse(-1).success).toBe(false);
-    expect(Timestamp().safeParse(TimestampBounds.max() + 1).success).toBe(false);
+    assert(!Timestamp().safeParse(-1).success);
+    assert(!Timestamp().safeParse(TimestampBounds.max() + 1).success);
   });
 
   test("rejects non-integer timestamps", () => {
-    expect(Timestamp().safeParse(1.5).success).toBe(false);
-    expect(Timestamp().safeParse("1").success).toBe(false);
+    assert(!Timestamp().safeParse(1.5).success);
+    assert(!Timestamp().safeParse("1").success);
   });
 });
 
@@ -34,8 +35,8 @@ describe("TimestampString schema", () => {
   });
 
   test("rejects invalid timestamp formats", () => {
-    expect(TimestampString().safeParse("-5").success).toBe(false);
-    expect(TimestampString().safeParse("0001").success).toBe(false);
-    expect(TimestampString().safeParse("1.5").success).toBe(false);
+    assert(!TimestampString().safeParse("-5").success);
+    assert(!TimestampString().safeParse("0001").success);
+    assert(!TimestampString().safeParse("1.5").success);
   });
 });

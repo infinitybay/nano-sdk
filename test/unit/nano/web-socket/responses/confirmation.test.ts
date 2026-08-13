@@ -2,6 +2,7 @@ import {
   ConfirmationMessageBlock,
   ConfirmationResponse,
 } from "../../../../../src/nano/web-socket/responses/confirmation";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("ConfirmationMessageBlock schema", () => {
@@ -11,7 +12,7 @@ describe("ConfirmationMessageBlock schema", () => {
       linked_account: TestData.Valid.Account1(),
       subtype: "send",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("validates legacy block confirmation content", () => {
@@ -24,7 +25,7 @@ describe("ConfirmationMessageBlock schema", () => {
       signature: TestData.Valid.Signature1(),
       linked_account: TestData.Valid.Account1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects confirmation content with missing required fields", () => {
@@ -32,7 +33,7 @@ describe("ConfirmationMessageBlock schema", () => {
       type: "state",
       account: TestData.Valid.Account1(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });
 
@@ -74,7 +75,7 @@ describe("ConfirmationResponse schema", () => {
         },
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects confirmation response with invalid hash", () => {
@@ -88,6 +89,6 @@ describe("ConfirmationResponse schema", () => {
         confirmation_type: "active",
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

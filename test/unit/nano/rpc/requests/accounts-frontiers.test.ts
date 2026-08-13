@@ -1,4 +1,5 @@
 import { AccountsFrontiersRequest } from "../../../../../src/nano/rpc/requests/accounts-frontiers";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountsFrontiersRequest schema", () => {
@@ -7,7 +8,7 @@ describe("AccountsFrontiersRequest schema", () => {
       action: "accounts_frontiers",
       accounts: [TestData.Valid.Account1(), TestData.Valid.Account2()],
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects accounts frontiers request with invalid account entry", () => {
@@ -15,6 +16,6 @@ describe("AccountsFrontiersRequest schema", () => {
       action: "accounts_frontiers",
       accounts: [TestData.Invalid.Account.InvalidCharacters()],
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

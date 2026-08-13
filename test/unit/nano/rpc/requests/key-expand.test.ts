@@ -1,4 +1,5 @@
 import { KeyExpandRequest } from "../../../../../src/nano/rpc/requests/key-expand";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("KeyExpandRequest schema", () => {
@@ -7,7 +8,7 @@ describe("KeyExpandRequest schema", () => {
       action: "key_expand",
       key: TestData.Valid.PrivateKey1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects key expand request with invalid private key", () => {
@@ -15,6 +16,6 @@ describe("KeyExpandRequest schema", () => {
       action: "key_expand",
       key: TestData.Invalid.PrivateKey.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

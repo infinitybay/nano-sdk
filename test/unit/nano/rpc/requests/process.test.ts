@@ -1,4 +1,5 @@
 import { ProcessRequest } from "../../../../../src/nano/rpc/requests/process";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("ProcessRequest schema", () => {
@@ -11,7 +12,7 @@ describe("ProcessRequest schema", () => {
       force: true,
       async: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("validates process request without json block", () => {
@@ -23,7 +24,7 @@ describe("ProcessRequest schema", () => {
       force: true,
       async: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects process request with json flag and invalid block type", () => {
@@ -33,6 +34,6 @@ describe("ProcessRequest schema", () => {
       subtype: "receive",
       block: TestData.Valid.StateBlock1(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

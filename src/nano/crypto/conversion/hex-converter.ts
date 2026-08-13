@@ -3,101 +3,90 @@ import { HexString } from "../../types/hex";
 import { NonThrowing } from "../../types/non-throwing";
 import { Result } from "../../types/result";
 import { Throwing } from "../../types/throwing";
+import { CryptoError } from "../crypto-error";
+import { CryptoErrorCode } from "../crypto-error-code";
 
-type HexToBytesParams = {
+export type HexToBytesParams = {
   hex: string;
-} & (Throwing | NonThrowing);
+};
 
-function hexToBytesThrowing(params: HexToBytesParams & Throwing): Uint8Array {
-  const validatedHex = HexString().safeParse(params.hex);
-  if (!validatedHex.success) {
-    throw new Error("Invalid hex string.");
-  }
+export type HexToBytesResult = Result<
+  Uint8Array,
+  CryptoError<CryptoErrorCode.InvalidHex | CryptoErrorCode.InvalidHexLength | CryptoErrorCode.Unexpected>
+>;
 
-  const normalizedHex = validatedHex.data.toUpperCase();
-  if (normalizedHex.length % 2 !== 0) {
-    throw new Error(`Hex value [${normalizedHex}] must contain a multiple of 2 characters.`);
-  }
-
-  const byteValues: number[] = [];
-  for (let index = 0; index < normalizedHex.length; index += 2) {
-    byteValues.push(parseInt(normalizedHex.substring(index, index + 2), 16));
-  }
-
-  return new Uint8Array(byteValues);
-}
-
-function hexToBytesNonThrowing(params: HexToBytesParams & NonThrowing): Result<Uint8Array> {
-  try {
-    return {
-      success: true,
-      data: hexToBytesThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      success: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function hexToBytes(params: HexToBytesParams & NonThrowing): Result<Uint8Array>;
+export function hexToBytes(params: HexToBytesParams & NonThrowing): HexToBytesResult;
 export function hexToBytes(params: HexToBytesParams & Throwing): Uint8Array;
-export function hexToBytes(params: HexToBytesParams): Uint8Array | Result<Uint8Array>;
-export function hexToBytes(params: HexToBytesParams) {
-  if (params.throwOnError === false) {
-    return hexToBytesNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return hexToBytesThrowing({ ...params, throwOnError: true });
-  }
+export function hexToBytes(params: HexToBytesParams & (Throwing | NonThrowing)): Uint8Array | HexToBytesResult;
+export function hexToBytes(params: HexToBytesParams & (Throwing | NonThrowing)) {
+  const result = ((): HexToBytesResult => {
+    try {
+      const validatedHex = HexString().safeParse(params.hex);
+      if (!validatedHex.success) {
+        return Result.err(new CryptoError(CryptoErrorCode.InvalidHex, "Invalid hex string."));
+      }
+
+      const normalizedHex = validatedHex.data.toUpperCase();
+      if (normalizedHex.length % 2 !== 0) {
+        return Result.err(
+          new CryptoError(
+            CryptoErrorCode.InvalidHexLength,
+            `Hex value [${normalizedHex}] must contain a multiple of 2 characters.`
+          )
+        );
+      }
+
+      const byteValues: number[] = [];
+      for (let index = 0; index < normalizedHex.length; index += 2) {
+        byteValues.push(parseInt(normalizedHex.substring(index, index + 2), 16));
+      }
+
+      return Result.ok(new Uint8Array(byteValues));
+    } catch (e) {
+      return Result.err(new CryptoError(CryptoErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+
+  return Result.unwrap(result, params.throwOnError);
 }
 
-type BytesToHexParams = {
+export type BytesToHexParams = {
   bytes: Uint8Array;
-} & (Throwing | NonThrowing);
+};
 
-function bytesToHexThrowing(params: BytesToHexParams & Throwing): HexString {
-  const validatedBytes = ByteArray().safeParse(params.bytes);
-  if (!validatedBytes.success) {
-    throw new Error("Invalid bytes value.");
-  }
+export type BytesToHexResult = Result<
+  HexString,
+  CryptoError<CryptoErrorCode.InvalidBytes | CryptoErrorCode.InvalidHex | CryptoErrorCode.Unexpected>
+>;
 
-  let hexString: string = "";
-  for (let index = 0; index < validatedBytes.data.length; index++) {
-    let byteHex = (validatedBytes.data[index] & 0xff).toString(16);
-    byteHex = byteHex.length === 1 ? `0${byteHex}` : byteHex;
-    hexString += byteHex;
-  }
-
-  const hexResult = HexString().safeParse(hexString.toUpperCase());
-  if (!hexResult.success) {
-    throw new Error("Invalid hex value derived from byte array.");
-  }
-
-  return hexResult.data;
-}
-
-function bytesToHexNonThrowing(params: BytesToHexParams & NonThrowing): Result<HexString> {
-  try {
-    return {
-      success: true,
-      data: bytesToHexThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      success: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function bytesToHex(params: BytesToHexParams & NonThrowing): Result<HexString>;
+export function bytesToHex(params: BytesToHexParams & NonThrowing): BytesToHexResult;
 export function bytesToHex(params: BytesToHexParams & Throwing): HexString;
-export function bytesToHex(params: BytesToHexParams): HexString | Result<HexString>;
-export function bytesToHex(params: BytesToHexParams) {
-  if (params.throwOnError === false) {
-    return bytesToHexNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return bytesToHexThrowing({ ...params, throwOnError: true });
-  }
+export function bytesToHex(params: BytesToHexParams & (Throwing | NonThrowing)): HexString | BytesToHexResult;
+export function bytesToHex(params: BytesToHexParams & (Throwing | NonThrowing)) {
+  const result = ((): BytesToHexResult => {
+    try {
+      const validatedBytes = ByteArray().safeParse(params.bytes);
+      if (!validatedBytes.success) {
+        return Result.err(new CryptoError(CryptoErrorCode.InvalidBytes, "Invalid bytes value."));
+      }
+
+      let hexString: string = "";
+      for (let index = 0; index < validatedBytes.data.length; index++) {
+        let byteHex = (validatedBytes.data[index] & 0xff).toString(16);
+        byteHex = byteHex.length === 1 ? `0${byteHex}` : byteHex;
+        hexString += byteHex;
+      }
+
+      const hexResult = HexString().safeParse(hexString.toUpperCase());
+      if (!hexResult.success) {
+        return Result.err(new CryptoError(CryptoErrorCode.InvalidHex, "Invalid hex value derived from byte array."));
+      }
+
+      return Result.ok(hexResult.data);
+    } catch (e) {
+      return Result.err(new CryptoError(CryptoErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+
+  return Result.unwrap(result, params.throwOnError);
 }

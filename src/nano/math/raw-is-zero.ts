@@ -1,41 +1,43 @@
 import { RawAmount, RawAmountString } from "../types/amount";
 import { NonThrowing } from "../types/non-throwing";
-import { PredicateResult } from "../types/result";
+import { PredicateResult, Result } from "../types/result";
 import { Throwing } from "../types/throwing";
+import { MathError } from "./math-error";
+import { MathErrorCode } from "./math-error-code";
 
-type RawIsZeroParams = {
+export type RawIsZeroParams = {
   raw: RawAmount | RawAmountString;
-} & (Throwing | NonThrowing);
+};
 
-function rawIsZeroThrowing(params: RawIsZeroParams & Throwing): boolean {
-  const rawResult = RawAmount().safeParse(params.raw);
-  if (!rawResult.success) {
-    throw new Error("Invalid raw value.");
-  }
-  return rawResult.data === 0n;
-}
+export type RawIsZeroResult = PredicateResult<
+  "checked",
+  "zero",
+  MathError<MathErrorCode.InvalidRaw | MathErrorCode.Unexpected>
+>;
 
-function rawIsZeroNonThrowing(params: RawIsZeroParams & NonThrowing): PredicateResult<"checked", "zero"> {
-  try {
-    return {
-      checked: true,
-      zero: rawIsZeroThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      checked: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function rawIsZero(params: RawIsZeroParams & NonThrowing): PredicateResult<"checked", "zero">;
+export function rawIsZero(params: RawIsZeroParams & NonThrowing): RawIsZeroResult;
 export function rawIsZero(params: RawIsZeroParams & Throwing): boolean;
-export function rawIsZero(params: RawIsZeroParams): PredicateResult<"checked", "zero"> | boolean;
-export function rawIsZero(params: RawIsZeroParams) {
+export function rawIsZero(params: RawIsZeroParams & (Throwing | NonThrowing)): RawIsZeroResult | boolean;
+export function rawIsZero(params: RawIsZeroParams & (Throwing | NonThrowing)) {
+  const result = ((): Result<boolean, Extract<RawIsZeroResult, { checked: false }>["error"]> => {
+    try {
+      const rawResult = RawAmount().safeParse(params.raw);
+      if (!rawResult.success) {
+        return Result.err(new MathError(MathErrorCode.InvalidRaw, "Invalid raw value."));
+      }
+      return Result.ok(rawResult.data === 0n);
+    } catch (e) {
+      return Result.err(new MathError(MathErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+
   if (params.throwOnError === false) {
-    return rawIsZeroNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return rawIsZeroThrowing({ ...params, throwOnError: true });
+    if (result.success) {
+      return { checked: true, zero: result.data };
+    }
+
+    return { checked: false, error: result.error };
   }
+
+  return Result.unwrap(result, params.throwOnError);
 }

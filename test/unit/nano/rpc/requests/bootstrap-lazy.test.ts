@@ -1,4 +1,5 @@
 import { BootstrapLazyRequest } from "../../../../../src/nano/rpc/requests/bootstrap-lazy";
+import { assert } from "../../../../assert";
 
 describe("BootstrapLazyRequest schema", () => {
   test("validates bootstrap lazy request with optional force", () => {
@@ -6,6 +7,6 @@ describe("BootstrapLazyRequest schema", () => {
       action: "bootstrap_lazy",
       force: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 });

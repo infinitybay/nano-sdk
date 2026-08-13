@@ -1,4 +1,5 @@
 import { NanoToRawResponse } from "../../../../../src/nano/rpc/responses/nano-to-raw";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("NanoToRawResponse schema", () => {
@@ -6,13 +7,13 @@ describe("NanoToRawResponse schema", () => {
     const result = NanoToRawResponse().safeParse({
       amount: TestData.Valid.RawAmount1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects nano to raw response with invalid amount", () => {
     const result = NanoToRawResponse().safeParse({
       amount: TestData.Invalid.RawAmount.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

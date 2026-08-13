@@ -11,102 +11,165 @@ import { Result } from "../types/result";
 import { SignatureStrings } from "../types/signature";
 import { Throwing } from "../types/throwing";
 import { WorkStrings } from "../types/work";
+import { BlockError } from "./block-error";
+import { BlockErrorCode } from "./block-error-code";
 import { StateBlock } from "./state-block";
 
-type CreateSendBlockParams = {
+export type CreateSendBlockParams = {
   amount: RawAmount | RawAmountString;
   destination: AccountString;
   frontierBlock: StateBlock;
   privateKey?: PrivateKeyString;
   representative?: AccountString;
-} & (Throwing | NonThrowing);
+};
 
-function createSendBlockThrowing(params: CreateSendBlockParams & Throwing): StateBlock {
-  const frontierBlockResult = StateBlock().safeParse(params.frontierBlock);
-  if (!frontierBlockResult.success) {
-    throw new Error("Invalid frontier state block.");
-  }
-  const frontierBlock = frontierBlockResult.data;
+export type CreateSendBlockResult = Result<
+  StateBlock,
+  BlockError<
+    | BlockErrorCode.DeriveAccountFromFrontierLinkFailed
+    | BlockErrorCode.DerivePublicKeyFromDestinationFailed
+    | BlockErrorCode.FrontierLinkMismatch
+    | BlockErrorCode.HashFrontierBlockFailed
+    | BlockErrorCode.InsufficientBalance
+    | BlockErrorCode.InvalidAmount
+    | BlockErrorCode.InvalidCreatedBlock
+    | BlockErrorCode.InvalidDestination
+    | BlockErrorCode.InvalidFrontierBlock
+    | BlockErrorCode.InvalidRepresentative
+    | BlockErrorCode.NegativeAmount
+    | BlockErrorCode.SignBlockFailed
+    | BlockErrorCode.Unexpected
+  >
+>;
 
-  const frontierLinkAsAccount = deriveAccountFromLink({ link: frontierBlock.link, throwOnError: true });
-  if (frontierLinkAsAccount !== frontierBlock.link_as_account) {
-    throw new Error("Frontier block link and link_as_account do not match.");
-  }
-
-  if (
-    (typeof params.amount === "bigint" && params.amount < 0n) ||
-    (typeof params.amount === "string" && params.amount.startsWith("-"))
-  ) {
-    throw new Error("Invalid amount: negative raw amounts are not allowed.");
-  }
-
-  const amountResult = RawAmountString().safeParse(
-    typeof params.amount === "bigint" ? params.amount.toString() : params.amount
-  );
-  if (!amountResult.success || amountResult.data === "0") {
-    throw new Error("Invalid amount: expected a positive raw amount.");
-  }
-  const amount = amountResult.data;
-
-  const destinationResult = AccountString().safeParse(params.destination);
-  if (!destinationResult.success) {
-    throw new Error("Invalid destination account.");
-  }
-
-  const representativeResult = AccountString().safeParse(params.representative ?? frontierBlock.representative);
-  if (!representativeResult.success) {
-    throw new Error("Invalid representative account.");
-  }
-
-  const block: StateBlock = {
-    type: "state",
-    account: frontierBlock.account,
-    previous: hashBlock({ block: frontierBlock, throwOnError: true }),
-    representative: representativeResult.data,
-    balance: rawMinus({ raw: frontierBlock.balance, subtrahend: amount, throwOnError: true }),
-    link: derivePublicKeyFromAccount({ account: destinationResult.data, throwOnError: true }),
-    link_as_account: destinationResult.data,
-    signature: SignatureStrings.zero(),
-    work: WorkStrings.zero(),
-  };
-
-  if (params.privateKey !== undefined) {
-    block.signature = signBlock({
-      block,
-      privateKey: params.privateKey,
-      throwOnError: true,
-    });
-  }
-
-  const blockResult = StateBlock().safeParse(block);
-  if (!blockResult.success) {
-    throw new Error("Failed to create a valid state block.");
-  }
-
-  return block;
-}
-
-function createSendBlockNonThrowing(params: CreateSendBlockParams & NonThrowing): Result<StateBlock> {
-  try {
-    return {
-      success: true,
-      data: createSendBlockThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      success: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function createSendBlock(params: CreateSendBlockParams & NonThrowing): Result<StateBlock>;
+export function createSendBlock(params: CreateSendBlockParams & NonThrowing): CreateSendBlockResult;
 export function createSendBlock(params: CreateSendBlockParams & Throwing): StateBlock;
-export function createSendBlock(params: CreateSendBlockParams): StateBlock | Result<StateBlock>;
-export function createSendBlock(params: CreateSendBlockParams) {
-  if (params.throwOnError === false) {
-    return createSendBlockNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return createSendBlockThrowing({ ...params, throwOnError: true });
-  }
+export function createSendBlock(
+  params: CreateSendBlockParams & (Throwing | NonThrowing)
+): StateBlock | CreateSendBlockResult;
+export function createSendBlock(params: CreateSendBlockParams & (Throwing | NonThrowing)) {
+  const result = ((): CreateSendBlockResult => {
+    try {
+      const frontierBlockResult = StateBlock().safeParse(params.frontierBlock);
+      if (!frontierBlockResult.success) {
+        return Result.err(new BlockError(BlockErrorCode.InvalidFrontierBlock, "Invalid frontier state block."));
+      }
+      const frontierBlock = frontierBlockResult.data;
+
+      const frontierLinkAsAccountResult = deriveAccountFromLink({ link: frontierBlock.link, throwOnError: false });
+      if (!frontierLinkAsAccountResult.success) {
+        return Result.err(
+          new BlockError(
+            BlockErrorCode.DeriveAccountFromFrontierLinkFailed,
+            "Failed to derive the frontier block link account.",
+            {
+              cause: frontierLinkAsAccountResult.error,
+            }
+          )
+        );
+      }
+      if (frontierLinkAsAccountResult.data !== frontierBlock.link_as_account) {
+        return Result.err(
+          new BlockError(BlockErrorCode.FrontierLinkMismatch, "Frontier block link and link_as_account do not match.")
+        );
+      }
+
+      if (
+        (typeof params.amount === "bigint" && params.amount < 0n) ||
+        (typeof params.amount === "string" && params.amount.startsWith("-"))
+      ) {
+        return Result.err(
+          new BlockError(BlockErrorCode.NegativeAmount, "Invalid amount: negative raw amounts are not allowed.")
+        );
+      }
+
+      const amountResult = RawAmountString().safeParse(
+        typeof params.amount === "bigint" ? params.amount.toString() : params.amount
+      );
+      if (!amountResult.success || amountResult.data === "0") {
+        return Result.err(
+          new BlockError(BlockErrorCode.InvalidAmount, "Invalid amount: expected a positive raw amount.")
+        );
+      }
+
+      const destinationResult = AccountString().safeParse(params.destination);
+      if (!destinationResult.success) {
+        return Result.err(new BlockError(BlockErrorCode.InvalidDestination, "Invalid destination account."));
+      }
+
+      const representativeResult = AccountString().safeParse(params.representative ?? frontierBlock.representative);
+      if (!representativeResult.success) {
+        return Result.err(new BlockError(BlockErrorCode.InvalidRepresentative, "Invalid representative account."));
+      }
+
+      const previousResult = hashBlock({ block: frontierBlock, throwOnError: false });
+      if (!previousResult.success) {
+        return Result.err(
+          new BlockError(BlockErrorCode.HashFrontierBlockFailed, "Failed to hash the frontier block.", {
+            cause: previousResult.error,
+          })
+        );
+      }
+
+      const balanceResult = rawMinus({
+        raw: frontierBlock.balance,
+        subtrahend: amountResult.data,
+        throwOnError: false,
+      });
+      if (!balanceResult.success) {
+        return Result.err(
+          new BlockError(BlockErrorCode.InsufficientBalance, "The send amount exceeds the frontier balance.", {
+            cause: balanceResult.error,
+          })
+        );
+      }
+
+      const linkResult = derivePublicKeyFromAccount({ account: destinationResult.data, throwOnError: false });
+      if (!linkResult.success) {
+        return Result.err(
+          new BlockError(
+            BlockErrorCode.DerivePublicKeyFromDestinationFailed,
+            "Failed to derive the destination public key.",
+            {
+              cause: linkResult.error,
+            }
+          )
+        );
+      }
+
+      const block: StateBlock = {
+        type: "state",
+        account: frontierBlock.account,
+        previous: previousResult.data,
+        representative: representativeResult.data,
+        balance: balanceResult.data,
+        link: linkResult.data,
+        link_as_account: destinationResult.data,
+        signature: SignatureStrings.zero(),
+        work: WorkStrings.zero(),
+      };
+
+      if (params.privateKey !== undefined) {
+        const signatureResult = signBlock({ block, privateKey: params.privateKey, throwOnError: false });
+        if (!signatureResult.success) {
+          return Result.err(
+            new BlockError(BlockErrorCode.SignBlockFailed, "Failed to sign the state block.", {
+              cause: signatureResult.error,
+            })
+          );
+        }
+        block.signature = signatureResult.data;
+      }
+
+      const blockResult = StateBlock().safeParse(block);
+      if (!blockResult.success) {
+        return Result.err(new BlockError(BlockErrorCode.InvalidCreatedBlock, "Failed to create a valid state block."));
+      }
+
+      return Result.ok(block);
+    } catch (e) {
+      return Result.err(new BlockError(BlockErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+  return Result.unwrap(result, params.throwOnError);
 }

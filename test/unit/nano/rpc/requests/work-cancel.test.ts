@@ -1,4 +1,5 @@
 import { WorkCancelRequest } from "../../../../../src/nano/rpc/requests/work-cancel";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("WorkCancelRequest schema", () => {
@@ -7,7 +8,7 @@ describe("WorkCancelRequest schema", () => {
       action: "work_cancel",
       hash: TestData.Valid.Hash1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects work cancel request with invalid hash", () => {
@@ -15,6 +16,6 @@ describe("WorkCancelRequest schema", () => {
       action: "work_cancel",
       hash: TestData.Invalid.Hash.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

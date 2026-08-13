@@ -1,4 +1,5 @@
 import { signHash } from "../../../../src/nano/crypto/sign-hash";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("signHash function", () => {
@@ -38,7 +39,7 @@ describe("signHash function", () => {
       { hash: TestData.Valid.Hash3(), privateKey: TestData.Invalid.PrivateKey.TooShort() },
     ];
     for (let i = 0; i < data.length; i++) {
-      expect(signHash({ hash: data[i].hash, privateKey: data[i].privateKey, throwOnError: false }).success).toBe(false);
+      assert(!signHash({ hash: data[i].hash, privateKey: data[i].privateKey, throwOnError: false }).success);
     }
   });
 });

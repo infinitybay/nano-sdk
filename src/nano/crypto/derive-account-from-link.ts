@@ -4,42 +4,50 @@ import { NonThrowing } from "../types/non-throwing";
 import { PublicKeyString } from "../types/public-key";
 import { Result } from "../types/result";
 import { Throwing } from "../types/throwing";
+import { CryptoError } from "./crypto-error";
+import { CryptoErrorCode } from "./crypto-error-code";
 import { deriveAccountFromPublicKey } from "./derive-account-from-public-key";
 
-type DeriveAccountFromLinkParams = {
+export type DeriveAccountFromLinkParams = {
   link: LinkString;
-} & (Throwing | NonThrowing);
+};
 
-function deriveAccountFromLinkThrowing(params: DeriveAccountFromLinkParams & Throwing): AccountString {
-  const publicKeyResult = PublicKeyString().safeParse(params.link);
-  if (!publicKeyResult.success) {
-    throw new Error("Invalid link: cannot convert to public key.");
-  }
+export type DeriveAccountFromLinkResult = Result<
+  AccountString,
+  CryptoError<
+    CryptoErrorCode.DeriveAccountFromPublicKeyFailed | CryptoErrorCode.InvalidLink | CryptoErrorCode.Unexpected
+  >
+>;
 
-  return deriveAccountFromPublicKey({ publicKey: publicKeyResult.data, throwOnError: true });
-}
-
-function deriveAccountFromLinkNonThrowing(params: DeriveAccountFromLinkParams & NonThrowing): Result<AccountString> {
-  try {
-    return {
-      success: true,
-      data: deriveAccountFromLinkThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      success: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function deriveAccountFromLink(params: DeriveAccountFromLinkParams & NonThrowing): Result<AccountString>;
+export function deriveAccountFromLink(params: DeriveAccountFromLinkParams & NonThrowing): DeriveAccountFromLinkResult;
 export function deriveAccountFromLink(params: DeriveAccountFromLinkParams & Throwing): AccountString;
-export function deriveAccountFromLink(params: DeriveAccountFromLinkParams): AccountString | Result<AccountString>;
-export function deriveAccountFromLink(params: DeriveAccountFromLinkParams) {
-  if (params.throwOnError === false) {
-    return deriveAccountFromLinkNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return deriveAccountFromLinkThrowing({ ...params, throwOnError: true });
-  }
+export function deriveAccountFromLink(
+  params: DeriveAccountFromLinkParams & (Throwing | NonThrowing)
+): AccountString | DeriveAccountFromLinkResult;
+export function deriveAccountFromLink(params: DeriveAccountFromLinkParams & (Throwing | NonThrowing)) {
+  const result = ((): DeriveAccountFromLinkResult => {
+    try {
+      const publicKeyResult = PublicKeyString().safeParse(params.link);
+      if (!publicKeyResult.success) {
+        return Result.err(new CryptoError(CryptoErrorCode.InvalidLink, "Invalid link: cannot convert to public key."));
+      }
+
+      const accountResult = deriveAccountFromPublicKey({ publicKey: publicKeyResult.data, throwOnError: false });
+      if (!accountResult.success) {
+        return Result.err(
+          new CryptoError(
+            CryptoErrorCode.DeriveAccountFromPublicKeyFailed,
+            "Failed to derive account from link public key.",
+            { cause: accountResult.error }
+          )
+        );
+      }
+
+      return Result.ok(accountResult.data);
+    } catch (e) {
+      return Result.err(new CryptoError(CryptoErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+
+  return Result.unwrap(result, params.throwOnError);
 }

@@ -1,4 +1,5 @@
 import { RepresentativesOnlineResponse } from "../../../../../src/nano/rpc/responses/representatives-online";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("RepresentativesOnlineResponse schema", () => {
@@ -7,7 +8,7 @@ describe("RepresentativesOnlineResponse schema", () => {
     const result = schema.safeParse({
       representatives: "",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses representatives online response with weights", () => {
@@ -18,7 +19,7 @@ describe("RepresentativesOnlineResponse schema", () => {
         [TestData.Valid.Representative2()]: { weight: TestData.Valid.RawAmount2() },
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses representatives online response without weights", () => {
@@ -26,6 +27,6 @@ describe("RepresentativesOnlineResponse schema", () => {
     const result = schema.safeParse({
       representatives: [TestData.Valid.Representative1(), TestData.Valid.Representative2()],
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 });

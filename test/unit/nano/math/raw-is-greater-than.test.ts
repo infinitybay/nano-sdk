@@ -1,6 +1,8 @@
+import { MathErrorCode } from "../../../../src/nano/math/math-error-code";
 import { rawIsGreaterThan } from "../../../../src/nano/math/raw-is-greater-than";
 import { RawAmountStrings } from "../../../../src/nano/types/amount";
 import { assert } from "../../../assert";
+import { expectErrorCode, expectToThrowErrorCode } from "../../../expect";
 
 describe("rawIsGreaterThan", () => {
   test("returns true when left is larger than right", () => {
@@ -40,15 +42,21 @@ describe("rawIsGreaterThan", () => {
   test("returns predicate error for invalid inputs without throwing", () => {
     const leftInvalid = rawIsGreaterThan({ raw: "", compareTo: RawAmountStrings.zero(), throwOnError: false });
     assert(!leftInvalid.checked);
-    expect(leftInvalid.error).toBeInstanceOf(Error);
+    expectErrorCode(leftInvalid.error, MathErrorCode.InvalidRaw);
 
     const rightInvalid = rawIsGreaterThan({ raw: RawAmountStrings.zero(), compareTo: "-1", throwOnError: false });
     assert(!rightInvalid.checked);
-    expect(rightInvalid.error).toBeInstanceOf(Error);
+    expectErrorCode(rightInvalid.error, MathErrorCode.InvalidCompareTo);
   });
 
   test("throws for invalid inputs when throwOnError is true", () => {
-    expect(() => rawIsGreaterThan({ raw: "", compareTo: RawAmountStrings.zero(), throwOnError: true })).toThrow();
-    expect(() => rawIsGreaterThan({ raw: RawAmountStrings.zero(), compareTo: "-1", throwOnError: true })).toThrow();
+    expectToThrowErrorCode(
+      () => rawIsGreaterThan({ raw: "", compareTo: RawAmountStrings.zero(), throwOnError: true }),
+      MathErrorCode.InvalidRaw
+    );
+    expectToThrowErrorCode(
+      () => rawIsGreaterThan({ raw: RawAmountStrings.zero(), compareTo: "-1", throwOnError: true }),
+      MathErrorCode.InvalidCompareTo
+    );
   });
 });

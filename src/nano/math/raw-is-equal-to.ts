@@ -1,35 +1,48 @@
+import { RawAmount } from "../types/amount";
 import { NonThrowing } from "../types/non-throwing";
-import { PredicateResult } from "../types/result";
+import { PredicateResult, Result } from "../types/result";
 import { Throwing } from "../types/throwing";
-import { compareRawValues, RawComparisonInputs } from "./comparison";
+import { RawComparisonInputs } from "./comparison";
+import { MathError } from "./math-error";
+import { MathErrorCode } from "./math-error-code";
 
-type RawIsEqualToParams = RawComparisonInputs & (Throwing | NonThrowing);
+export type RawIsEqualToParams = RawComparisonInputs;
 
-function rawIsEqualToThrowing(params: RawIsEqualToParams & Throwing): boolean {
-  return compareRawValues(params.raw, params.compareTo) === 0;
-}
+export type RawIsEqualToResult = PredicateResult<
+  "checked",
+  "equal",
+  MathError<MathErrorCode.InvalidCompareTo | MathErrorCode.InvalidRaw | MathErrorCode.Unexpected>
+>;
 
-function rawIsEqualToNonThrowing(params: RawIsEqualToParams & NonThrowing): PredicateResult<"checked", "equal"> {
-  try {
-    return {
-      checked: true,
-      equal: rawIsEqualToThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      checked: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function rawIsEqualTo(params: RawIsEqualToParams & NonThrowing): PredicateResult<"checked", "equal">;
+export function rawIsEqualTo(params: RawIsEqualToParams & NonThrowing): RawIsEqualToResult;
 export function rawIsEqualTo(params: RawIsEqualToParams & Throwing): boolean;
-export function rawIsEqualTo(params: RawIsEqualToParams): PredicateResult<"checked", "equal"> | boolean;
-export function rawIsEqualTo(params: RawIsEqualToParams) {
+export function rawIsEqualTo(params: RawIsEqualToParams & (Throwing | NonThrowing)): RawIsEqualToResult | boolean;
+export function rawIsEqualTo(params: RawIsEqualToParams & (Throwing | NonThrowing)) {
+  const result = ((): Result<boolean, Extract<RawIsEqualToResult, { checked: false }>["error"]> => {
+    try {
+      const rawResult = RawAmount().safeParse(params.raw);
+      if (!rawResult.success) {
+        return Result.err(new MathError(MathErrorCode.InvalidRaw, "Invalid raw value."));
+      }
+
+      const compareToResult = RawAmount().safeParse(params.compareTo);
+      if (!compareToResult.success) {
+        return Result.err(new MathError(MathErrorCode.InvalidCompareTo, "Invalid compareTo value."));
+      }
+
+      return Result.ok(rawResult.data === compareToResult.data);
+    } catch (e) {
+      return Result.err(new MathError(MathErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+
   if (params.throwOnError === false) {
-    return rawIsEqualToNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return rawIsEqualToThrowing({ ...params, throwOnError: true });
+    if (result.success) {
+      return { checked: true, equal: result.data };
+    }
+
+    return { checked: false, error: result.error };
   }
+
+  return Result.unwrap(result, params.throwOnError);
 }

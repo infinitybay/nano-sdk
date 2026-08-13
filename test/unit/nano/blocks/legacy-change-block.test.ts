@@ -1,10 +1,11 @@
 import { LegacyChangeBlock } from "../../../../src/nano/blocks/legacy-change-block";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("LegacyChangeBlock schema", () => {
   test("validates structure for change blocks", () => {
     const result = LegacyChangeBlock().safeParse(TestData.Valid.LegacyChangeBlock());
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects change blocks with invalid data", () => {
@@ -16,7 +17,7 @@ describe("LegacyChangeBlock schema", () => {
     ];
     for (const invalidChangeBlock of invalidChangeBlocks) {
       const result = LegacyChangeBlock().safeParse(invalidChangeBlock);
-      expect(result.success).toBe(false);
+      assert(!result.success);
     }
   });
 });

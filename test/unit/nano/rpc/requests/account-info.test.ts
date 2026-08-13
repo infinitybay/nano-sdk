@@ -1,4 +1,5 @@
 import { AccountInfoRequest } from "../../../../../src/nano/rpc/requests/account-info";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountInfoRequest schema", () => {
@@ -11,7 +12,7 @@ describe("AccountInfoRequest schema", () => {
       receivable: true,
       include_confirmed: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects account info request with invalid account", () => {
@@ -19,6 +20,6 @@ describe("AccountInfoRequest schema", () => {
       action: "account_info",
       account: TestData.Invalid.Account.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

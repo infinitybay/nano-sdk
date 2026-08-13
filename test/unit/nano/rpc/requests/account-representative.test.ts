@@ -1,4 +1,5 @@
 import { AccountRepresentativeRequest } from "../../../../../src/nano/rpc/requests/account-representative";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountRepresentativeRequest schema", () => {
@@ -7,7 +8,7 @@ describe("AccountRepresentativeRequest schema", () => {
       action: "account_representative",
       account: TestData.Valid.Account1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects account representative request with invalid account", () => {
@@ -15,6 +16,6 @@ describe("AccountRepresentativeRequest schema", () => {
       action: "account_representative",
       account: TestData.Invalid.Account.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

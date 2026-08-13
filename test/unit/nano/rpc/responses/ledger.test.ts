@@ -1,4 +1,5 @@
 import { LedgerResponse } from "../../../../../src/nano/rpc/responses/ledger";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("LedgerResponse schema", () => {
@@ -7,7 +8,7 @@ describe("LedgerResponse schema", () => {
     const result = schema.safeParse({
       accounts: "",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses ledger response with receivable, representative, and weight", () => {
@@ -28,7 +29,7 @@ describe("LedgerResponse schema", () => {
         },
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses ledger response without optional properties when flags are false", () => {
@@ -45,7 +46,7 @@ describe("LedgerResponse schema", () => {
         },
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects ledger response when receivable fields are missing despite flag", () => {
@@ -62,7 +63,7 @@ describe("LedgerResponse schema", () => {
         },
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects ledger response when representative field is missing despite flag", () => {
@@ -79,7 +80,7 @@ describe("LedgerResponse schema", () => {
         },
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects ledger response when weight field is missing despite flag", () => {
@@ -96,6 +97,6 @@ describe("LedgerResponse schema", () => {
         },
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

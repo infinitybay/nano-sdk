@@ -1,4 +1,5 @@
 import { StatsResponse } from "../../../../../src/nano/rpc/responses/stats";
+import { assert } from "../../../../assert";
 
 describe("StatsResponse schema", () => {
   test("parses counters stats response", () => {
@@ -9,7 +10,7 @@ describe("StatsResponse schema", () => {
       entries: [{ time: "0", type: "t", detail: "d", dir: "in", value: "1" }],
       stat_duration_seconds: "5",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses samples stats response", () => {
@@ -20,7 +21,7 @@ describe("StatsResponse schema", () => {
       entries: [{ time: "0", sample: "s", min: "1", max: "2", values: ["1", "2"] }],
       stat_duration_seconds: "5",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses objects stats response", () => {
@@ -28,7 +29,7 @@ describe("StatsResponse schema", () => {
     const result = schema.safeParse({
       node: {},
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses database stats response", () => {
@@ -41,6 +42,6 @@ describe("StatsResponse schema", () => {
       overflow_pages: "1",
       page_size: "1",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 });

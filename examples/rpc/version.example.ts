@@ -8,7 +8,7 @@ async function fetchVersion() {
     console.log("Node Vendor:", version.node_vendor); // prints e.g. "Node Vendor: Nano V28.2"
   } catch (err) {
     if (err instanceof Nano.RPC.PostError) {
-      console.error("PostError:", err.message, err.status, err.statusText); // prints details if available
+      console.error("PostError:", err.code, err.message, err.status, err.statusText); // prints details if available
     } else {
       console.error("Unexpected error:", err);
     }

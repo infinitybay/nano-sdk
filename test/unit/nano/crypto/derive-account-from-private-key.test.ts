@@ -1,4 +1,5 @@
 import { deriveAccountFromPrivateKey } from "../../../../src/nano/crypto/derive-account-from-private-key";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("deriveAccountFromPrivateKey function", () => {
@@ -29,7 +30,7 @@ describe("deriveAccountFromPrivateKey function", () => {
       TestData.Invalid.PrivateKey.TooShort(),
     ];
     for (const invalidPrivateKey of invalidPrivateKeys) {
-      expect(deriveAccountFromPrivateKey({ privateKey: invalidPrivateKey, throwOnError: false }).success).toBe(false);
+      assert(!deriveAccountFromPrivateKey({ privateKey: invalidPrivateKey, throwOnError: false }).success);
     }
   });
 });

@@ -1,6 +1,8 @@
+import { MathErrorCode } from "../../../../src/nano/math/math-error-code";
 import { rawIsEqualTo } from "../../../../src/nano/math/raw-is-equal-to";
 import { RawAmountStrings } from "../../../../src/nano/types/amount";
 import { assert } from "../../../assert";
+import { expectErrorCode, expectToThrowErrorCode } from "../../../expect";
 
 describe("rawIsEqualTo", () => {
   test("returns true when values are equal", () => {
@@ -36,15 +38,21 @@ describe("rawIsEqualTo", () => {
   test("returns predicate error for invalid inputs without throwing", () => {
     const leftInvalid = rawIsEqualTo({ raw: "", compareTo: RawAmountStrings.zero(), throwOnError: false });
     assert(!leftInvalid.checked);
-    expect(leftInvalid.error).toBeInstanceOf(Error);
+    expectErrorCode(leftInvalid.error, MathErrorCode.InvalidRaw);
 
     const rightInvalid = rawIsEqualTo({ raw: RawAmountStrings.zero(), compareTo: "-1", throwOnError: false });
     assert(!rightInvalid.checked);
-    expect(rightInvalid.error).toBeInstanceOf(Error);
+    expectErrorCode(rightInvalid.error, MathErrorCode.InvalidCompareTo);
   });
 
   test("throws for invalid inputs when throwOnError is true", () => {
-    expect(() => rawIsEqualTo({ raw: "", compareTo: RawAmountStrings.zero(), throwOnError: true })).toThrow();
-    expect(() => rawIsEqualTo({ raw: RawAmountStrings.zero(), compareTo: "-1", throwOnError: true })).toThrow();
+    expectToThrowErrorCode(
+      () => rawIsEqualTo({ raw: "", compareTo: RawAmountStrings.zero(), throwOnError: true }),
+      MathErrorCode.InvalidRaw
+    );
+    expectToThrowErrorCode(
+      () => rawIsEqualTo({ raw: RawAmountStrings.zero(), compareTo: "-1", throwOnError: true }),
+      MathErrorCode.InvalidCompareTo
+    );
   });
 });

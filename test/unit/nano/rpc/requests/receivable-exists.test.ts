@@ -1,4 +1,5 @@
 import { ReceivableExistsRequest } from "../../../../../src/nano/rpc/requests/receivable-exists";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("ReceivableExistsRequest schema", () => {
@@ -9,7 +10,7 @@ describe("ReceivableExistsRequest schema", () => {
       include_active: true,
       include_only_confirmed: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects receivable exists request with invalid hash", () => {
@@ -17,6 +18,6 @@ describe("ReceivableExistsRequest schema", () => {
       action: "receivable_exists",
       hash: TestData.Invalid.Hash.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

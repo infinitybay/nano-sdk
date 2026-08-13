@@ -1,37 +1,50 @@
+import { RawAmount } from "../types/amount";
 import { NonThrowing } from "../types/non-throwing";
-import { PredicateResult } from "../types/result";
+import { PredicateResult, Result } from "../types/result";
 import { Throwing } from "../types/throwing";
-import { compareRawValues, RawComparisonInputs } from "./comparison";
+import { RawComparisonInputs } from "./comparison";
+import { MathError } from "./math-error";
+import { MathErrorCode } from "./math-error-code";
 
-type RawIsGreaterThanParams = RawComparisonInputs & (Throwing | NonThrowing);
+export type RawIsGreaterThanParams = RawComparisonInputs;
 
-function rawIsGreaterThanThrowing(params: RawIsGreaterThanParams & Throwing): boolean {
-  return compareRawValues(params.raw, params.compareTo) > 0;
-}
+export type RawIsGreaterThanResult = PredicateResult<
+  "checked",
+  "greater",
+  MathError<MathErrorCode.InvalidCompareTo | MathErrorCode.InvalidRaw | MathErrorCode.Unexpected>
+>;
 
-function rawIsGreaterThanNonThrowing(
-  params: RawIsGreaterThanParams & NonThrowing
-): PredicateResult<"checked", "greater"> {
-  try {
-    return {
-      checked: true,
-      greater: rawIsGreaterThanThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      checked: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function rawIsGreaterThan(params: RawIsGreaterThanParams & NonThrowing): PredicateResult<"checked", "greater">;
+export function rawIsGreaterThan(params: RawIsGreaterThanParams & NonThrowing): RawIsGreaterThanResult;
 export function rawIsGreaterThan(params: RawIsGreaterThanParams & Throwing): boolean;
-export function rawIsGreaterThan(params: RawIsGreaterThanParams): PredicateResult<"checked", "greater"> | boolean;
-export function rawIsGreaterThan(params: RawIsGreaterThanParams) {
+export function rawIsGreaterThan(
+  params: RawIsGreaterThanParams & (Throwing | NonThrowing)
+): RawIsGreaterThanResult | boolean;
+export function rawIsGreaterThan(params: RawIsGreaterThanParams & (Throwing | NonThrowing)) {
+  const result = ((): Result<boolean, Extract<RawIsGreaterThanResult, { checked: false }>["error"]> => {
+    try {
+      const rawResult = RawAmount().safeParse(params.raw);
+      if (!rawResult.success) {
+        return Result.err(new MathError(MathErrorCode.InvalidRaw, "Invalid raw value."));
+      }
+
+      const compareToResult = RawAmount().safeParse(params.compareTo);
+      if (!compareToResult.success) {
+        return Result.err(new MathError(MathErrorCode.InvalidCompareTo, "Invalid compareTo value."));
+      }
+
+      return Result.ok(rawResult.data > compareToResult.data);
+    } catch (e) {
+      return Result.err(new MathError(MathErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+
   if (params.throwOnError === false) {
-    return rawIsGreaterThanNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return rawIsGreaterThanThrowing({ ...params, throwOnError: true });
+    if (result.success) {
+      return { checked: true, greater: result.data };
+    }
+
+    return { checked: false, error: result.error };
   }
+
+  return Result.unwrap(result, params.throwOnError);
 }

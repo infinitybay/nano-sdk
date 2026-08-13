@@ -1,4 +1,5 @@
 import { derivePublicKeyFromPrivateKey } from "../../../../src/nano/crypto/derive-public-key-from-private-key";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("derivePublicKeyFromPrivateKey function", () => {
@@ -29,7 +30,7 @@ describe("derivePublicKeyFromPrivateKey function", () => {
       TestData.Invalid.PrivateKey.TooShort(),
     ];
     for (const invalidPrivateKey of invalidPrivateKeys) {
-      expect(derivePublicKeyFromPrivateKey({ privateKey: invalidPrivateKey, throwOnError: false }).success).toBe(false);
+      assert(!derivePublicKeyFromPrivateKey({ privateKey: invalidPrivateKey, throwOnError: false }).success);
     }
   });
 });

@@ -1,13 +1,14 @@
 import { WorkCancelResponse } from "../../../../../src/nano/rpc/responses/work-cancel";
+import { assert } from "../../../../assert";
 
 describe("WorkCancelResponse schema", () => {
   test("parses work cancel response", () => {
     const result = WorkCancelResponse().safeParse({ success: "" });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects work cancel response without success", () => {
     const result = WorkCancelResponse().safeParse({});
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

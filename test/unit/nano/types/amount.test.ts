@@ -1,4 +1,5 @@
 import { NanoAmountString, RawAmountString } from "../../../../src/nano/types/amount";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("Amount schema validation", () => {
@@ -27,30 +28,30 @@ describe("Amount schema validation", () => {
   });
 
   test("rejects raw amounts with invalid characters", () => {
-    expect(RawAmountString().safeParse(TestData.Invalid.RawAmount.InvalidCharacters()).success).toBe(false);
+    assert(!RawAmountString().safeParse(TestData.Invalid.RawAmount.InvalidCharacters()).success);
   });
 
   test("rejects raw amounts containing decimal points", () => {
-    expect(RawAmountString().safeParse(TestData.Invalid.RawAmount.InvalidDecimalPoint()).success).toBe(false);
+    assert(!RawAmountString().safeParse(TestData.Invalid.RawAmount.InvalidDecimalPoint()).success);
   });
 
   test("rejects negative raw amounts", () => {
-    expect(RawAmountString().safeParse(TestData.Invalid.RawAmount.Negative()).success).toBe(false);
+    assert(!RawAmountString().safeParse(TestData.Invalid.RawAmount.Negative()).success);
   });
 
   test("rejects raw amounts exceeding maximum", () => {
-    expect(RawAmountString().safeParse(TestData.Invalid.RawAmount.TooHigh()).success).toBe(false);
+    assert(!RawAmountString().safeParse(TestData.Invalid.RawAmount.TooHigh()).success);
   });
 
   test("rejects nano amounts with invalid characters", () => {
-    expect(NanoAmountString().safeParse(TestData.Invalid.NanoAmount.InvalidCharacters()).success).toBe(false);
+    assert(!NanoAmountString().safeParse(TestData.Invalid.NanoAmount.InvalidCharacters()).success);
   });
 
   test("rejects negative nano amounts", () => {
-    expect(NanoAmountString().safeParse(TestData.Invalid.NanoAmount.Negative()).success).toBe(false);
+    assert(!NanoAmountString().safeParse(TestData.Invalid.NanoAmount.Negative()).success);
   });
 
   test("rejects nano amounts exceeding maximum", () => {
-    expect(NanoAmountString().safeParse(TestData.Invalid.NanoAmount.TooHigh()).success).toBe(false);
+    assert(!NanoAmountString().safeParse(TestData.Invalid.NanoAmount.TooHigh()).success);
   });
 });

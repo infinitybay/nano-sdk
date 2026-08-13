@@ -1,4 +1,5 @@
 import { KeepaliveRequest } from "../../../../../src/nano/rpc/requests/keepalive";
+import { assert } from "../../../../assert";
 
 describe("KeepaliveRequest schema", () => {
   test("validates keepalive request", () => {
@@ -7,7 +8,7 @@ describe("KeepaliveRequest schema", () => {
       address: "127.0.0.1",
       port: "7075",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects keepalive request with missing address", () => {
@@ -15,6 +16,6 @@ describe("KeepaliveRequest schema", () => {
       action: "keepalive",
       port: "7075",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

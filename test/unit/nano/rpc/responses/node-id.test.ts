@@ -1,4 +1,5 @@
 import { NodeIdResponse } from "../../../../../src/nano/rpc/responses/node-id";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("NodeIdResponse schema", () => {
@@ -8,7 +9,7 @@ describe("NodeIdResponse schema", () => {
       as_account: TestData.Valid.Account1(),
       node_id: TestData.Valid.NodeId1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects node id response with invalid account", () => {
@@ -17,6 +18,6 @@ describe("NodeIdResponse schema", () => {
       as_account: TestData.Invalid.Account.InvalidCharacters(),
       node_id: TestData.Valid.NodeId1(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

@@ -1,4 +1,5 @@
 import { Ack } from "../../../../../src/nano/web-socket/types/ack";
+import { assert } from "../../../../assert";
 
 describe("Ack schema", () => {
   test("validates action acknowledgements and pong", () => {
@@ -9,6 +10,6 @@ describe("Ack schema", () => {
   });
 
   test("rejects unsupported acknowledgements", () => {
-    expect(Ack().safeParse("ping").success).toBe(false);
+    assert(!Ack().safeParse("ping").success);
   });
 });

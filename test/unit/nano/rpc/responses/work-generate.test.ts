@@ -1,4 +1,5 @@
 import { WorkGenerateResponse } from "../../../../../src/nano/rpc/responses/work-generate";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("WorkGenerateResponse schema", () => {
@@ -9,7 +10,7 @@ describe("WorkGenerateResponse schema", () => {
       difficulty: TestData.Valid.WorkDifficulty1(),
       multiplier: "1.0",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects work generate response with invalid work", () => {
@@ -19,6 +20,6 @@ describe("WorkGenerateResponse schema", () => {
       difficulty: TestData.Valid.WorkDifficulty1(),
       multiplier: "1.0",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

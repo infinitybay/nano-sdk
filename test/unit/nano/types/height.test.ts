@@ -1,4 +1,5 @@
 import { Height, HeightBounds, HeightString } from "../../../../src/nano/types/height";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("Height schema", () => {
@@ -10,13 +11,13 @@ describe("Height schema", () => {
   });
 
   test("rejects heights outside allowed bounds", () => {
-    expect(Height().safeParse(-1).success).toBe(false);
-    expect(Height().safeParse(HeightBounds.max() + 1).success).toBe(false);
+    assert(!Height().safeParse(-1).success);
+    assert(!Height().safeParse(HeightBounds.max() + 1).success);
   });
 
   test("rejects non-integer heights", () => {
-    expect(Height().safeParse(1.5).success).toBe(false);
-    expect(Height().safeParse("1").success).toBe(false);
+    assert(!Height().safeParse(1.5).success);
+    assert(!Height().safeParse("1").success);
   });
 });
 
@@ -34,18 +35,18 @@ describe("HeightString schema", () => {
   });
 
   test("rejects heights with invalid characters", () => {
-    expect(HeightString().safeParse(TestData.Invalid.Height.InvalidCharacters()).success).toBe(false);
+    assert(!HeightString().safeParse(TestData.Invalid.Height.InvalidCharacters()).success);
   });
 
   test("rejects heights containing decimal points", () => {
-    expect(HeightString().safeParse(TestData.Invalid.Height.InvalidDecimalPoint()).success).toBe(false);
+    assert(!HeightString().safeParse(TestData.Invalid.Height.InvalidDecimalPoint()).success);
   });
 
   test("rejects negative heights", () => {
-    expect(HeightString().safeParse(TestData.Invalid.Height.Negative()).success).toBe(false);
+    assert(!HeightString().safeParse(TestData.Invalid.Height.Negative()).success);
   });
 
   test("rejects heights exceeding maximum", () => {
-    expect(HeightString().safeParse(TestData.Invalid.Height.TooHigh()).success).toBe(false);
+    assert(!HeightString().safeParse(TestData.Invalid.Height.TooHigh()).success);
   });
 });

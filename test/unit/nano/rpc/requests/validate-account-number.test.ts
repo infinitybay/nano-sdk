@@ -1,4 +1,5 @@
 import { ValidateAccountNumberRequest } from "../../../../../src/nano/rpc/requests/validate-account-number";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("ValidateAccountNumberRequest schema", () => {
@@ -7,7 +8,7 @@ describe("ValidateAccountNumberRequest schema", () => {
       action: "validate_account_number",
       account: TestData.Valid.Account1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects account number validation request with invalid action", () => {
@@ -15,6 +16,6 @@ describe("ValidateAccountNumberRequest schema", () => {
       action: "validate_account_number_invalid",
       account: TestData.Valid.Account1(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

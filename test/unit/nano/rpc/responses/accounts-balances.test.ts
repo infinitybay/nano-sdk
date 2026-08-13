@@ -1,4 +1,5 @@
 import { AccountsBalancesResponse } from "../../../../../src/nano/rpc/responses/accounts-balances";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("AccountsBalancesResponse schema", () => {
@@ -12,7 +13,7 @@ describe("AccountsBalancesResponse schema", () => {
         },
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects balances map with invalid account key", () => {
@@ -25,7 +26,7 @@ describe("AccountsBalancesResponse schema", () => {
         },
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects balances map with invalid balance", () => {
@@ -38,6 +39,6 @@ describe("AccountsBalancesResponse schema", () => {
         },
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

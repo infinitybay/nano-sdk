@@ -2,6 +2,7 @@ import {
   NewUnconfirmedBlockMessage,
   NewUnconfirmedBlockResponse,
 } from "../../../../../src/nano/web-socket/responses/new-unconfirmed-block";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("NewUnconfirmedBlockMessage schema", () => {
@@ -10,17 +11,17 @@ describe("NewUnconfirmedBlockMessage schema", () => {
       ...TestData.Valid.StateBlock1(),
       subtype: "send",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("validates new unconfirmed block message with legacy block", () => {
     const result = NewUnconfirmedBlockMessage().safeParse(TestData.Valid.LegacyOpenBlock());
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects new unconfirmed block message with missing fields", () => {
     const result = NewUnconfirmedBlockMessage().safeParse({ type: "state" });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });
 
@@ -35,7 +36,7 @@ describe("NewUnconfirmedBlockResponse schema", () => {
         subtype: "receive",
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects new unconfirmed block response with invalid hash", () => {
@@ -48,6 +49,6 @@ describe("NewUnconfirmedBlockResponse schema", () => {
         subtype: "receive",
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

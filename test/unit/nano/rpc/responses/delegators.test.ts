@@ -1,4 +1,5 @@
 import { DelegatorsResponse } from "../../../../../src/nano/rpc/responses/delegators";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("DelegatorsResponse schema", () => {
@@ -6,7 +7,7 @@ describe("DelegatorsResponse schema", () => {
     const result = DelegatorsResponse().safeParse({
       delegators: "",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses delegators response", () => {
@@ -16,7 +17,7 @@ describe("DelegatorsResponse schema", () => {
         [TestData.Valid.Account2()]: TestData.Valid.RawAmount2(),
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects delegators response with invalid account key", () => {
@@ -25,6 +26,6 @@ describe("DelegatorsResponse schema", () => {
         [TestData.Invalid.Account.InvalidCharacters()]: TestData.Valid.RawAmount1(),
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

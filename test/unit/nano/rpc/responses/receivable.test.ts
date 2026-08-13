@@ -8,7 +8,7 @@ describe("ReceivableResponse schema", () => {
     const result = schema.safeParse({
       blocks: "",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses receivable response with min_version, source and threshold", () => {
@@ -52,7 +52,7 @@ describe("ReceivableResponse schema", () => {
         },
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses receivable response with threshold", () => {
@@ -62,7 +62,7 @@ describe("ReceivableResponse schema", () => {
         [TestData.Valid.Hash1()]: TestData.Valid.RawAmount1(),
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses receivable response when no flags are set", () => {
@@ -70,6 +70,6 @@ describe("ReceivableResponse schema", () => {
     const result = schema.safeParse({
       blocks: [TestData.Valid.Hash1(), TestData.Valid.Hash2()],
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 });

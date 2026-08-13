@@ -1,5 +1,6 @@
 import { UIntBounds, UIntString } from "../../../../src/nano/types/uint";
 import { UInt } from "../../../../src/nano/types/uint";
+import { assert } from "../../../assert";
 
 describe("UInt schema", () => {
   test("validates unsigned integers at or above zero", () => {
@@ -12,21 +13,21 @@ describe("UInt schema", () => {
   test("rejects negative integers", () => {
     const invalid = [-1, -5, -999999];
     for (const value of invalid) {
-      expect(UInt().safeParse(value).success).toBe(false);
+      assert(!UInt().safeParse(value).success);
     }
   });
 
   test("rejects non-integer numbers", () => {
     const invalid = [1.5, 0.1, 3.14];
     for (const value of invalid) {
-      expect(UInt().safeParse(value).success).toBe(false);
+      assert(!UInt().safeParse(value).success);
     }
   });
 
   test("rejects non-number types", () => {
     const invalid = ["0", "1", "-1", true, false, null, undefined];
     for (const value of invalid) {
-      expect(UInt().safeParse(value).success).toBe(false);
+      assert(!UInt().safeParse(value).success);
     }
   });
 });
@@ -42,35 +43,35 @@ describe("UIntString schema", () => {
   test("rejects negative integers", () => {
     const invalid = ["-1", "-42", "-999999"];
     for (const value of invalid) {
-      expect(UIntString().safeParse(value).success).toBe(false);
+      assert(!UIntString().safeParse(value).success);
     }
   });
 
   test("rejects strings with leading zeros", () => {
     const invalid = ["00", "01", "0005"];
     for (const value of invalid) {
-      expect(UIntString().safeParse(value).success).toBe(false);
+      assert(!UIntString().safeParse(value).success);
     }
   });
 
   test("rejects decimal numbers", () => {
     const invalid = ["1.0", "3.14", "0.1", "10.", ".5"];
     for (const value of invalid) {
-      expect(UIntString().safeParse(value).success).toBe(false);
+      assert(!UIntString().safeParse(value).success);
     }
   });
 
   test("rejects non-numeric strings", () => {
     const invalid = ["abc", "one", "", " ", "+1", "--1"];
     for (const value of invalid) {
-      expect(UIntString().safeParse(value).success).toBe(false);
+      assert(!UIntString().safeParse(value).success);
     }
   });
 
   test("rejects Infinity or NaN literals", () => {
     const invalid = ["Infinity", "NaN"];
     for (const value of invalid) {
-      expect(UIntString().safeParse(value).success).toBe(false);
+      assert(!UIntString().safeParse(value).success);
     }
   });
 });

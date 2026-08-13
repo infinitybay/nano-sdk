@@ -1,4 +1,5 @@
 import { ChainResponse } from "../../../../../src/nano/rpc/responses/chain";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("ChainResponse schema", () => {
@@ -6,20 +7,20 @@ describe("ChainResponse schema", () => {
     const result = ChainResponse().safeParse({
       blocks: "",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses chain response hashes", () => {
     const result = ChainResponse().safeParse({
       blocks: [TestData.Valid.Hash1(), TestData.Valid.Hash2()],
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects chain response with invalid hash entry", () => {
     const result = ChainResponse().safeParse({
       blocks: [TestData.Invalid.Hash.InvalidCharacters()],
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

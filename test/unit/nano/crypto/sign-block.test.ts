@@ -1,4 +1,7 @@
+import { CryptoErrorCode } from "../../../../src/nano/crypto/crypto-error-code";
 import { signBlock } from "../../../../src/nano/crypto/sign-block";
+import { assert } from "../../../assert";
+import { expectErrorCode, expectToThrowErrorCode } from "../../../expect";
 import { TestData } from "../../test-data";
 
 describe("signBlock function", () => {
@@ -19,10 +22,8 @@ describe("signBlock function", () => {
       throwOnError: false,
     });
 
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data).toBe(TestData.Valid.Signature2());
-    }
+    assert(result.success);
+    expect(result.data).toBe(TestData.Valid.Signature2());
   });
 
   test("rejects a private key belonging to another account", () => {
@@ -32,7 +33,8 @@ describe("signBlock function", () => {
       throwOnError: false,
     });
 
-    expect(result.success).toBe(false);
+    assert(!result.success);
+    expectErrorCode(result.error, CryptoErrorCode.KeyAccountMismatch);
   });
 
   test("rejects invalid state blocks and mismatched link_as_account values", () => {
@@ -44,7 +46,8 @@ describe("signBlock function", () => {
       privateKey: TestData.Valid.PrivateKey1(),
       throwOnError: false,
     });
-    expect(invalidBlockResult.success).toBe(false);
+    assert(!invalidBlockResult.success);
+    expectErrorCode(invalidBlockResult.error, CryptoErrorCode.InvalidBlock);
 
     const mismatchedLinkResult = signBlock({
       block: {
@@ -54,15 +57,18 @@ describe("signBlock function", () => {
       privateKey: TestData.Valid.PrivateKey1(),
       throwOnError: false,
     });
-    expect(mismatchedLinkResult.success).toBe(false);
+    assert(!mismatchedLinkResult.success);
+    expectErrorCode(mismatchedLinkResult.error, CryptoErrorCode.BlockLinkMismatch);
   });
 
   test("throws by default when signing fails", () => {
-    expect(() =>
-      signBlock({
-        block: TestData.Valid.StateBlock1(),
-        privateKey: TestData.Valid.PrivateKey2(),
-      })
-    ).toThrow();
+    expectToThrowErrorCode(
+      () =>
+        signBlock({
+          block: TestData.Valid.StateBlock1(),
+          privateKey: TestData.Valid.PrivateKey2(),
+        }),
+      CryptoErrorCode.KeyAccountMismatch
+    );
   });
 });

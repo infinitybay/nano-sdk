@@ -1,4 +1,5 @@
 import { BootstrapPrioritiesResponse } from "../../../../../src/nano/rpc/responses/bootstrap-priorities";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BootstrapPrioritiesResponse schema", () => {
@@ -7,7 +8,7 @@ describe("BootstrapPrioritiesResponse schema", () => {
       priorities: "",
       blocking: "",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses bootstrap priorities and blocking lists", () => {
@@ -24,7 +25,7 @@ describe("BootstrapPrioritiesResponse schema", () => {
         },
       ],
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects bootstrap priorities response with invalid dependency hash", () => {
@@ -38,6 +39,6 @@ describe("BootstrapPrioritiesResponse schema", () => {
         },
       ],
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

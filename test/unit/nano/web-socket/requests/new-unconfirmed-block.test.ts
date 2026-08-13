@@ -1,4 +1,5 @@
 import { NewUnconfirmedBlockRequest } from "../../../../../src/nano/web-socket/requests/new-unconfirmed-block";
+import { assert } from "../../../../assert";
 
 describe("NewUnconfirmedBlockRequest schema", () => {
   test("validates new unconfirmed block request", () => {
@@ -7,7 +8,7 @@ describe("NewUnconfirmedBlockRequest schema", () => {
       topic: "new_unconfirmed_block",
       ack: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects new unconfirmed block request with invalid topic", () => {
@@ -15,6 +16,6 @@ describe("NewUnconfirmedBlockRequest schema", () => {
       action: "subscribe",
       topic: "confirmation",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

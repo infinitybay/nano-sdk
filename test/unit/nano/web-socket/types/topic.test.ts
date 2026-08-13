@@ -1,4 +1,5 @@
 import { Topic } from "../../../../../src/nano/web-socket/types/topic";
+import { assert } from "../../../../assert";
 
 describe("Topic schema", () => {
   test("validates allowed topics", () => {
@@ -13,6 +14,6 @@ describe("Topic schema", () => {
   });
 
   test("rejects unsupported topics", () => {
-    expect(Topic().safeParse("other").success).toBe(false);
+    assert(!Topic().safeParse("other").success);
   });
 });

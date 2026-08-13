@@ -1,4 +1,5 @@
 import { UncheckedKeysRequest } from "../../../../../src/nano/rpc/requests/unchecked-keys";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("UncheckedKeysRequest schema", () => {
@@ -8,7 +9,7 @@ describe("UncheckedKeysRequest schema", () => {
       json_block: true,
       count: 5,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects unchecked keys request with invalid key hash", () => {
@@ -17,6 +18,6 @@ describe("UncheckedKeysRequest schema", () => {
       key: TestData.Invalid.Hash.InvalidCharacters(),
       count: 1,
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

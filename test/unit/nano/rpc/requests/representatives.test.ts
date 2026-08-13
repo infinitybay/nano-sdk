@@ -1,4 +1,5 @@
 import { RepresentativesRequest } from "../../../../../src/nano/rpc/requests/representatives";
+import { assert } from "../../../../assert";
 
 describe("RepresentativesRequest schema", () => {
   test("validates representatives request with optional sorting", () => {
@@ -7,14 +8,14 @@ describe("RepresentativesRequest schema", () => {
       count: 5,
       sorting: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects representatives request with invalid action", () => {
     const result = RepresentativesRequest().safeParse({
       action: "representatives_invalid",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects representatives request with invalid count", () => {
@@ -22,6 +23,6 @@ describe("RepresentativesRequest schema", () => {
       action: "representatives_invalid",
       count: -1,
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

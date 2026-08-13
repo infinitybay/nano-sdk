@@ -1,4 +1,5 @@
 import { PublicKeyString, PublicKeyStrings } from "../../../../src/nano/types/public-key";
+import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
 describe("PublicKeyString schema", () => {
@@ -28,14 +29,14 @@ describe("PublicKeyString schema", () => {
   });
 
   test("rejects public keys with invalid characters", () => {
-    expect(PublicKeyString().safeParse(TestData.Invalid.PublicKey.InvalidCharacters()).success).toBe(false);
+    assert(!PublicKeyString().safeParse(TestData.Invalid.PublicKey.InvalidCharacters()).success);
   });
 
   test("rejects public keys exceeding length limit", () => {
-    expect(PublicKeyString().safeParse(TestData.Invalid.PublicKey.TooLong()).success).toBe(false);
+    assert(!PublicKeyString().safeParse(TestData.Invalid.PublicKey.TooLong()).success);
   });
 
   test("rejects public keys below length requirement", () => {
-    expect(PublicKeyString().safeParse(TestData.Invalid.PublicKey.TooShort()).success).toBe(false);
+    assert(!PublicKeyString().safeParse(TestData.Invalid.PublicKey.TooShort()).success);
   });
 });

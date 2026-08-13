@@ -1,4 +1,5 @@
 import { DeterministicKeyRequest } from "../../../../../src/nano/rpc/requests/deterministic-key";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("DeterministicKeyRequest schema", () => {
@@ -8,7 +9,7 @@ describe("DeterministicKeyRequest schema", () => {
       seed: TestData.Valid.Seed1(),
       index: TestData.Valid.SeedIndex1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects deterministic key request with invalid seed", () => {
@@ -17,7 +18,7 @@ describe("DeterministicKeyRequest schema", () => {
       seed: TestData.Invalid.Seed.InvalidCharacters(),
       index: TestData.Valid.SeedIndex1(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects deterministic key request with negative index", () => {
@@ -26,6 +27,6 @@ describe("DeterministicKeyRequest schema", () => {
       seed: TestData.Valid.Seed1(),
       index: -1,
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

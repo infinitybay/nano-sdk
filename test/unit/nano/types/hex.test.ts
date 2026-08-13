@@ -1,4 +1,5 @@
 import { HexString } from "../../../../src/nano/types/hex";
+import { assert } from "../../../assert";
 
 describe("HexString schema", () => {
   test("accepts uppercase and lowercase hex strings", () => {
@@ -8,7 +9,7 @@ describe("HexString schema", () => {
   });
 
   test("rejects hex strings with non-hex characters", () => {
-    expect(HexString().safeParse("Z").success).toBe(false);
-    expect(HexString().safeParse("z").success).toBe(false);
+    assert(!HexString().safeParse("Z").success);
+    assert(!HexString().safeParse("z").success);
   });
 });

@@ -2,17 +2,18 @@ import {
   StoppedElectionMessage,
   StoppedElectionResponse,
 } from "../../../../../src/nano/web-socket/responses/stopped-election";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("StoppedElectionMessage schema", () => {
   test("validates stopped election message", () => {
     const result = StoppedElectionMessage().safeParse({ hash: TestData.Valid.Hash1() });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects stopped election message with invalid hash", () => {
     const result = StoppedElectionMessage().safeParse({ hash: TestData.Invalid.Hash.InvalidCharacters() });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });
 
@@ -23,7 +24,7 @@ describe("StoppedElectionResponse schema", () => {
       time: TestData.Valid.Timestamp1(),
       message: { hash: TestData.Valid.Hash2() },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects stopped election response with invalid time", () => {
@@ -32,6 +33,6 @@ describe("StoppedElectionResponse schema", () => {
       time: "-1",
       message: { hash: TestData.Valid.Hash2() },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

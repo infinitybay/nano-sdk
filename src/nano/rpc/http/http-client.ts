@@ -1,3 +1,4 @@
+import { PostErrorCode } from "./post-error-code";
 import { RequestConfig } from "./request-config";
 
 export interface HttpResponseSuccess {
@@ -10,6 +11,7 @@ export interface HttpResponseSuccess {
 export interface HttpResponseError {
   success: false;
   error: {
+    code?: PostErrorCode.HttpError | PostErrorCode.TransportError;
     message: string;
   };
   status?: number;
@@ -103,6 +105,7 @@ export const defaultHttpClient: HttpClient = {
       return {
         success: false,
         error: {
+          code: PostErrorCode.HttpError,
           message: response.statusText,
         },
         status: response.status,
@@ -112,6 +115,7 @@ export const defaultHttpClient: HttpClient = {
       return {
         success: false,
         error: {
+          code: PostErrorCode.TransportError,
           message: err instanceof Error ? err.message : "Unknown fetch error",
         },
       };

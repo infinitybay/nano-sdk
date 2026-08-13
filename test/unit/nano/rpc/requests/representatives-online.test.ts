@@ -1,4 +1,5 @@
 import { RepresentativesOnlineRequest } from "../../../../../src/nano/rpc/requests/representatives-online";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("RepresentativesOnlineRequest schema", () => {
@@ -8,7 +9,7 @@ describe("RepresentativesOnlineRequest schema", () => {
       accounts: [TestData.Valid.Account1(), TestData.Valid.Account2()],
       weight: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects representatives online request with invalid account", () => {
@@ -16,6 +17,6 @@ describe("RepresentativesOnlineRequest schema", () => {
       action: "representatives_online",
       accounts: [TestData.Invalid.Account.InvalidCharacters()],
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

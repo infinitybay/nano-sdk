@@ -1,4 +1,5 @@
 import { UncheckedResponse } from "../../../../../src/nano/rpc/responses/unchecked";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("UncheckedResponse schema", () => {
@@ -7,7 +8,7 @@ describe("UncheckedResponse schema", () => {
     const result = schema.safeParse({
       blocks: "",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses unchecked response with block objects when json flag is true", () => {
@@ -17,7 +18,7 @@ describe("UncheckedResponse schema", () => {
         [TestData.Valid.Hash1()]: TestData.Valid.StateBlock1(),
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses unchecked response with block strings when json flag is false", () => {
@@ -27,7 +28,7 @@ describe("UncheckedResponse schema", () => {
         [TestData.Valid.Hash1()]: "block-data",
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects unchecked response with invalid block contents when json flag is true", () => {
@@ -37,7 +38,7 @@ describe("UncheckedResponse schema", () => {
         [TestData.Valid.Hash1()]: "block-data",
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects unchecked response with invalid block hash key", () => {
@@ -47,6 +48,6 @@ describe("UncheckedResponse schema", () => {
         [TestData.Invalid.Hash.InvalidCharacters()]: "block-data",
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

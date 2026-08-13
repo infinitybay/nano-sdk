@@ -1,4 +1,5 @@
 import { BlocksResponse } from "../../../../../src/nano/rpc/responses/blocks";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BlocksResponse schema", () => {
@@ -9,7 +10,7 @@ describe("BlocksResponse schema", () => {
         [TestData.Valid.Hash2()]: TestData.Valid.StateBlock2(),
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses blocks response with string blocks", () => {
@@ -19,7 +20,7 @@ describe("BlocksResponse schema", () => {
         [TestData.Valid.Hash4()]: "block-data-2",
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects blocks response with invalid hash key", () => {
@@ -28,6 +29,6 @@ describe("BlocksResponse schema", () => {
         [TestData.Invalid.Hash.InvalidCharacters()]: "block-data",
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

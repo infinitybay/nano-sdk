@@ -1,4 +1,5 @@
 import { BlocksRequest } from "../../../../../src/nano/rpc/requests/blocks";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BlocksRequest schema", () => {
@@ -8,7 +9,7 @@ describe("BlocksRequest schema", () => {
       hashes: [TestData.Valid.Hash1(), TestData.Valid.Hash2()],
       json_block: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects blocks request with invalid hash list", () => {
@@ -16,6 +17,6 @@ describe("BlocksRequest schema", () => {
       action: "blocks",
       hashes: [TestData.Invalid.Hash.InvalidCharacters()],
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

@@ -1,4 +1,6 @@
 import { defaultHttpClient } from "../../../../../src/nano/rpc/http/http-client";
+import { PostErrorCode } from "../../../../../src/nano/rpc/http/post-error-code";
+import { assert } from "../../../../assert";
 
 describe("defaultHttpClient", () => {
   afterEach(() => {
@@ -113,9 +115,19 @@ describe("defaultHttpClient", () => {
   test("continues to return transport errors", async () => {
     jest.spyOn(globalThis, "fetch").mockRejectedValue(new Error("Network failure"));
 
-    await expect(defaultHttpClient.post("http://localhost", {})).resolves.toEqual({
-      success: false,
-      error: { message: "Network failure" },
-    });
+    const result = await defaultHttpClient.post("http://localhost", {});
+
+    assert(!result.success);
+    expect(result.error.code).toBe(PostErrorCode.TransportError);
+  });
+
+  test("returns an HTTP error code for non-success status responses", async () => {
+    jest.spyOn(globalThis, "fetch").mockResolvedValue(new Response(null, { status: 503 }));
+
+    const result = await defaultHttpClient.post("http://localhost", {});
+
+    assert(!result.success);
+    expect(result.error.code).toBe(PostErrorCode.HttpError);
+    expect(result.status).toBe(503);
   });
 });

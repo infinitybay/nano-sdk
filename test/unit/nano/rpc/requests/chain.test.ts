@@ -1,4 +1,5 @@
 import { ChainRequest } from "../../../../../src/nano/rpc/requests/chain";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("ChainRequest schema", () => {
@@ -10,7 +11,7 @@ describe("ChainRequest schema", () => {
       offset: 1,
       reverse: true,
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects chain request with invalid block hash", () => {
@@ -19,6 +20,6 @@ describe("ChainRequest schema", () => {
       block: TestData.Invalid.Hash.InvalidCharacters(),
       count: 5,
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

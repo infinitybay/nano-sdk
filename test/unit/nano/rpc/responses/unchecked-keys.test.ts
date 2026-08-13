@@ -1,4 +1,5 @@
 import { UncheckedKeysResponse } from "../../../../../src/nano/rpc/responses/unchecked-keys";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("UncheckedKeysResponse schema", () => {
@@ -7,7 +8,7 @@ describe("UncheckedKeysResponse schema", () => {
     const result = schema.safeParse({
       unchecked: "",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses unchecked keys response with block contents when json flag is true", () => {
@@ -20,7 +21,7 @@ describe("UncheckedKeysResponse schema", () => {
         contents: TestData.Valid.StateBlock1(),
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("parses unchecked keys response with string contents when json flag is false", () => {
@@ -33,7 +34,7 @@ describe("UncheckedKeysResponse schema", () => {
         contents: "block-data",
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects unchecked keys response with invalid block contents when json flag is true", () => {
@@ -44,7 +45,7 @@ describe("UncheckedKeysResponse schema", () => {
       modified_timestamp: TestData.Valid.Timestamp2(),
       contents: "block-data",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects unchecked keys response with invalid hash", () => {
@@ -57,6 +58,6 @@ describe("UncheckedKeysResponse schema", () => {
         contents: TestData.Valid.StateBlock1(),
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

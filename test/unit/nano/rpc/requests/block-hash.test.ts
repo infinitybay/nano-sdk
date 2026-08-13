@@ -1,4 +1,5 @@
 import { BlockHashRequest } from "../../../../../src/nano/rpc/requests/block-hash";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BlockHashRequest schema", () => {
@@ -8,7 +9,7 @@ describe("BlockHashRequest schema", () => {
       json_block: true,
       block: TestData.Valid.StateBlock1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("validates block hash request with block string", () => {
@@ -17,7 +18,7 @@ describe("BlockHashRequest schema", () => {
       json_block: false,
       block: "block-string",
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects block hash request with mismatched json flag", () => {
@@ -26,6 +27,6 @@ describe("BlockHashRequest schema", () => {
       json_block: true,
       block: "block-string",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

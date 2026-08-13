@@ -2,108 +2,114 @@ import { RawAmount, RawAmountString } from "../types/amount";
 import { NonThrowing } from "../types/non-throwing";
 import { Result } from "../types/result";
 import { Throwing } from "../types/throwing";
+import { MathError } from "./math-error";
+import { MathErrorCode } from "./math-error-code";
 
-type RawMinusParams = {
+export type RawMinusParams = {
   raw: RawAmount | RawAmountString;
   subtrahend: RawAmount | RawAmountString;
 };
 
-type RawMinusRawAmountParams = {
+export type RawMinusRawAmountParams = {
   raw: RawAmount;
   subtrahend: RawAmount | RawAmountString;
 };
 
-type RawMinusRawAmountStringParams = {
+export type RawMinusRawAmountStringParams = {
   raw: RawAmountString;
   subtrahend: RawAmount | RawAmountString;
 };
 
-function rawMinusThrowing(params: RawMinusRawAmountParams & Throwing): RawAmount;
-function rawMinusThrowing(params: RawMinusRawAmountStringParams & Throwing): RawAmountString;
-function rawMinusThrowing(params: RawMinusParams & Throwing) {
-  if (
-    (typeof params.raw === "bigint" && params.raw < 0n) ||
-    (typeof params.raw === "string" && params.raw.startsWith("-"))
-  ) {
-    throw new Error("Invalid raw value: negative raw amounts are not allowed.");
-  }
+export type RawMinusRawAmountResult = Result<
+  RawAmount,
+  MathError<
+    | MathErrorCode.InvalidRaw
+    | MathErrorCode.InvalidSubtrahend
+    | MathErrorCode.NegativeRaw
+    | MathErrorCode.NegativeResult
+    | MathErrorCode.NegativeSubtrahend
+    | MathErrorCode.ResultOutOfRange
+    | MathErrorCode.Unexpected
+  >
+>;
+export type RawMinusRawAmountStringResult = Result<
+  RawAmountString,
+  MathError<
+    | MathErrorCode.InvalidRaw
+    | MathErrorCode.InvalidSubtrahend
+    | MathErrorCode.NegativeRaw
+    | MathErrorCode.NegativeResult
+    | MathErrorCode.NegativeSubtrahend
+    | MathErrorCode.ResultOutOfRange
+    | MathErrorCode.Unexpected
+  >
+>;
 
-  const baseResult = RawAmount().safeParse(params.raw);
-  if (!baseResult.success) {
-    throw new Error("Invalid raw value.");
-  }
-
-  if (
-    (typeof params.subtrahend === "bigint" && params.subtrahend < 0n) ||
-    (typeof params.subtrahend === "string" && params.subtrahend.startsWith("-"))
-  ) {
-    throw new Error("Invalid subtrahend value: negative raw amounts are not allowed.");
-  }
-
-  const subtrahendResult = RawAmount().safeParse(params.subtrahend);
-  if (!subtrahendResult.success) {
-    throw new Error("Invalid subtrahend value.");
-  }
-
-  const base = baseResult.data;
-  const subtrahend = subtrahendResult.data;
-  const difference = base - subtrahend;
-  if (difference < 0n) {
-    throw new Error("Resulting raw amount must not be negative.");
-  }
-
-  const result = RawAmount().safeParse(difference);
-  if (!result.success) {
-    throw new Error("Resulting amount is no valid raw amount.");
-  }
-
-  if (typeof params.raw === "bigint") {
-    return result.data;
-  } else {
-    return result.data.toString();
-  }
-}
-
-function rawMinusNonThrowing(params: RawMinusRawAmountParams & NonThrowing): Result<RawAmount>;
-function rawMinusNonThrowing(params: RawMinusRawAmountStringParams & NonThrowing): Result<RawAmountString>;
-function rawMinusNonThrowing(params: RawMinusParams & NonThrowing) {
-  try {
-    let result;
-    if (typeof params.raw === "bigint") {
-      result = rawMinusThrowing({ raw: params.raw, subtrahend: params.subtrahend, throwOnError: true });
-    } else {
-      result = rawMinusThrowing({ raw: params.raw, subtrahend: params.subtrahend, throwOnError: true });
-    }
-    return {
-      success: true,
-      data: result,
-    };
-  } catch (e) {
-    return {
-      success: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function rawMinus(params: RawMinusRawAmountParams & NonThrowing): Result<RawAmount>;
+export function rawMinus(params: RawMinusRawAmountParams & NonThrowing): RawMinusRawAmountResult;
 export function rawMinus(params: RawMinusRawAmountParams & Throwing): RawAmount;
-export function rawMinus(params: RawMinusRawAmountParams): RawAmount | Result<RawAmount>;
-export function rawMinus(params: RawMinusRawAmountStringParams & NonThrowing): Result<RawAmountString>;
+export function rawMinus(
+  params: RawMinusRawAmountParams & (Throwing | NonThrowing)
+): RawAmount | RawMinusRawAmountResult;
+export function rawMinus(params: RawMinusRawAmountStringParams & NonThrowing): RawMinusRawAmountStringResult;
 export function rawMinus(params: RawMinusRawAmountStringParams & Throwing): RawAmountString;
-export function rawMinus(params: RawMinusRawAmountStringParams): RawAmountString | Result<RawAmountString>;
+export function rawMinus(
+  params: RawMinusRawAmountStringParams & (Throwing | NonThrowing)
+): RawAmountString | RawMinusRawAmountStringResult;
 export function rawMinus(params: RawMinusParams & (Throwing | NonThrowing)) {
-  if (params.throwOnError === false) {
-    if (typeof params.raw === "bigint") {
-      return rawMinusNonThrowing({ raw: params.raw, subtrahend: params.subtrahend, throwOnError: false });
-    } else {
-      return rawMinusNonThrowing({ raw: params.raw, subtrahend: params.subtrahend, throwOnError: false });
+  const result = (() => {
+    try {
+      if (
+        (typeof params.raw === "bigint" && params.raw < 0n) ||
+        (typeof params.raw === "string" && params.raw.startsWith("-"))
+      ) {
+        return Result.err(
+          new MathError(MathErrorCode.NegativeRaw, "Invalid raw value: negative raw amounts are not allowed.")
+        );
+      }
+
+      const baseResult = RawAmount().safeParse(params.raw);
+      if (!baseResult.success) {
+        return Result.err(new MathError(MathErrorCode.InvalidRaw, "Invalid raw value."));
+      }
+
+      if (
+        (typeof params.subtrahend === "bigint" && params.subtrahend < 0n) ||
+        (typeof params.subtrahend === "string" && params.subtrahend.startsWith("-"))
+      ) {
+        return Result.err(
+          new MathError(
+            MathErrorCode.NegativeSubtrahend,
+            "Invalid subtrahend value: negative raw amounts are not allowed."
+          )
+        );
+      }
+
+      const subtrahendResult = RawAmount().safeParse(params.subtrahend);
+      if (!subtrahendResult.success) {
+        return Result.err(new MathError(MathErrorCode.InvalidSubtrahend, "Invalid subtrahend value."));
+      }
+
+      const base = baseResult.data;
+      const subtrahend = subtrahendResult.data;
+      const difference = base - subtrahend;
+      if (difference < 0n) {
+        return Result.err(new MathError(MathErrorCode.NegativeResult, "Resulting raw amount must not be negative."));
+      }
+
+      const result = RawAmount().safeParse(difference);
+      if (!result.success) {
+        return Result.err(new MathError(MathErrorCode.ResultOutOfRange, "Resulting amount is no valid raw amount."));
+      }
+
+      if (typeof params.raw === "bigint") {
+        return Result.ok(result.data);
+      } else {
+        return Result.ok(result.data.toString());
+      }
+    } catch (e) {
+      return Result.err(new MathError(MathErrorCode.Unexpected, "Unexpected error.", { cause: e }));
     }
-  } else {
-    if (typeof params.raw === "bigint") {
-      return rawMinusThrowing({ raw: params.raw, subtrahend: params.subtrahend, throwOnError: true });
-    } else {
-      return rawMinusThrowing({ raw: params.raw, subtrahend: params.subtrahend, throwOnError: true });
-    }
-  }
+  })();
+
+  return Result.unwrap(result, params.throwOnError);
 }

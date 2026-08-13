@@ -1,12 +1,16 @@
+import { BlockErrorCode } from "../../../../src/nano/blocks/block-error-code";
 import { createChangeBlock } from "../../../../src/nano/blocks/create-change-block";
 import { createOpenBlock } from "../../../../src/nano/blocks/create-open-block";
 import { createSendBlock } from "../../../../src/nano/blocks/create-send-block";
+import { CryptoErrorCode } from "../../../../src/nano/crypto/crypto-error-code";
 import { deriveAccountFromLink } from "../../../../src/nano/crypto/derive-account-from-link";
 import { hashBlock } from "../../../../src/nano/crypto/hash-block";
 import { verifyBlock } from "../../../../src/nano/crypto/verify-block";
 import { HashStrings } from "../../../../src/nano/types/hash";
 import { SignatureStrings } from "../../../../src/nano/types/signature";
 import { WorkStrings } from "../../../../src/nano/types/work";
+import { assert } from "../../../assert";
+import { expectErrorCode, expectToThrowErrorCode } from "../../../expect";
 import { TestData } from "../../test-data";
 
 describe("createOpenBlock function", () => {
@@ -50,11 +54,9 @@ describe("createOpenBlock function", () => {
       throwOnError: false,
     });
 
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.representative).toBe(TestData.Valid.Representative3());
-      expect(result.data.signature).toBe(SignatureStrings.zero());
-    }
+    assert(result.success);
+    expect(result.data.representative).toBe(TestData.Valid.Representative3());
+    expect(result.data.signature).toBe(SignatureStrings.zero());
   });
 
   test("returns a block that can directly become the previous block of another creation call", () => {
@@ -88,41 +90,45 @@ describe("createOpenBlock function", () => {
       link_as_account: TestData.Valid.Account3(),
     };
 
-    expect(
-      createOpenBlock({
-        amount: "1000",
-        representative: TestData.Valid.Representative3(),
-        sendBlock: inconsistentSendBlock,
-        throwOnError: false,
-      }).success
-    ).toBe(false);
+    const inconsistentSendBlockResult = createOpenBlock({
+      amount: "1000",
+      representative: TestData.Valid.Representative3(),
+      sendBlock: inconsistentSendBlock,
+      throwOnError: false,
+    });
+    assert(!inconsistentSendBlockResult.success);
+    expectErrorCode(inconsistentSendBlockResult.error, BlockErrorCode.SendLinkMismatch);
 
     const incompleteSendBlock = { ...sendBlock };
     delete (incompleteSendBlock as { signature?: string }).signature;
-    expect(() =>
-      createOpenBlock({
-        amount: "1000",
-        representative: TestData.Valid.Representative3(),
-        sendBlock: incompleteSendBlock,
-      })
-    ).toThrow("Invalid send state block.");
+    expectToThrowErrorCode(
+      () =>
+        createOpenBlock({
+          amount: "1000",
+          representative: TestData.Valid.Representative3(),
+          sendBlock: incompleteSendBlock,
+        }),
+      BlockErrorCode.InvalidSendBlock
+    );
 
-    expect(
-      createOpenBlock({
-        amount: "0",
-        representative: TestData.Valid.Representative3(),
-        sendBlock,
-        throwOnError: false,
-      }).success
-    ).toBe(false);
+    const zeroAmountResult = createOpenBlock({
+      amount: "0",
+      representative: TestData.Valid.Representative3(),
+      sendBlock,
+      throwOnError: false,
+    });
+    assert(!zeroAmountResult.success);
+    expectErrorCode(zeroAmountResult.error, BlockErrorCode.InvalidAmount);
 
-    expect(() =>
-      createOpenBlock({
-        amount: "-1",
-        representative: TestData.Valid.Representative3(),
-        sendBlock,
-      })
-    ).toThrow("Invalid amount: negative raw amounts are not allowed.");
+    expectToThrowErrorCode(
+      () =>
+        createOpenBlock({
+          amount: "-1",
+          representative: TestData.Valid.Representative3(),
+          sendBlock,
+        }),
+      BlockErrorCode.NegativeAmount
+    );
 
     const negativeAmountResult = createOpenBlock({
       amount: -1n,
@@ -130,19 +136,17 @@ describe("createOpenBlock function", () => {
       sendBlock,
       throwOnError: false,
     });
-    expect(negativeAmountResult.success).toBe(false);
-    if (!negativeAmountResult.success) {
-      expect(negativeAmountResult.error.message).toBe("Invalid amount: negative raw amounts are not allowed.");
-    }
+    assert(!negativeAmountResult.success);
+    expectErrorCode(negativeAmountResult.error, BlockErrorCode.NegativeAmount);
 
-    expect(
-      createOpenBlock({
-        amount: "1000",
-        representative: TestData.Invalid.Account.ChecksumMismatch(),
-        sendBlock,
-        throwOnError: false,
-      }).success
-    ).toBe(false);
+    const invalidRepresentativeResult = createOpenBlock({
+      amount: "1000",
+      representative: TestData.Invalid.Account.ChecksumMismatch(),
+      sendBlock,
+      throwOnError: false,
+    });
+    assert(!invalidRepresentativeResult.success);
+    expectErrorCode(invalidRepresentativeResult.error, BlockErrorCode.InvalidRepresentative);
   });
 
   test("rejects a private key that does not belong to the destination account", () => {
@@ -160,6 +164,8 @@ describe("createOpenBlock function", () => {
       throwOnError: false,
     });
 
-    expect(result.success).toBe(false);
+    assert(!result.success);
+    expectErrorCode(result.error, BlockErrorCode.SignBlockFailed);
+    expectErrorCode(result.error.cause, CryptoErrorCode.KeyAccountMismatch);
   });
 });

@@ -1,4 +1,5 @@
 import { VoteRequest } from "../../../../../src/nano/web-socket/requests/vote";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("VoteRequest schema", () => {
@@ -12,7 +13,7 @@ describe("VoteRequest schema", () => {
         include_indeterminate: "false",
       },
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects vote request with invalid representatives", () => {
@@ -23,6 +24,6 @@ describe("VoteRequest schema", () => {
         representatives: [TestData.Invalid.Account.InvalidCharacters()],
       },
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

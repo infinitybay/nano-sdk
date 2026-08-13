@@ -1,4 +1,5 @@
 import { SignRequest } from "../../../../../src/nano/rpc/requests/sign";
+import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("SignRequest schema", () => {
@@ -12,7 +13,7 @@ describe("SignRequest schema", () => {
       wallet: TestData.Valid.PublicKey1(),
       account: TestData.Valid.Account1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("validates signing request with string block", () => {
@@ -23,7 +24,7 @@ describe("SignRequest schema", () => {
       block: "block-string",
       account: TestData.Valid.Account1(),
     });
-    expect(result.success).toBe(true);
+    assert(result.success);
   });
 
   test("rejects signing request with json flag and invalid block type", () => {
@@ -32,7 +33,7 @@ describe("SignRequest schema", () => {
       json_block: true,
       block: "block-string",
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 
   test("rejects signing request with invalid hash type", () => {
@@ -42,6 +43,6 @@ describe("SignRequest schema", () => {
       block: "block-string",
       hash: TestData.Invalid.Hash.InvalidCharacters(),
     });
-    expect(result.success).toBe(false);
+    assert(!result.success);
   });
 });

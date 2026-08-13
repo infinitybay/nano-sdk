@@ -1,6 +1,8 @@
+import { MathErrorCode } from "../../../../src/nano/math/math-error-code";
 import { rawModulo } from "../../../../src/nano/math/raw-modulo";
 import { RawAmountStrings } from "../../../../src/nano/types/amount";
 import { assert } from "../../../assert";
+import { expectErrorCode, expectToThrowErrorCode } from "../../../expect";
 
 describe("rawModulo", () => {
   test("computes modulo correctly (string inputs)", () => {
@@ -24,20 +26,28 @@ describe("rawModulo", () => {
   });
 
   test("throws when divisor is zero", () => {
-    expect(() => rawModulo({ raw: "10", divisor: "0", throwOnError: true })).toThrow();
+    expectToThrowErrorCode(
+      () => rawModulo({ raw: "10", divisor: "0", throwOnError: true }),
+      MathErrorCode.DivisionByZero
+    );
   });
 
   test("returns failure result instead of throwing when errors occur without throwOnError", () => {
     const zeroDivisorResult = rawModulo({ raw: "10", divisor: "0", throwOnError: false });
-    expect(zeroDivisorResult.success).toBe(false);
+    assert(!zeroDivisorResult.success);
+    expectErrorCode(zeroDivisorResult.error, MathErrorCode.DivisionByZero);
   });
 
   test("rejects invalid inputs", () => {
-    expect(() => rawModulo({ raw: "", divisor: "1", throwOnError: true })).toThrow();
-    expect(() => rawModulo({ raw: "1", divisor: "-1", throwOnError: true })).toThrow();
+    expectToThrowErrorCode(() => rawModulo({ raw: "", divisor: "1", throwOnError: true }), MathErrorCode.InvalidRaw);
+    expectToThrowErrorCode(
+      () => rawModulo({ raw: "1", divisor: "-1", throwOnError: true }),
+      MathErrorCode.InvalidDivisor
+    );
 
     const result = rawModulo({ raw: "abc", divisor: "1", throwOnError: false });
-    expect(result.success).toBe(false);
+    assert(!result.success);
+    expectErrorCode(result.error, MathErrorCode.InvalidRaw);
   });
 
   test("accepts mixed input types and returns matching output type", () => {

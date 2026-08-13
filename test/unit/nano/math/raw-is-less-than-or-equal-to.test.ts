@@ -1,6 +1,8 @@
+import { MathErrorCode } from "../../../../src/nano/math/math-error-code";
 import { rawIsLessThanOrEqualTo } from "../../../../src/nano/math/raw-is-less-than-or-equal-to";
 import { RawAmountStrings } from "../../../../src/nano/types/amount";
 import { assert } from "../../../assert";
+import { expectErrorCode, expectToThrowErrorCode } from "../../../expect";
 
 describe("rawIsLessThanOrEqualTo", () => {
   test("returns true when left is smaller than right", () => {
@@ -48,7 +50,7 @@ describe("rawIsLessThanOrEqualTo", () => {
       throwOnError: false,
     });
     assert(!rightInvalid.checked);
-    expect(rightInvalid.error).toBeInstanceOf(Error);
+    expectErrorCode(rightInvalid.error, MathErrorCode.InvalidCompareTo);
 
     const leftInvalid = rawIsLessThanOrEqualTo({
       raw: " ",
@@ -56,15 +58,17 @@ describe("rawIsLessThanOrEqualTo", () => {
       throwOnError: false,
     });
     assert(!leftInvalid.checked);
-    expect(leftInvalid.error).toBeInstanceOf(Error);
+    expectErrorCode(leftInvalid.error, MathErrorCode.InvalidRaw);
   });
 
   test("throws for invalid inputs when throwOnError is true", () => {
-    expect(() =>
-      rawIsLessThanOrEqualTo({ raw: " ", compareTo: RawAmountStrings.zero(), throwOnError: true })
-    ).toThrow();
-    expect(() =>
-      rawIsLessThanOrEqualTo({ raw: RawAmountStrings.zero(), compareTo: "abc", throwOnError: true })
-    ).toThrow();
+    expectToThrowErrorCode(
+      () => rawIsLessThanOrEqualTo({ raw: " ", compareTo: RawAmountStrings.zero(), throwOnError: true }),
+      MathErrorCode.InvalidRaw
+    );
+    expectToThrowErrorCode(
+      () => rawIsLessThanOrEqualTo({ raw: RawAmountStrings.zero(), compareTo: "abc", throwOnError: true }),
+      MathErrorCode.InvalidCompareTo
+    );
   });
 });

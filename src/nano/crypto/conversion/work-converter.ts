@@ -1,82 +1,94 @@
+import { ByteArray } from "../../types/byte-array";
 import { NonThrowing } from "../../types/non-throwing";
 import { Result } from "../../types/result";
 import { Throwing } from "../../types/throwing";
 import { WorkString } from "../../types/work";
+import { CryptoError } from "../crypto-error";
+import { CryptoErrorCode } from "../crypto-error-code";
 import { bytesToHex, hexToBytes } from "./hex-converter";
 
-type WorkToBytesParams = {
+export type WorkToBytesParams = {
   work: WorkString;
-} & (Throwing | NonThrowing);
+};
 
-function workToBytesThrowing(params: WorkToBytesParams & Throwing): Uint8Array {
-  const validatedWork = WorkString().safeParse(params.work);
-  if (!validatedWork.success) {
-    throw new Error("Invalid work value.");
-  }
+export type WorkToBytesResult = Result<
+  Uint8Array,
+  CryptoError<CryptoErrorCode.HexToBytesFailed | CryptoErrorCode.InvalidWork | CryptoErrorCode.Unexpected>
+>;
 
-  return hexToBytes({ hex: validatedWork.data, throwOnError: true });
-}
-
-function workToBytesNonThrowing(params: WorkToBytesParams & NonThrowing): Result<Uint8Array> {
-  try {
-    return {
-      success: true,
-      data: workToBytesThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      success: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function workToBytes(params: WorkToBytesParams & NonThrowing): Result<Uint8Array>;
+export function workToBytes(params: WorkToBytesParams & NonThrowing): WorkToBytesResult;
 export function workToBytes(params: WorkToBytesParams & Throwing): Uint8Array;
-export function workToBytes(params: WorkToBytesParams): Uint8Array | Result<Uint8Array>;
-export function workToBytes(params: WorkToBytesParams) {
-  if (params.throwOnError === false) {
-    return workToBytesNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return workToBytesThrowing({ ...params, throwOnError: true });
-  }
+export function workToBytes(params: WorkToBytesParams & (Throwing | NonThrowing)): Uint8Array | WorkToBytesResult;
+export function workToBytes(params: WorkToBytesParams & (Throwing | NonThrowing)) {
+  const result = ((): WorkToBytesResult => {
+    try {
+      const validatedWork = WorkString().safeParse(params.work);
+      if (!validatedWork.success) {
+        return Result.err(new CryptoError(CryptoErrorCode.InvalidWork, "Invalid work value."));
+      }
+
+      const bytesResult = hexToBytes({ hex: validatedWork.data, throwOnError: false });
+      if (!bytesResult.success) {
+        return Result.err(
+          new CryptoError(CryptoErrorCode.HexToBytesFailed, "Failed to convert work hex to bytes.", {
+            cause: bytesResult.error,
+          })
+        );
+      }
+
+      return Result.ok(bytesResult.data);
+    } catch (e) {
+      return Result.err(new CryptoError(CryptoErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+
+  return Result.unwrap(result, params.throwOnError);
 }
 
-type BytesToWorkParams = {
+export type BytesToWorkParams = {
   workBytes: Uint8Array;
-} & (Throwing | NonThrowing);
+};
 
-function bytesToWorkThrowing(params: BytesToWorkParams & Throwing): WorkString {
-  const hexResult = bytesToHex({ bytes: params.workBytes, throwOnError: true });
-  const workResult = WorkString().safeParse(hexResult);
-  if (!workResult.success) {
-    throw new Error("Invalid work byte array.");
-  }
+export type BytesToWorkResult = Result<
+  WorkString,
+  CryptoError<
+    | CryptoErrorCode.BytesToHexFailed
+    | CryptoErrorCode.InvalidBytes
+    | CryptoErrorCode.InvalidWorkBytes
+    | CryptoErrorCode.Unexpected
+  >
+>;
 
-  return workResult.data;
-}
-
-function bytesToWorkNonThrowing(params: BytesToWorkParams & NonThrowing): Result<WorkString> {
-  try {
-    return {
-      success: true,
-      data: bytesToWorkThrowing({ ...params, throwOnError: true }),
-    };
-  } catch (e) {
-    return {
-      success: false,
-      error: e instanceof Error ? e : new Error("Unexpected error."),
-    };
-  }
-}
-
-export function bytesToWork(params: BytesToWorkParams & NonThrowing): Result<WorkString>;
+export function bytesToWork(params: BytesToWorkParams & NonThrowing): BytesToWorkResult;
 export function bytesToWork(params: BytesToWorkParams & Throwing): WorkString;
-export function bytesToWork(params: BytesToWorkParams): WorkString | Result<WorkString>;
-export function bytesToWork(params: BytesToWorkParams) {
-  if (params.throwOnError === false) {
-    return bytesToWorkNonThrowing({ ...params, throwOnError: false });
-  } else {
-    return bytesToWorkThrowing({ ...params, throwOnError: true });
-  }
+export function bytesToWork(params: BytesToWorkParams & (Throwing | NonThrowing)): WorkString | BytesToWorkResult;
+export function bytesToWork(params: BytesToWorkParams & (Throwing | NonThrowing)) {
+  const result = ((): BytesToWorkResult => {
+    try {
+      const bytesResult = ByteArray().safeParse(params.workBytes);
+      if (!bytesResult.success) {
+        return Result.err(new CryptoError(CryptoErrorCode.InvalidBytes, "Invalid bytes value."));
+      }
+
+      const hexResult = bytesToHex({ bytes: bytesResult.data, throwOnError: false });
+      if (!hexResult.success) {
+        return Result.err(
+          new CryptoError(CryptoErrorCode.BytesToHexFailed, "Failed to convert work bytes to hex.", {
+            cause: hexResult.error,
+          })
+        );
+      }
+
+      const workResult = WorkString().safeParse(hexResult.data);
+      if (!workResult.success) {
+        return Result.err(new CryptoError(CryptoErrorCode.InvalidWorkBytes, "Invalid work byte array."));
+      }
+
+      return Result.ok(workResult.data);
+    } catch (e) {
+      return Result.err(new CryptoError(CryptoErrorCode.Unexpected, "Unexpected error.", { cause: e }));
+    }
+  })();
+
+  return Result.unwrap(result, params.throwOnError);
 }
