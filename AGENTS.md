@@ -39,6 +39,8 @@ The areas are deliberately organized by Nano concepts:
 
 - **Types — `src/nano/types/`:** Zod schema factories and inferred TypeScript aliases for accounts, amounts,
   hashes, keys, heights, timestamps, work, and other protocol primitives. Higher layers reuse these validators.
+  Numeric timestamps are unsigned 64-bit `bigint` values; wire-format timestamp strings preserve that full range,
+  including the maximum value used for final votes.
   Some support types (`Result`, throwing-mode markers, conditional mapped types, and `Nacl`) are internal because
   they are not exported by `src/nano/types/index.ts`. Unit tests are in `test/unit/nano/types/`.
 - **Blocks — `src/nano/blocks/`:** Zod schemas for state and legacy block shapes; `block.ts` unions the variants.
@@ -235,7 +237,8 @@ Established implementation patterns:
 - RPC calls default to throwing and use `PostError`; `{ throwOnError: false }` returns `PostResult<T>`.
   Preserve overloads and response inference when editing a method. `RequestConfig.headers` is forwarded through
   the shared HTTP client config; the default client merges it after its JSON content type so callers can override
-  the default without mutating their header object.
+  the default without mutating their header object. RPC timestamp request fields use decimal timestamp strings so
+  bigint values never reach either the default or a custom HTTP client.
 - Error tests assert stable `error.code` values rather than human-readable `error.message` text. Keep messages
   useful for people, but do not make their wording a compatibility or test contract. Nano node RPC errors only
   provide free-form text and therefore use the general `PostErrorCode.NodeError` without parsing that text.

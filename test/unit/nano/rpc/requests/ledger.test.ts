@@ -18,7 +18,7 @@ describe("LedgerRequest schema", () => {
       representative: true,
       weight: true,
       receivable: true,
-      modified_since: 0,
+      modified_since: "0",
       sorting: true,
       threshold: TestData.Valid.RawAmount1(),
     });
@@ -40,6 +40,14 @@ describe("LedgerRequest schema", () => {
       account: TestData.Valid.Account1(),
       count: 1,
       threshold: TestData.Invalid.RawAmount.InvalidCharacters(),
+    });
+    assert(!result.success);
+  });
+
+  test("rejects a bigint modified timestamp", () => {
+    const result = LedgerRequest().safeParse({
+      action: "ledger",
+      modified_since: 0n,
     });
     assert(!result.success);
   });

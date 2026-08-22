@@ -5,8 +5,8 @@ describe("DatabaseTxnTrackerRequest schema", () => {
   test("validates database transaction tracker request", () => {
     const result = DatabaseTxnTrackerRequest().safeParse({
       action: "database_txn_tracker",
-      min_read_time: 0,
-      min_write_time: 1,
+      min_read_time: "0",
+      min_write_time: "1",
     });
     assert(result.success);
   });
@@ -14,8 +14,17 @@ describe("DatabaseTxnTrackerRequest schema", () => {
   test("rejects database transaction tracker request with negative timings", () => {
     const result = DatabaseTxnTrackerRequest().safeParse({
       action: "database_txn_tracker",
-      min_read_time: -1,
-      min_write_time: 1,
+      min_read_time: "-1",
+      min_write_time: "1",
+    });
+    assert(!result.success);
+  });
+
+  test("rejects bigint timings", () => {
+    const result = DatabaseTxnTrackerRequest().safeParse({
+      action: "database_txn_tracker",
+      min_read_time: 0n,
+      min_write_time: 1n,
     });
     assert(!result.success);
   });

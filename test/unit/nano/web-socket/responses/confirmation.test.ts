@@ -1,3 +1,4 @@
+import { Timestamps } from "../../../../../src/nano/types/timestamp";
 import {
   ConfirmationMessageBlock,
   ConfirmationResponse,
@@ -109,6 +110,62 @@ describe("ConfirmationResponse schema", () => {
         sideband: {
           height: TestData.Valid.Height1(),
           local_timestamp: TestData.Valid.Timestamp1(),
+        },
+      },
+    });
+    assert(result.success);
+  });
+
+  test("validates nano-node's empty vote serialization", () => {
+    const result = ConfirmationResponse().safeParse({
+      topic: "confirmation",
+      time: TestData.Valid.Timestamp1(),
+      message: {
+        account: TestData.Valid.Account1(),
+        amount: TestData.Valid.RawAmount1(),
+        hash: TestData.Valid.Hash1(),
+        confirmation_type: "active_quorum",
+        election_info: {
+          duration: TestData.Valid.Timestamp1(),
+          time: TestData.Valid.Timestamp1(),
+          tally: TestData.Valid.RawAmount1(),
+          final: TestData.Valid.RawAmount1(),
+          blocks: "1",
+          voters: "0",
+          request_count: "0",
+          votes: "",
+        },
+      },
+    });
+    assert(result.success);
+    expect(result.data.message.election_info?.votes).toBe("");
+  });
+
+  test("validates a final vote timestamp in election info", () => {
+    const result = ConfirmationResponse().safeParse({
+      topic: "confirmation",
+      time: TestData.Valid.Timestamp1(),
+      message: {
+        account: TestData.Valid.Account1(),
+        amount: TestData.Valid.RawAmount1(),
+        hash: TestData.Valid.Hash1(),
+        confirmation_type: "active_quorum",
+        election_info: {
+          duration: TestData.Valid.Timestamp1(),
+          time: TestData.Valid.Timestamp1(),
+          tally: TestData.Valid.RawAmount1(),
+          final: TestData.Valid.RawAmount1(),
+          blocks: "1",
+          voters: "1",
+          request_count: "0",
+          votes: [
+            {
+              representative: TestData.Valid.Account1(),
+              timestamp: Timestamps.FinalVoteString(),
+              hash: TestData.Valid.Hash1(),
+              weight: TestData.Valid.RawAmount1(),
+            },
+          ],
         },
       },
     });

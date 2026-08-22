@@ -9,7 +9,7 @@ import { AccountString } from "../../types/account";
 import { RawAmountString } from "../../types/amount";
 import { HashString } from "../../types/hash";
 import { HeightString } from "../../types/height";
-import { TimestampString } from "../../types/timestamp";
+import { FinalVoteTimestampString, TimestampString } from "../../types/timestamp";
 import { UIntString } from "../../types/uint";
 
 export type ConfirmationMessageBlock = z.infer<ReturnType<typeof ConfirmationMessageBlock>>;
@@ -38,11 +38,12 @@ export const ConfirmationMessageElectionInfo = () =>
     votes: z
       .object({
         representative: AccountString(),
-        timestamp: TimestampString(),
+        timestamp: TimestampString().or(FinalVoteTimestampString()),
         hash: HashString(),
         weight: RawAmountString(),
       })
       .array()
+      .or(z.literal(""))
       .optional(),
   });
 
