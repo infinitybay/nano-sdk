@@ -3,6 +3,13 @@ import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("LedgerRequest schema", () => {
+  test("validates ledger request without account and count", () => {
+    const result = LedgerRequest().safeParse({
+      action: "ledger",
+    });
+    assert(result.success);
+  });
+
   test("validates ledger request with optional filters", () => {
     const result = LedgerRequest().safeParse({
       action: "ledger",

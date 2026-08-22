@@ -9,8 +9,8 @@ import { UInt, UIntString } from "../../types/uint";
 export function LedgerRequest() {
   return z.object({
     action: z.literal("ledger"),
-    account: AccountString(),
-    count: UIntString().or(UInt()),
+    account: AccountString().optional(),
+    count: UIntString().or(UInt()).optional(),
     representative: BooleanString().or(z.boolean()).optional(),
     weight: BooleanString().or(z.boolean()).optional(),
     receivable: BooleanString().or(z.boolean()).optional(),
