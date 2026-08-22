@@ -21,6 +21,23 @@ describe("account_history RPC integration", () => {
     expect(result.data.previous).toBeTruthy();
   });
 
+  test("returns account history starting from head", async () => {
+    const result = await Nano.RPC.account_history(
+      rpcUrl,
+      {
+        action: "account_history",
+        count: 1,
+        head: TestData.GenesisBlockHash(),
+      },
+      rpcRequestConfig
+    );
+    assert(result.success);
+    expect(result.data.account).toBe(TestData.GenesisAccount());
+    assert(result.data.history);
+    expect(result.data.history).toHaveLength(1);
+    expect(result.data.history[0].hash).toBe(TestData.GenesisBlockHash());
+  });
+
   test("returns account history including linked accounts", async () => {
     const result = await Nano.RPC.account_history(
       rpcUrl,
