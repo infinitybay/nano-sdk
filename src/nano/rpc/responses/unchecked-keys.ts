@@ -15,12 +15,14 @@ type UncheckedKeysResponseZodType<T extends UppercaseKeys<UncheckedKeysResponseO
   z.ZodObject<{
     unchecked: z.ZodUnion<
       [
-        z.ZodObject<{
-          key: ReturnType<typeof HashString>;
-          hash: ReturnType<typeof HashString>;
-          modified_timestamp: ReturnType<typeof TimestampString>;
-          contents: ReturnType<typeof Block>;
-        }>,
+        z.ZodArray<
+          z.ZodObject<{
+            key: ReturnType<typeof HashString>;
+            hash: ReturnType<typeof HashString>;
+            modified_timestamp: ReturnType<typeof TimestampString>;
+            contents: ReturnType<typeof Block>;
+          }>
+        >,
         z.ZodLiteral<"">,
       ]
     >;
@@ -28,12 +30,14 @@ type UncheckedKeysResponseZodType<T extends UppercaseKeys<UncheckedKeysResponseO
   z.ZodObject<{
     unchecked: z.ZodUnion<
       [
-        z.ZodObject<{
-          key: ReturnType<typeof HashString>;
-          hash: ReturnType<typeof HashString>;
-          modified_timestamp: ReturnType<typeof TimestampString>;
-          contents: z.ZodString;
-        }>,
+        z.ZodArray<
+          z.ZodObject<{
+            key: ReturnType<typeof HashString>;
+            hash: ReturnType<typeof HashString>;
+            modified_timestamp: ReturnType<typeof TimestampString>;
+            contents: z.ZodString;
+          }>
+        >,
         z.ZodLiteral<"">,
       ]
     >;
@@ -56,6 +60,7 @@ export function UncheckedKeysResponse(options: UncheckedKeysResponseOptions) {
             modified_timestamp: TimestampString(),
             contents: Block(),
           })
+          .array()
           .or(z.literal("")),
       })
     : z.object({
@@ -66,6 +71,7 @@ export function UncheckedKeysResponse(options: UncheckedKeysResponseOptions) {
             modified_timestamp: TimestampString(),
             contents: z.string(),
           })
+          .array()
           .or(z.literal("")),
       });
 }
