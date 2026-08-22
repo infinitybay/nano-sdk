@@ -9,7 +9,6 @@ import { AccountString } from "../../types/account";
 import { RawAmountString } from "../../types/amount";
 import { HashString } from "../../types/hash";
 import { HeightString } from "../../types/height";
-import { SubtypeString } from "../../types/subtype";
 import { TimestampString } from "../../types/timestamp";
 import { UIntString } from "../../types/uint";
 
@@ -17,13 +16,13 @@ export type ConfirmationMessageBlock = z.infer<ReturnType<typeof ConfirmationMes
 export const ConfirmationMessageBlock = () =>
   z.union([
     StateBlock().extend({
-      linked_account: AccountString().or(z.literal("")).optional(),
-      subtype: SubtypeString().optional(),
+      linked_account: AccountString().or(z.literal("0")).optional(),
+      subtype: z.union([z.literal("change"), z.literal("epoch"), z.literal("receive"), z.literal("send")]),
     }),
-    LegacyChangeBlock().extend({ linked_account: AccountString().or(z.literal("")).optional() }),
-    LegacyOpenBlock().extend({ linked_account: AccountString().or(z.literal("")).optional() }),
-    LegacyReceiveBlock().extend({ linked_account: AccountString().or(z.literal("")).optional() }),
-    LegacySendBlock().extend({ linked_account: AccountString().or(z.literal("")).optional() }),
+    LegacyChangeBlock().extend({ linked_account: AccountString().or(z.literal("0")).optional() }),
+    LegacyOpenBlock().extend({ linked_account: AccountString().or(z.literal("0")).optional() }),
+    LegacyReceiveBlock().extend({ linked_account: AccountString().or(z.literal("0")).optional() }),
+    LegacySendBlock().extend({ linked_account: AccountString().or(z.literal("0")).optional() }),
   ]);
 
 export type ConfirmationMessageElectionInfo = z.infer<ReturnType<typeof ConfirmationMessageElectionInfo>>;
