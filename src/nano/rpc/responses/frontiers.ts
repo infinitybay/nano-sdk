@@ -5,7 +5,7 @@ import { HashString } from "../../types/hash";
 
 export function FrontiersResponse() {
   return z.object({
-    frontiers: z.record(AccountString(), HashString()),
+    frontiers: z.union([z.record(AccountString(), HashString()), z.literal("")]),
   });
 }
 

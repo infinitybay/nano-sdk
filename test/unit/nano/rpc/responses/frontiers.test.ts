@@ -3,6 +3,13 @@ import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("FrontiersResponse schema", () => {
+  test("parses empty frontiers response", () => {
+    const result = FrontiersResponse().safeParse({
+      frontiers: "",
+    });
+    assert(result.success);
+  });
+
   test("parses frontiers map", () => {
     const result = FrontiersResponse().safeParse({
       frontiers: {
@@ -18,6 +25,13 @@ describe("FrontiersResponse schema", () => {
       frontiers: {
         [TestData.Valid.Account1()]: TestData.Invalid.Hash.InvalidCharacters(),
       },
+    });
+    assert(!result.success);
+  });
+
+  test("rejects non-empty frontiers string", () => {
+    const result = FrontiersResponse().safeParse({
+      frontiers: "invalid",
     });
     assert(!result.success);
   });
