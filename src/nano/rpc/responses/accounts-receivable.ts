@@ -17,6 +17,7 @@ const AccountsReceivableSources = () =>
   );
 
 type AccountsReceivableBlocksOptions = {
+  sorting: boolean;
   source: boolean;
   threshold: boolean;
 };
@@ -27,7 +28,11 @@ type AccountsReceivableBlocksZodType<T extends UppercaseKeys<AccountsReceivableB
   BooleanDistribution<
     T["THRESHOLD"],
     z.ZodRecord<ReturnType<typeof AccountString>, ReturnType<typeof AccountsReceivableAmounts>>,
-    z.ZodRecord<ReturnType<typeof AccountString>, z.ZodArray<ReturnType<typeof HashString>>>
+    BooleanDistribution<
+      T["SORTING"],
+      z.ZodRecord<ReturnType<typeof AccountString>, ReturnType<typeof AccountsReceivableAmounts>>,
+      z.ZodRecord<ReturnType<typeof AccountString>, z.ZodArray<ReturnType<typeof HashString>>>
+    >
   >
 >;
 
@@ -41,7 +46,7 @@ function AccountsReceivableBlocks<T extends AccountsReceivableBlocksOptions>(
 function AccountsReceivableBlocks(options: AccountsReceivableBlocksOptions) {
   if (options.source) {
     return z.record(AccountString(), AccountsReceivableSources());
-  } else if (options.threshold) {
+  } else if (options.threshold || options.sorting) {
     return z.record(AccountString(), AccountsReceivableAmounts());
   } else {
     return z.record(AccountString(), HashString().array());
@@ -49,6 +54,7 @@ function AccountsReceivableBlocks(options: AccountsReceivableBlocksOptions) {
 }
 
 type AccountsReceivableResponseOptions = {
+  sorting: boolean;
   source: boolean;
   threshold: boolean;
 };

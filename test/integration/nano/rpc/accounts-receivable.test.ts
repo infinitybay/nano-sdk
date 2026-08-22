@@ -75,4 +75,25 @@ describe("accounts_receivable RPC integration", () => {
     expect(result.data.blocks).toHaveProperty(TestData.BurnAccount());
     expect(Object.keys(result.data.blocks[TestData.BurnAccount()])).toHaveLength(5);
   });
+
+  test("returns sorted pending blocks with amounts", async () => {
+    const result = await Nano.RPC.accounts_receivable(
+      rpcUrl,
+      {
+        action: "accounts_receivable",
+        accounts: [TestData.GenesisAccount()],
+        count: 5,
+        sorting: true,
+      },
+      rpcRequestConfig
+    );
+    assert(result.success);
+    assert(result.data.blocks);
+    expect(result.data.blocks).toHaveProperty(TestData.GenesisAccount());
+    expect(Object.keys(result.data.blocks[TestData.GenesisAccount()])).toHaveLength(5);
+    const amountResult = Nano.Types.RawAmountString().safeParse(
+      result.data.blocks[TestData.GenesisAccount()][Object.keys(result.data.blocks[TestData.GenesisAccount()])[0]]
+    );
+    assert(amountResult.success);
+  });
 });

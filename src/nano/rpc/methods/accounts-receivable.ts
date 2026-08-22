@@ -8,6 +8,7 @@ import { ThresholdFlag } from "./conditional-types/threshold-flag";
 import { WithDefault } from "./conditional-types/with-default";
 
 type ResponseType<T extends AccountsReceivableRequest> = AccountsReceivableResponse<{
+  SORTING: BoolFlag<WithDefault<T, "sorting", false>["sorting"]>;
   SOURCE: BoolFlag<WithDefault<T, "source", false>["source"]>;
   THRESHOLD: ThresholdFlag<WithDefault<T, "threshold", undefined>["threshold"]>;
 }>;
@@ -37,6 +38,7 @@ export function accounts_receivable(url: string, request: AccountsReceivableRequ
       request,
       AccountsReceivableRequest(),
       AccountsReceivableResponse({
+        sorting: request.sorting === true,
         source: request.source === true,
         threshold: request.threshold !== undefined && request.threshold !== "" && request.threshold !== "0",
       }),
@@ -48,6 +50,7 @@ export function accounts_receivable(url: string, request: AccountsReceivableRequ
       request,
       AccountsReceivableRequest(),
       AccountsReceivableResponse({
+        sorting: request.sorting === true,
         source: request.source === true,
         threshold: request.threshold !== undefined && request.threshold !== "" && request.threshold !== "0",
       }),
