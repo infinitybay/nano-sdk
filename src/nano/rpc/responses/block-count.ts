@@ -7,6 +7,8 @@ export function BlockCountResponse() {
     count: UIntString(),
     unchecked: UIntString(),
     cemented: UIntString(),
+    full: UIntString().optional(),
+    pruned: UIntString().optional(),
   });
 }
 
