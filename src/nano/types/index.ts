@@ -26,7 +26,7 @@ export { Port, PortBounds, PortString } from "./port";
 export { PrivateKeyString, PrivateKeyStrings } from "./private-key";
 export { PublicKeyString, PublicKeyStrings } from "./public-key";
 export { RootString, RootStrings } from "./root";
-export { SeedIndex, SeedIndexBounds, SeedString } from "./seed";
+export { SeedIndex, SeedIndexBounds, SeedIndexString, SeedString } from "./seed";
 export { SignatureString, SignatureStrings } from "./signature";
 export { SubtypeString } from "./subtype";
 export { FinalVoteTimestampString, Timestamp, TimestampBounds, TimestampString } from "./timestamp";

@@ -10,5 +10,14 @@ export const SeedIndexBounds = {
 export type SeedIndex = z.infer<ReturnType<typeof SeedIndex>>;
 export const SeedIndex = () => z.number().int().min(SeedIndexBounds.min()).max(SeedIndexBounds.max());
 
+export type SeedIndexString = z.infer<ReturnType<typeof SeedIndexString>>;
+export const SeedIndexString = () =>
+  z
+    .string()
+    .regex(/^(0|[1-9]\d*)$/, "Invalid seed index")
+    .refine((val) => SeedIndex().safeParse(Number(val)).success, {
+      message: "Invalid seed index",
+    });
+
 export type SeedString = z.infer<ReturnType<typeof SeedString>>;
 export const SeedString = () => HexString().length(64);

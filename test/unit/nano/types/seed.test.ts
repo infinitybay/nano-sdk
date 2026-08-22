@@ -1,4 +1,4 @@
-import { SeedIndex, SeedIndexBounds, SeedString } from "../../../../src/nano/types/seed";
+import { SeedIndex, SeedIndexBounds, SeedIndexString, SeedString } from "../../../../src/nano/types/seed";
 import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
@@ -49,5 +49,30 @@ describe("SeedIndex schema", () => {
   test("rejects non-numeric seed indices", () => {
     assert(!SeedIndex().safeParse("5").success);
     assert(!SeedIndex().safeParse("A").success);
+  });
+});
+
+describe("SeedIndexString schema", () => {
+  test("validates seed index strings within bounds", () => {
+    const validSeedIndices = [SeedIndexBounds.min().toString(), "1", SeedIndexBounds.max().toString()];
+    for (const validSeedIndex of validSeedIndices) {
+      expect(SeedIndexString().parse(validSeedIndex)).toBe(validSeedIndex);
+    }
+  });
+
+  test("rejects seed index strings outside bounds", () => {
+    assert(!SeedIndexString().safeParse((SeedIndexBounds.min() - 1).toString()).success);
+    assert(!SeedIndexString().safeParse((SeedIndexBounds.max() + 1).toString()).success);
+  });
+
+  test("rejects non-canonical seed index strings", () => {
+    const invalidSeedIndices = ["00", "01", "1.0", "+1", "A", ""];
+    for (const invalidSeedIndex of invalidSeedIndices) {
+      assert(!SeedIndexString().safeParse(invalidSeedIndex).success);
+    }
+  });
+
+  test("rejects non-string seed indices", () => {
+    assert(!SeedIndexString().safeParse(5).success);
   });
 });

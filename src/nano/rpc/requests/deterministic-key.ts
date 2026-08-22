@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-import { SeedIndex, SeedString } from "../../types/seed";
+import { SeedIndex, SeedIndexString, SeedString } from "../../types/seed";
 
 export function DeterministicKeyRequest() {
   return z.object({
     action: z.literal("deterministic_key"),
     seed: SeedString(),
-    index: SeedIndex(),
+    index: SeedIndexString().or(SeedIndex()),
   });
 }
 

@@ -10,7 +10,7 @@ describe("deterministic_key RPC integration", () => {
       {
         action: "deterministic_key",
         seed: TestData.KeySet().Seed(),
-        index: TestData.KeySet().SeedIndex(),
+        index: TestData.KeySet().SeedIndex().toString(),
       },
       rpcRequestConfig
     );
