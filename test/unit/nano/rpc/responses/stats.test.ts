@@ -13,6 +13,17 @@ describe("StatsResponse schema", () => {
     assert(result.success);
   });
 
+  test("parses counters stats response with empty entries", () => {
+    const schema = StatsResponse({ type: "counters" });
+    const result = schema.safeParse({
+      type: "counters",
+      created: "0",
+      entries: "",
+      stat_duration_seconds: "5",
+    });
+    assert(result.success);
+  });
+
   test("parses samples stats response", () => {
     const schema = StatsResponse({ type: "samples" });
     const result = schema.safeParse({
@@ -22,6 +33,50 @@ describe("StatsResponse schema", () => {
       stat_duration_seconds: "5",
     });
     assert(result.success);
+  });
+
+  test("parses samples stats response with empty entries", () => {
+    const schema = StatsResponse({ type: "samples" });
+    const result = schema.safeParse({
+      type: "samples",
+      created: "0",
+      entries: "",
+      stat_duration_seconds: "5",
+    });
+    assert(result.success);
+  });
+
+  test("parses samples stats response with empty sample values", () => {
+    const schema = StatsResponse({ type: "samples" });
+    const result = schema.safeParse({
+      type: "samples",
+      created: "0",
+      entries: [{ time: "0", sample: "s", min: "0", max: "0", values: "" }],
+      stat_duration_seconds: "5",
+    });
+    assert(result.success);
+  });
+
+  test("rejects non-empty strings for collection fields", () => {
+    const countersSchema = StatsResponse({ type: "counters" });
+    const samplesSchema = StatsResponse({ type: "samples" });
+
+    expect(
+      countersSchema.safeParse({
+        type: "counters",
+        created: "0",
+        entries: "invalid",
+        stat_duration_seconds: "5",
+      }).success
+    ).toBe(false);
+    expect(
+      samplesSchema.safeParse({
+        type: "samples",
+        created: "0",
+        entries: [{ time: "0", sample: "s", min: "0", max: "0", values: "invalid" }],
+        stat_duration_seconds: "5",
+      }).success
+    ).toBe(false);
   });
 
   test("parses objects stats response", () => {

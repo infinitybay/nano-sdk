@@ -19,7 +19,7 @@ export const StatsCounters = () =>
   z.object({
     type: z.literal("counters"),
     created: z.string(),
-    entries: StatsCountersEntry().array(),
+    entries: z.union([StatsCountersEntry().array(), z.literal("")]),
     stat_duration_seconds: TimestampString(),
   });
 
@@ -30,7 +30,7 @@ export const StatsSamplesEntry = () =>
     sample: z.string(),
     min: z.string(),
     max: z.string(),
-    values: z.string().array(),
+    values: z.union([z.string().array(), z.literal("")]),
   });
 
 export type StatsSamples = z.infer<ReturnType<typeof StatsSamples>>;
@@ -38,7 +38,7 @@ export const StatsSamples = () =>
   z.object({
     type: z.literal("samples"),
     created: z.string(),
-    entries: StatsSamplesEntry().array(),
+    entries: z.union([StatsSamplesEntry().array(), z.literal("")]),
     stat_duration_seconds: z.string(),
   });
 
