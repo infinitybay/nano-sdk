@@ -11,7 +11,7 @@ export function ReceivableRequest() {
     account: AccountString(),
     count: UIntString().or(UInt()).optional(),
     offset: UIntString().or(UInt()).optional(),
-    threshold: z.union([z.literal(""), z.literal("0"), RawAmountString()]).optional(),
+    threshold: RawAmountString().optional(),
     source: BooleanString().or(z.boolean()).optional(),
     include_active: BooleanString().or(z.boolean()).optional(),
     include_only_confirmed: BooleanString().or(z.boolean()).optional(),

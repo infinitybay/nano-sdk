@@ -35,4 +35,13 @@ describe("ReceivableRequest schema", () => {
     });
     assert(!result.success);
   });
+
+  test("rejects receivable request with empty threshold", () => {
+    const result = ReceivableRequest().safeParse({
+      action: "receivable",
+      account: TestData.Valid.Account1(),
+      threshold: "",
+    });
+    assert(!result.success);
+  });
 });

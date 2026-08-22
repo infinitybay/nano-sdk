@@ -54,6 +54,24 @@ describe("receivable RPC integration", () => {
     expect(result.data.blocks[Object.keys(result.data.blocks)[0]]).toBeTruthy();
   });
 
+  test("returns sorted receivable blocks with amounts", async () => {
+    const result = await Nano.RPC.receivable(
+      rpcUrl,
+      {
+        action: "receivable",
+        account: TestData.GenesisAccount(),
+        count: 3,
+        sorting: true,
+      },
+      rpcRequestConfig
+    );
+    assert(result.success);
+    assert(result.data.blocks);
+    expect(Object.keys(result.data.blocks)).toHaveLength(3);
+    const amountResult = Nano.Types.RawAmountString().safeParse(result.data.blocks[Object.keys(result.data.blocks)[0]]);
+    assert(amountResult.success);
+  });
+
   test("returns receivable blocks requiring minimum version", async () => {
     const result = await Nano.RPC.receivable(
       rpcUrl,

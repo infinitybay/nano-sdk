@@ -9,6 +9,7 @@ import { WithDefault } from "./conditional-types/with-default";
 
 type ResponseType<T extends ReceivableRequest> = ReceivableResponse<{
   MIN_VERSION: BoolFlag<WithDefault<T, "min_version", false>["min_version"]>;
+  SORTING: BoolFlag<WithDefault<T, "sorting", false>["sorting"]>;
   SOURCE: BoolFlag<WithDefault<T, "source", false>["source"]>;
   THRESHOLD: ThresholdFlag<WithDefault<T, "threshold", undefined>["threshold"]>;
 }>;
@@ -39,8 +40,9 @@ export function receivable(url: string, request: ReceivableRequest, config?: Req
       ReceivableRequest(),
       ReceivableResponse({
         min_version: request.min_version === true,
+        sorting: request.sorting === true,
         source: request.source === true,
-        threshold: request.threshold !== undefined && request.threshold !== "" && request.threshold !== "0",
+        threshold: request.threshold !== undefined && request.threshold !== "0",
       }),
       config as NonThrowingRequestConfig
     );
@@ -51,8 +53,9 @@ export function receivable(url: string, request: ReceivableRequest, config?: Req
       ReceivableRequest(),
       ReceivableResponse({
         min_version: request.min_version === true,
+        sorting: request.sorting === true,
         source: request.source === true,
-        threshold: request.threshold !== undefined && request.threshold !== "" && request.threshold !== "0",
+        threshold: request.threshold !== undefined && request.threshold !== "0",
       }),
       config as ThrowingRequestConfig
     );

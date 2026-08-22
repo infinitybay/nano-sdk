@@ -9,6 +9,7 @@ import { UppercaseKeys } from "../../types/uppercase-keys";
 
 type ReceivableBlocksOptions = {
   min_version: boolean;
+  sorting: boolean;
   source: boolean;
   threshold: boolean;
 };
@@ -39,7 +40,11 @@ type ReceivableBlocksZodType<T extends UppercaseKeys<ReceivableBlocksOptions>> =
     BooleanDistribution<
       T["THRESHOLD"],
       z.ZodRecord<ReturnType<typeof HashString>, ReturnType<typeof RawAmountString>>,
-      z.ZodArray<ReturnType<typeof HashString>>
+      BooleanDistribution<
+        T["SORTING"],
+        z.ZodRecord<ReturnType<typeof HashString>, ReturnType<typeof RawAmountString>>,
+        z.ZodArray<ReturnType<typeof HashString>>
+      >
     >
   >
 >;
@@ -79,7 +84,7 @@ function ReceivableBlocks(options: ReceivableBlocksOptions) {
         source: AccountString(),
       })
     );
-  } else if (options.threshold) {
+  } else if (options.threshold || options.sorting) {
     return z.record(HashString(), RawAmountString());
   } else {
     return HashString().array();
@@ -88,6 +93,7 @@ function ReceivableBlocks(options: ReceivableBlocksOptions) {
 
 type ReceivableResponseOptions = {
   min_version: boolean;
+  sorting: boolean;
   source: boolean;
   threshold: boolean;
 };
