@@ -1,4 +1,4 @@
-import { StateBlock } from "../../../../src/nano/blocks/state-block";
+import { StateBlock, StateBlockString } from "../../../../src/nano/blocks/state-block";
 import { assert } from "../../../assert";
 import { TestData } from "../../test-data";
 
@@ -31,5 +31,20 @@ describe("StateBlock schema", () => {
       const result = StateBlock().safeParse(invalidStateBlock);
       assert(!result.success);
     }
+  });
+
+  test("validates state block JSON strings", () => {
+    const validStateBlockString: StateBlockString = JSON.stringify(TestData.Valid.StateBlock1());
+    const result = StateBlockString().safeParse(validStateBlockString);
+    assert(result.success);
+  });
+
+  test.each([
+    ["malformed JSON", "block-string"],
+    ["invalid state block JSON", JSON.stringify({ ...TestData.Valid.StateBlock1(), balance: "invalid" })],
+    ["legacy block JSON", JSON.stringify(TestData.Valid.LegacySendBlock())],
+  ])("rejects %s strings", (_description, block) => {
+    const result = StateBlockString().safeParse(block);
+    assert(!result.success);
   });
 });

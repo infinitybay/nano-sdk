@@ -16,5 +16,6 @@ describe("Blocks index exports", () => {
     expect(Blocks.LegacyReceiveBlock).toBeDefined();
     expect(Blocks.LegacySendBlock).toBeDefined();
     expect(Blocks.StateBlock).toBeDefined();
+    expect(Blocks.StateBlockString).toBeDefined();
   });
 });

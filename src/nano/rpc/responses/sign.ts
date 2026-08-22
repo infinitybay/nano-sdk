@@ -7,14 +7,22 @@ import { UppercaseKeys } from "../../types/uppercase-keys";
 
 type SignResponseOptions = {
   block: boolean;
+  json_block: boolean;
 };
 
 type SignResponseZodType<T extends UppercaseKeys<SignResponseOptions>> = BooleanDistribution<
   T["BLOCK"],
-  z.ZodObject<{
-    signature: ReturnType<typeof SignatureString>;
-    block: ReturnType<typeof StateBlock>;
-  }>,
+  BooleanDistribution<
+    T["JSON_BLOCK"],
+    z.ZodObject<{
+      signature: ReturnType<typeof SignatureString>;
+      block: ReturnType<typeof StateBlock>;
+    }>,
+    z.ZodObject<{
+      signature: ReturnType<typeof SignatureString>;
+      block: z.ZodString;
+    }>
+  >,
   z.ZodObject<{
     signature: ReturnType<typeof SignatureString>;
   }>
@@ -25,10 +33,15 @@ export type SignResponse<T extends UppercaseKeys<SignResponseOptions>> = z.infer
 export function SignResponse<T extends SignResponseOptions>(options: T): SignResponseZodType<UppercaseKeys<T>>;
 export function SignResponse(options: SignResponseOptions) {
   return options.block
-    ? z.object({
-        signature: SignatureString(),
-        block: StateBlock(),
-      })
+    ? options.json_block
+      ? z.object({
+          signature: SignatureString(),
+          block: StateBlock(),
+        })
+      : z.object({
+          signature: SignatureString(),
+          block: z.string(),
+        })
     : z.object({
         signature: SignatureString(),
       });

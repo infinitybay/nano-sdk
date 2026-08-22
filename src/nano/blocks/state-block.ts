@@ -21,3 +21,13 @@ export const StateBlock = () =>
     signature: SignatureString(),
     work: WorkString(),
   });
+
+export type StateBlockString = z.infer<ReturnType<typeof StateBlockString>>;
+export const StateBlockString = () =>
+  z.string().refine((block) => {
+    try {
+      return StateBlock().safeParse(JSON.parse(block)).success;
+    } catch {
+      return false;
+    }
+  }, "Invalid state block JSON string.");

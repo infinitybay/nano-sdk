@@ -27,6 +27,32 @@ describe("sign RPC integration", () => {
     ).toBe(true);
   });
 
+  test("signs a state block string and returns the signed block as a JSON string", async () => {
+    const result = await Nano.RPC.sign(
+      rpcUrl,
+      {
+        action: "sign",
+        json_block: false,
+        key: TestData.KeySet().PrivateKey(),
+        block: TestData.StateBlockString(),
+      },
+      rpcRequestConfig
+    );
+    assert(result.success);
+    expect(typeof result.data.block).toBe("string");
+    const block = Nano.Blocks.StateBlock().safeParse(JSON.parse(result.data.block));
+    assert(block.success);
+    expect(block.data.signature).toBe(result.data.signature);
+    expect(
+      verifySignature({
+        hash: TestData.StateBlockHash(),
+        publicKey: TestData.KeySet().PublicKey(),
+        signature: result.data.signature,
+        throwOnError: true,
+      })
+    ).toBe(true);
+  });
+
   // Disabled, because signing by block hash could be disabled
   xtest("signs using a hash reference without returning block contents", async () => {
     const result = await Nano.RPC.sign(

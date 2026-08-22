@@ -3,11 +3,13 @@ import { PostResult } from "../http/post-result";
 import { NonThrowingRequestConfig, RequestConfig, ThrowingRequestConfig } from "../http/request-config";
 import { SignRequest } from "../requests/sign";
 import { SignResponse } from "../responses/sign";
+import { BoolFlag } from "./conditional-types/bool-flag";
 import { NotUndefinedFlag } from "./conditional-types/not-undefined-flag";
 import { WithDefault } from "./conditional-types/with-default";
 
 type ResponseType<T extends SignRequest> = SignResponse<{
   BLOCK: NotUndefinedFlag<WithDefault<T, "block", undefined>["block"]>;
+  JSON_BLOCK: BoolFlag<WithDefault<T, "json_block", false>["json_block"]>;
 }>;
 
 export function sign<const T extends SignRequest>(
@@ -36,6 +38,7 @@ export function sign(url: string, request: SignRequest, config?: RequestConfig) 
       SignRequest(),
       SignResponse({
         block: request.block !== undefined,
+        json_block: request.json_block === true,
       }),
       config as NonThrowingRequestConfig
     );
@@ -46,6 +49,7 @@ export function sign(url: string, request: SignRequest, config?: RequestConfig) 
       SignRequest(),
       SignResponse({
         block: request.block !== undefined,
+        json_block: request.json_block === true,
       }),
       config as ThrowingRequestConfig
     );
