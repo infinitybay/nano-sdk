@@ -1,6 +1,6 @@
 {
   "name": "nano-sdk",
-  "version": "1.0.6",
+  "version": "2.0.0-beta.1",
   "description": "SDK for the Nano cryptocurrency with typed and runtime-validated RPC and WebSocket APIs, a built-in WebSocket client, safe amount arithmetic, and cryptographic utilities.",
   "keywords": [
     "blockchain",
