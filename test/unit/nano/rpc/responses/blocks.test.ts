@@ -3,6 +3,13 @@ import { assert } from "../../../../assert";
 import { TestData } from "../../../test-data";
 
 describe("BlocksResponse schema", () => {
+  test.each([true, false])("parses empty blocks response when json_block is %s", (jsonBlock) => {
+    const result = BlocksResponse({ json_block: jsonBlock }).safeParse({
+      blocks: "",
+    });
+    assert(result.success);
+  });
+
   test("parses blocks response with json blocks", () => {
     const result = BlocksResponse({ json_block: true }).safeParse({
       blocks: {
@@ -28,6 +35,13 @@ describe("BlocksResponse schema", () => {
       blocks: {
         [TestData.Invalid.Hash.InvalidCharacters()]: "block-data",
       },
+    });
+    assert(!result.success);
+  });
+
+  test("rejects non-empty string blocks response", () => {
+    const result = BlocksResponse({ json_block: false }).safeParse({
+      blocks: "block-data",
     });
     assert(!result.success);
   });

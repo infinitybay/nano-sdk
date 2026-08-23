@@ -4,6 +4,19 @@ import { rpcRequestConfig, rpcUrl } from "../../config";
 import { TestData } from "../../test-data";
 
 describe("blocks RPC integration", () => {
+  test("returns an empty string for an empty hash list", async () => {
+    const result = await Nano.RPC.blocks(
+      rpcUrl,
+      {
+        action: "blocks",
+        hashes: [],
+      },
+      rpcRequestConfig
+    );
+    assert(result.success);
+    expect(result.data.blocks).toBe("");
+  });
+
   test("returns blocks as strings", async () => {
     const result = await Nano.RPC.blocks(
       rpcUrl,

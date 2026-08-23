@@ -12,10 +12,10 @@ type BlocksResponseOptions = {
 type BlocksResponseZodType<T extends UppercaseKeys<BlocksResponseOptions>> = BooleanDistribution<
   T["JSON_BLOCK"],
   z.ZodObject<{
-    blocks: z.ZodRecord<ReturnType<typeof HashString>, ReturnType<typeof Block>>;
+    blocks: z.ZodUnion<[z.ZodRecord<ReturnType<typeof HashString>, ReturnType<typeof Block>>, z.ZodLiteral<"">]>;
   }>,
   z.ZodObject<{
-    blocks: z.ZodRecord<ReturnType<typeof HashString>, z.ZodString>;
+    blocks: z.ZodUnion<[z.ZodRecord<ReturnType<typeof HashString>, z.ZodString>, z.ZodLiteral<"">]>;
   }>
 >;
 export type BlocksResponse<T extends UppercaseKeys<BlocksResponseOptions>> = z.infer<BlocksResponseZodType<T>>;
@@ -24,9 +24,9 @@ export function BlocksResponse<T extends BlocksResponseOptions>(options: T): Blo
 export function BlocksResponse(options: BlocksResponseOptions) {
   return options.json_block
     ? z.object({
-        blocks: z.record(HashString(), Block()),
+        blocks: z.record(HashString(), Block()).or(z.literal("")),
       })
     : z.object({
-        blocks: z.record(HashString(), z.string()),
+        blocks: z.record(HashString(), z.string()).or(z.literal("")),
       });
 }
