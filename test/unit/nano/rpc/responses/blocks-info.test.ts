@@ -33,6 +33,7 @@ describe("BlocksInfoResponse schema", () => {
           amount: TestData.Valid.RawAmount1(),
           balance: TestData.Valid.RawAmount2(),
           height: TestData.Valid.Height1(),
+          topo_height: TestData.Valid.Height2(),
           local_timestamp: TestData.Valid.Timestamp1(),
           successor: TestData.Valid.Hash2(),
           confirmed: "true",
@@ -47,6 +48,8 @@ describe("BlocksInfoResponse schema", () => {
       blocks_not_found: [TestData.Valid.Hash4()],
     });
     assert(result.success);
+    assert(result.data.blocks !== "");
+    expect(result.data.blocks[TestData.Valid.Hash1()]?.topo_height).toBe(TestData.Valid.Height2());
   });
 
   test("parses blocks info response with all options disabled", () => {
@@ -64,6 +67,7 @@ describe("BlocksInfoResponse schema", () => {
           block_account: TestData.Valid.Account1(),
           balance: TestData.Valid.RawAmount1(),
           height: TestData.Valid.Height1(),
+          topo_height: TestData.Valid.Height2(),
           local_timestamp: TestData.Valid.Timestamp1(),
           successor: TestData.Valid.Hash2(),
           confirmed: "false",
@@ -89,6 +93,7 @@ describe("BlocksInfoResponse schema", () => {
           block_account: TestData.Invalid.Account.InvalidCharacters(),
           balance: TestData.Valid.RawAmount1(),
           height: TestData.Valid.Height1(),
+          topo_height: TestData.Valid.Height2(),
           local_timestamp: TestData.Valid.Timestamp1(),
           successor: TestData.Valid.Hash2(),
           confirmed: "true",

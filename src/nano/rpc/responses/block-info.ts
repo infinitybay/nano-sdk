@@ -20,6 +20,7 @@ const BlockInfoBase = () =>
     amount: RawAmountString().optional(),
     balance: RawAmountString(),
     height: HeightString(),
+    topo_height: HeightString(),
     local_timestamp: TimestampString(),
     successor: HashString(),
     confirmed: BooleanString(),

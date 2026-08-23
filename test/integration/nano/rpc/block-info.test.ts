@@ -15,6 +15,7 @@ describe("block_info RPC integration", () => {
     );
     assert(result.success);
     expect(result.data.block_account).toBe(TestData.GenesisAccount());
+    expect(result.data.topo_height).toMatch(/^(0|[1-9]\d*)$/);
     expect(result.data.contents.length).toBeGreaterThan(0);
   });
 
