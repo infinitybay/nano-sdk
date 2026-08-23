@@ -11,7 +11,7 @@ export type VoteMessage = z.infer<ReturnType<typeof VoteMessage>>;
 export const VoteMessage = () =>
   z.object({
     account: AccountString(),
-    signature: SignatureString().or(z.string()), // Currently returned as string number; not converted to hex string in nano::vote::serialize_json
+    signature: SignatureString(),
     sequence: TimestampString().or(FinalVoteTimestampString()),
     timestamp: TimestampString().or(FinalVoteTimestampString()),
     duration: UIntString(),
