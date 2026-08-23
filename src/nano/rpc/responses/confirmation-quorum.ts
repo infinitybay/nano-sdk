@@ -34,7 +34,7 @@ type ConfirmationQuorumResponseZodType<T extends UppercaseKeys<ConfirmationQuoru
     T["PEER_DETAILS"],
     z.ZodObject<
       ReturnType<typeof ConfirmationQuorum>["shape"] & {
-        peers: z.ZodArray<ReturnType<typeof ConfirmationQuorumPeer>>;
+        peers: z.ZodUnion<[z.ZodArray<ReturnType<typeof ConfirmationQuorumPeer>>, z.ZodLiteral<"">]>;
       }
     >,
     ReturnType<typeof ConfirmationQuorum>
@@ -49,6 +49,6 @@ export function ConfirmationQuorumResponse<T extends ConfirmationQuorumResponseO
 ): ConfirmationQuorumResponseZodType<UppercaseKeys<T>>;
 export function ConfirmationQuorumResponse(options: ConfirmationQuorumResponseOptions) {
   return options.peer_details
-    ? ConfirmationQuorum().extend({ peers: ConfirmationQuorumPeer().array() })
+    ? ConfirmationQuorum().extend({ peers: ConfirmationQuorumPeer().array().or(z.literal("")) })
     : ConfirmationQuorum();
 }

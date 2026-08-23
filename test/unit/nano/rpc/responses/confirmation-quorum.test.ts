@@ -30,6 +30,21 @@ describe("ConfirmationQuorumResponse schema", () => {
     assert(result.success);
   });
 
+  test("parses confirmation quorum response with empty peer details", () => {
+    const schema = ConfirmationQuorumResponse({ peer_details: true });
+    const result = schema.safeParse({
+      quorum_delta: TestData.Valid.RawAmount1(),
+      online_weight_quorum_percent: "67",
+      online_weight_minimum: TestData.Valid.RawAmount2(),
+      online_stake_total: TestData.Valid.RawAmount3(),
+      trended_stake_total: TestData.Valid.RawAmount4(),
+      peers_stake_total: TestData.Valid.RawAmount1(),
+      peers: "",
+    });
+    assert(result.success);
+    expect(result.data.peers).toBe("");
+  });
+
   test("rejects confirmation quorum response with invalid peer account", () => {
     const schema = ConfirmationQuorumResponse({ peer_details: true });
     const result = schema.safeParse({
@@ -42,6 +57,20 @@ describe("ConfirmationQuorumResponse schema", () => {
       peers: [
         { account: TestData.Invalid.Account.InvalidCharacters(), ip: "127.0.0.1", weight: TestData.Valid.RawAmount2() },
       ],
+    });
+    assert(!result.success);
+  });
+
+  test("rejects a non-empty string as peer details", () => {
+    const schema = ConfirmationQuorumResponse({ peer_details: true });
+    const result = schema.safeParse({
+      quorum_delta: TestData.Valid.RawAmount1(),
+      online_weight_quorum_percent: "67",
+      online_weight_minimum: TestData.Valid.RawAmount2(),
+      online_stake_total: TestData.Valid.RawAmount3(),
+      trended_stake_total: TestData.Valid.RawAmount4(),
+      peers_stake_total: TestData.Valid.RawAmount1(),
+      peers: "not-empty",
     });
     assert(!result.success);
   });

@@ -14,6 +14,8 @@ type ConfirmationInfoBlocksOptions = {
   representatives: boolean;
 };
 
+const ConfirmationInfoRepresentatives = () => z.record(AccountString(), RawAmountString()).or(z.literal(""));
+
 type ConfirmationInfoBlocksZodType<T extends UppercaseKeys<ConfirmationInfoBlocksOptions>> = BooleanDistribution<
   T["CONTENTS"],
   BooleanDistribution<
@@ -25,8 +27,8 @@ type ConfirmationInfoBlocksZodType<T extends UppercaseKeys<ConfirmationInfoBlock
         z.ZodObject<{
           tally: ReturnType<typeof RawAmountString>;
           contents: ReturnType<typeof Block>;
-          representatives: z.ZodRecord<ReturnType<typeof AccountString>, ReturnType<typeof RawAmountString>>;
-          representatives_final: z.ZodRecord<ReturnType<typeof AccountString>, ReturnType<typeof RawAmountString>>;
+          representatives: ReturnType<typeof ConfirmationInfoRepresentatives>;
+          representatives_final: ReturnType<typeof ConfirmationInfoRepresentatives>;
         }>
       >,
       z.ZodRecord<
@@ -44,8 +46,8 @@ type ConfirmationInfoBlocksZodType<T extends UppercaseKeys<ConfirmationInfoBlock
         z.ZodObject<{
           tally: ReturnType<typeof RawAmountString>;
           contents: z.ZodString;
-          representatives: z.ZodRecord<ReturnType<typeof AccountString>, ReturnType<typeof RawAmountString>>;
-          representatives_final: z.ZodRecord<ReturnType<typeof AccountString>, ReturnType<typeof RawAmountString>>;
+          representatives: ReturnType<typeof ConfirmationInfoRepresentatives>;
+          representatives_final: ReturnType<typeof ConfirmationInfoRepresentatives>;
         }>
       >,
       z.ZodRecord<
@@ -63,8 +65,8 @@ type ConfirmationInfoBlocksZodType<T extends UppercaseKeys<ConfirmationInfoBlock
       ReturnType<typeof HashString>,
       z.ZodObject<{
         tally: ReturnType<typeof RawAmountString>;
-        representatives: z.ZodRecord<ReturnType<typeof AccountString>, ReturnType<typeof RawAmountString>>;
-        representatives_final: z.ZodRecord<ReturnType<typeof AccountString>, ReturnType<typeof RawAmountString>>;
+        representatives: ReturnType<typeof ConfirmationInfoRepresentatives>;
+        representatives_final: ReturnType<typeof ConfirmationInfoRepresentatives>;
       }>
     >,
     z.ZodRecord<
@@ -98,8 +100,8 @@ function ConfirmationInfoBlocks(options: ConfirmationInfoBlocksOptions) {
 
   if (options.representatives) {
     value = value.extend({
-      representatives: z.record(AccountString(), RawAmountString()),
-      representatives_final: z.record(AccountString(), RawAmountString()),
+      representatives: ConfirmationInfoRepresentatives(),
+      representatives_final: ConfirmationInfoRepresentatives(),
     });
   }
 
