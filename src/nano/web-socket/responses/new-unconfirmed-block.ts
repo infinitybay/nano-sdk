@@ -6,8 +6,10 @@ import { LegacyReceiveBlock } from "../../blocks/legacy-receive-block";
 import { LegacySendBlock } from "../../blocks/legacy-send-block";
 import { StateBlock } from "../../blocks/state-block";
 import { HashString } from "../../types/hash";
-import { SubtypeString } from "../../types/subtype";
 import { TimestampString } from "../../types/timestamp";
+
+export type NewUnconfirmedBlockSubtype = z.infer<ReturnType<typeof NewUnconfirmedBlockSubtype>>;
+export const NewUnconfirmedBlockSubtype = () => z.enum(["change", "epoch", "receive", "send"]);
 
 export type NewUnconfirmedBlockMessage = z.infer<ReturnType<typeof NewUnconfirmedBlockMessage>>;
 export const NewUnconfirmedBlockMessage = () =>
@@ -17,7 +19,7 @@ export const NewUnconfirmedBlockMessage = () =>
     LegacyReceiveBlock(),
     LegacySendBlock(),
     StateBlock().extend({
-      subtype: SubtypeString(),
+      subtype: NewUnconfirmedBlockSubtype(),
     }),
   ]);
 
