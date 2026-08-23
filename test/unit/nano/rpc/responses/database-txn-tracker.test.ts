@@ -2,6 +2,13 @@ import { DatabaseTxnTrackerResponse } from "../../../../../src/nano/rpc/response
 import { assert } from "../../../../assert";
 
 describe("DatabaseTxnTrackerResponse schema", () => {
+  test("parses empty database transaction tracking response", () => {
+    const result = DatabaseTxnTrackerResponse().safeParse({
+      txn_tracking: "",
+    });
+    assert(result.success);
+  });
+
   test("parses database transaction tracker response", () => {
     const result = DatabaseTxnTrackerResponse().safeParse({
       txn_tracking: [

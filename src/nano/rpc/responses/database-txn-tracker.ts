@@ -22,7 +22,7 @@ const TxnTrackingEntry = () =>
 
 export function DatabaseTxnTrackerResponse() {
   return z.object({
-    txn_tracking: z.array(TxnTrackingEntry()),
+    txn_tracking: z.array(TxnTrackingEntry()).or(z.literal("")),
   });
 }
 
