@@ -19,6 +19,7 @@ describe("AccountHistoryResponse schema", () => {
           local_timestamp: TestData.Valid.Timestamp1(),
           height: TestData.Valid.Height1(),
           hash: TestData.Valid.Hash1(),
+          topo_height: TestData.Valid.Height2(),
           confirmed: "true",
           linked_account: TestData.Valid.Account2(),
         },
@@ -27,6 +28,8 @@ describe("AccountHistoryResponse schema", () => {
     });
     assert(result.success);
     expect(result.data.previous).toBe(TestData.Valid.PrevHash1());
+    assert(result.data.history !== "");
+    expect(result.data.history[0]?.topo_height).toBe(TestData.Valid.Height2());
   });
 
   test("parses account history response with linked account and raw", () => {
@@ -45,6 +48,7 @@ describe("AccountHistoryResponse schema", () => {
           local_timestamp: TestData.Valid.Timestamp1(),
           height: TestData.Valid.Height1(),
           hash: TestData.Valid.Hash1(),
+          topo_height: TestData.Valid.Height2(),
           confirmed: "true",
           linked_account: TestData.Valid.Account2(),
         },
@@ -53,6 +57,8 @@ describe("AccountHistoryResponse schema", () => {
     });
     assert(result.success);
     expect(result.data.previous).toBe(TestData.Valid.PrevHash1());
+    assert(result.data.history !== "");
+    expect(result.data.history[0]?.topo_height).toBe(TestData.Valid.Height2());
   });
 
   test("parses account history response without linked account and with raw", () => {
@@ -71,6 +77,7 @@ describe("AccountHistoryResponse schema", () => {
           local_timestamp: TestData.Valid.Timestamp1(),
           height: TestData.Valid.Height1(),
           hash: TestData.Valid.Hash1(),
+          topo_height: TestData.Valid.Height2(),
           confirmed: "true",
         },
       ],
@@ -95,6 +102,7 @@ describe("AccountHistoryResponse schema", () => {
           local_timestamp: TestData.Valid.Timestamp1(),
           height: TestData.Valid.Height1(),
           hash: TestData.Valid.Hash1(),
+          topo_height: TestData.Valid.Height2(),
           confirmed: "true",
         },
       ],
@@ -119,6 +127,7 @@ describe("AccountHistoryResponse schema", () => {
           local_timestamp: TestData.Valid.Timestamp1(),
           height: TestData.Valid.Height1(),
           hash: TestData.Valid.Hash1(),
+          topo_height: TestData.Valid.Height2(),
           confirmed: "true",
         },
       ],
@@ -139,6 +148,41 @@ describe("AccountHistoryResponse schema", () => {
         {
           ...TestData.Valid.StateBlock1(),
           subtype: "receive",
+          amount: TestData.Valid.RawAmount1(),
+          local_timestamp: TestData.Valid.Timestamp1(),
+          height: TestData.Valid.Height1(),
+          hash: TestData.Valid.Hash1(),
+          topo_height: TestData.Valid.Height2(),
+          confirmed: "true",
+        },
+      ],
+      previous: TestData.Valid.PrevHash1(),
+    });
+    assert(!result.success);
+  });
+
+  test.each([
+    { raw: false, entry: {} },
+    {
+      raw: true,
+      entry: {
+        ...TestData.Valid.StateBlock1(),
+        subtype: "receive",
+      },
+    },
+  ])("rejects account history response without topology height when raw is $raw", ({ raw, entry }) => {
+    const schema = AccountHistoryResponse({
+      include_linked_account: false,
+      raw,
+      reverse: false,
+    });
+    const result = schema.safeParse({
+      account: TestData.Valid.Account1(),
+      history: [
+        {
+          ...entry,
+          type: raw ? "state" : "receive",
+          account: TestData.Valid.Account1(),
           amount: TestData.Valid.RawAmount1(),
           local_timestamp: TestData.Valid.Timestamp1(),
           height: TestData.Valid.Height1(),

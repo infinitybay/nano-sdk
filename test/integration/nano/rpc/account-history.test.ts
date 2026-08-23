@@ -18,6 +18,7 @@ describe("account_history RPC integration", () => {
     expect(result.data.account).toBe(TestData.GenesisAccount());
     assert(result.data.history);
     expect(result.data.history.length).toBe(3);
+    expect(result.data.history[0].topo_height).toMatch(/^(0|[1-9]\d*)$/);
     expect(result.data.previous).toBeTruthy();
   });
 
@@ -72,6 +73,7 @@ describe("account_history RPC integration", () => {
     expect(result.data.account).toBe(TestData.GenesisAccount());
     assert(result.data.history);
     expect(result.data.history.length).toBe(3);
+    expect(result.data.history[0].topo_height).toMatch(/^(0|[1-9]\d*)$/);
     expect(result.data.previous).toBeTruthy();
   });
 

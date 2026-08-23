@@ -25,6 +25,7 @@ const BaseBlockHistory = () =>
     local_timestamp: TimestampString(),
     height: HeightString(),
     hash: HashString(),
+    topo_height: HeightString(),
     confirmed: BooleanString(),
     work: WorkString(),
     signature: SignatureString(),
@@ -228,6 +229,7 @@ const AccountHistoryEntryNotRaw = () =>
     local_timestamp: TimestampString(),
     height: HeightString(),
     hash: HashString(),
+    topo_height: HeightString(),
     confirmed: BooleanString(),
   });
 
