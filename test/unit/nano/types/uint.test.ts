@@ -1,5 +1,4 @@
-import { UIntBounds, UIntString } from "../../../../src/nano/types/uint";
-import { UInt } from "../../../../src/nano/types/uint";
+import { UInt, UINT64_MAX, UInt64String, UIntBounds, UIntString } from "../../../../src/nano/types/uint";
 import { assert } from "../../../assert";
 
 describe("UInt schema", () => {
@@ -72,6 +71,32 @@ describe("UIntString schema", () => {
     const invalid = ["Infinity", "NaN"];
     for (const value of invalid) {
       assert(!UIntString().safeParse(value).success);
+    }
+  });
+});
+
+describe("UInt64String schema", () => {
+  test("validates unsigned 64-bit integer strings", () => {
+    const validUInt64s = ["0", "1", Number.MAX_SAFE_INTEGER.toString(), UINT64_MAX.toString()];
+    for (const value of validUInt64s) {
+      expect(UInt64String().parse(value)).toBe(value);
+    }
+  });
+
+  test("rejects values above the unsigned 64-bit integer maximum", () => {
+    assert(!UInt64String().safeParse((UINT64_MAX + 1n).toString()).success);
+  });
+
+  test.each(["-1", "00", "01", "1.5", "", "abc", "+1", "Infinity", "NaN"])(
+    "rejects invalid unsigned 64-bit integer string %s",
+    (value) => {
+      assert(!UInt64String().safeParse(value).success);
+    }
+  );
+
+  test("rejects non-string values", () => {
+    for (const value of [0, 1n, true, null, undefined]) {
+      assert(!UInt64String().safeParse(value).success);
     }
   });
 });

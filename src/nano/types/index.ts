@@ -38,6 +38,6 @@ export {
   TimestampString,
 } from "./timestamp";
 export { TypeString } from "./type";
-export { UInt, UIntBounds, UIntString } from "./uint";
+export { UInt, UInt64String, UIntBounds, UIntString } from "./uint";
 export { WorkString, WorkStrings } from "./work";
 export { WorkDifficultyString } from "./work-difficulty";
