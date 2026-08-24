@@ -327,6 +327,7 @@ Integration test requirements:
 - All public **Nano** RPC and WebSocket endpoints must be reachable. `enable_control=true` is **not** required for any currently enabled integration tests.
 - The RPC endpoint URL can be configured via the `config.nanoRpcUrl` field in `package.json` or via the `NANO_RPC_URL` environment variable. The environment variable takes precedence if both are set.
 - The WebSocket endpoint URL can be configured via the `config.nanoWebSocketUrl` field in `package.json` or via the `NANO_WEB_SOCKET_URL` environment variable. The environment variable takes precedence if both are set.
+- Some RPC integration tests should only run against a node with the extended ledger enabled because they may otherwise be too slow for integration-test execution. Include them by enabling `config.nanoExtendedLedger` in `package.json` or by setting `NANO_EXTENDED_LEDGER=true` in the environment. The environment variable takes precedence. This setting only controls whether the tests run; it does not enable or detect the extended ledger on the node.
 
 Integration tests for RPC and WebSocket are executed together using:
 
