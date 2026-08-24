@@ -105,6 +105,7 @@ layers, but inspect imports and call sites before adding a new cross-area depend
 - `test/unit/test-data.ts`: shared valid and deliberately invalid primitive/block fixtures.
 - `test/integration/test-data.ts`: stable Nano network fixtures such as genesis/burn data.
 - `test/assert.ts`: assertion function used to narrow discriminated result types.
+- `test/describe.ts`: shared conditional Jest suite helpers for integration capabilities.
 - `test/integration/config.ts`: live RPC/WebSocket endpoint and timeout configuration.
 - `examples/`: consumer-oriented examples importing from `"nano-sdk"`. They are outside `tsconfig.json`'s
   `include`; do not treat them as build inputs.
@@ -308,6 +309,10 @@ WebSocket endpoints. Resolution order in `test/integration/config.ts` is:
 1. `NANO_RPC_URL` / `NANO_WEB_SOCKET_URL`
 2. npm-provided `package.json` config values (`config.nanoRpcUrl`, `config.nanoWebSocketUrl`)
 3. `http://127.0.0.1:7076` / `ws://127.0.0.1:7078`
+
+The delegators RPC integration suite additionally requires the v29 extended delegator index. It only runs when
+`NANO_EXTENDED_LEDGER=true` or npm config `nanoExtendedLedger` is enabled; the package default is disabled so a
+node without the index does not incur the legacy full-ledger scan.
 
 Enabled tests are intended not to require `enable_control=true`; control-only, expensive, or incompletely
 implemented cases are already marked with `xdescribe`/`xtest` or commented in their files. Inspect the specific

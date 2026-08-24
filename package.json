@@ -65,6 +65,7 @@
   },
   "sideEffects": false,
   "config": {
+    "nanoExtendedLedger": false,
     "nanoRpcUrl": "http://127.0.0.1:7076",
     "nanoWebSocketUrl": "ws://127.0.0.1:7078"
   },
