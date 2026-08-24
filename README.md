@@ -172,20 +172,20 @@ const response = await Nano.RPC.account_balance(
 
 RPC methods accept a custom `httpClient` via the request config. See the `axios` example in
 
-- [`axios-http-client.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/rpc/axios-http-client.example.ts)
+- [`axios-http-client.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/rpc/axios-http-client.example.ts)
 
 ### Custom RPCs
 
 Non-standard RPC providers can be integrated by defining custom Zod request and response schemas and passing them
 to `Nano.RPC.postFunction`. For example, Nano.to extends and changes parts of the official Nano Node RPC API; the
-[`custom-rpc.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/rpc/custom-rpc.example.ts)
+[`custom-rpc.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/rpc/custom-rpc.example.ts)
 example demonstrates how to integrate its custom `work_generate` action.
 
 ### Examples
 
-- [`account-info.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/rpc/account-info.example.ts)
-- [`custom-rpc.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/rpc/custom-rpc.example.ts)
-- [`version.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/rpc/version.example.ts)
+- [`account-info.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/rpc/account-info.example.ts)
+- [`custom-rpc.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/rpc/custom-rpc.example.ts)
+- [`version.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/rpc/version.example.ts)
 
 <a name="websocket"></a>
 ## WebSocket Usage
@@ -219,8 +219,8 @@ const ws = new Nano.WebSocketClient(webSocketUrl, undefined, {
 
 ### Examples
 
-- [`typed-ack-and-topic-listeners.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/web-socket/typed-ack-and-topic-listeners.example.ts)
-- [`custom-web-socket-client.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/web-socket/custom-web-socket-client.example.ts)
+- [`typed-ack-and-topic-listeners.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/web-socket/typed-ack-and-topic-listeners.example.ts)
+- [`custom-web-socket-client.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/web-socket/custom-web-socket-client.example.ts)
 
 <a name="validation"></a>
 ## Validation & Typing
@@ -236,7 +236,7 @@ The available schemas cover a wide range of Nano primitives, including but not l
 
 ### Examples
 
-- [`alias-and-safe-parse.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/types/alias-and-safe-parse.example.ts)
+- [`alias-and-safe-parse.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/types/alias-and-safe-parse.example.ts)
 
 <a name="math"></a>
 ## Math
@@ -263,9 +263,9 @@ Available utilities:
 
 ### Examples
 
-- [`format-raw.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/math/format-raw.example.ts)
-- [`raw-arithmetic.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/math/raw-arithmetic.example.ts)
-- [`raw-comparison.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/math/raw-comparison.example.ts)
+- [`format-raw.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/math/format-raw.example.ts)
+- [`raw-arithmetic.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/math/raw-arithmetic.example.ts)
+- [`raw-comparison.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/math/raw-comparison.example.ts)
 
 <a name="crypto"></a>
 ## Crypto
@@ -280,10 +280,10 @@ Available utilities:
 
 ### Examples
 
-- [`derive-account-from-seed.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/crypto/derive-account-from-seed.example.ts)
-- [`hash-and-verify-hash.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/crypto/hash-and-verify-hash.example.ts)
-- [`sign-and-verify-signature.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/crypto/sign-and-verify-signature.example.ts)
-- [`verify-block.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/crypto/verify-block.example.ts)
+- [`derive-account-from-seed.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/crypto/derive-account-from-seed.example.ts)
+- [`hash-and-verify-hash.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/crypto/hash-and-verify-hash.example.ts)
+- [`sign-and-verify-signature.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/crypto/sign-and-verify-signature.example.ts)
+- [`verify-block.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/crypto/verify-block.example.ts)
 
 ## Blocks
 
@@ -313,9 +313,9 @@ used by open and subsequent blocks.
 
 ### Examples
 
-- [`create-state-blocks.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/blocks/create-state-blocks.example.ts)
-- [`create-state-block-with-nano-pow.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/blocks/create-state-block-with-nano-pow.example.ts)
-- [`state-block-with-hash.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/blocks/state-block-with-hash.example.ts)
+- [`create-state-blocks.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/blocks/create-state-blocks.example.ts)
+- [`create-state-block-with-nano-pow.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/blocks/create-state-block-with-nano-pow.example.ts)
+- [`state-block-with-hash.example.ts`](https://github.com/infinitybay/nano-sdk/blob/develop/examples/blocks/state-block-with-hash.example.ts)
 
 <a name="testing"></a>
 ## Testing
