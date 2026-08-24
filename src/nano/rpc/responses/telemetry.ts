@@ -16,8 +16,7 @@ const TelemetryError = () =>
     error: z.string(),
   });
 
-export type TelemetryMetrics = z.infer<ReturnType<typeof TelemetryMetrics>>;
-export const TelemetryMetrics = () =>
+const TelemetryMetricsBase = () =>
   z.object({
     block_count: UIntString(),
     cemented_count: UIntString(),
@@ -32,19 +31,46 @@ export const TelemetryMetrics = () =>
     minor_version: UIntString(),
     patch_version: UIntString(),
     pre_release_version: UIntString(),
-    maker: UIntString(),
+    maker: z.enum(["nf_node", "nf_pruned_node", "nf_peering_node", "rs_nano", "invalid"]),
     timestamp: TimestampString(),
     active_difficulty: WorkDifficultyString(),
     node_id: NodeIdString(),
     signature: SignatureString(),
   });
 
+const TelemetryMetricsV1 = () =>
+  TelemetryMetricsBase().extend({
+    database_backend: z.never().optional(),
+    confirmation_latency_ms_p50: z.never().optional(),
+    confirmation_latency_ms_p90: z.never().optional(),
+    confirmation_latency_ms_p99: z.never().optional(),
+    bootstrap_status: z.never().optional(),
+  });
+
+const TelemetryMetricsV2 = () =>
+  TelemetryMetricsBase().extend({
+    database_backend: z.enum(["unknown", "lmdb", "rocksdb", "invalid"]),
+    confirmation_latency_ms_p50: UIntString(),
+    confirmation_latency_ms_p90: UIntString(),
+    confirmation_latency_ms_p99: UIntString(),
+    bootstrap_status: z.enum(["unknown", "syncing", "synced", "invalid"]),
+  });
+
+export type TelemetryMetrics = z.infer<ReturnType<typeof TelemetryMetrics>>;
+export const TelemetryMetrics = () => z.union([TelemetryMetricsV2(), TelemetryMetricsV1()]);
+
 export type TelemetryMetricsRaw = z.infer<ReturnType<typeof TelemetryMetricsRaw>>;
 export const TelemetryMetricsRaw = () =>
-  TelemetryMetrics().extend({
-    address: EndpointString(),
-    port: PortString(),
-  });
+  z.union([
+    TelemetryMetricsV2().extend({
+      address: EndpointString(),
+      port: PortString(),
+    }),
+    TelemetryMetricsV1().extend({
+      address: EndpointString(),
+      port: PortString(),
+    }),
+  ]);
 
 type TelemetryResponseOptions = {
   address: boolean;
