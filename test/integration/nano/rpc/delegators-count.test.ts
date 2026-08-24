@@ -1,13 +1,11 @@
 import { Nano } from "../../../../src";
 import { assert } from "../../../assert";
+import { describeWithExtendedLedger } from "../../../describe";
 import { rpcRequestConfig, rpcUrl } from "../../config";
 import { TestData } from "../../test-data";
 
-// Disabled: This RPC is skipped for performance reasons.
-xdescribe("delegators_count RPC integration", () => {
-  xtest("disabled", async () => {});
-
-  xtest("returns delegators count for account", async () => {
+describeWithExtendedLedger("delegators_count RPC integration with extended ledger", () => {
+  test("returns the delegator count for an account", async () => {
     const result = await Nano.RPC.delegators_count(
       rpcUrl,
       {
@@ -16,6 +14,7 @@ xdescribe("delegators_count RPC integration", () => {
       },
       rpcRequestConfig
     );
-    assert(result.success);
+    assert(result.success, JSON.stringify(result));
+    expect(BigInt(result.data.count)).toBeGreaterThan(0n);
   });
 });
