@@ -50,5 +50,16 @@ describe("stats RPC integration", () => {
       rpcRequestConfig
     );
     assert(result.success);
+
+    if ("column_families" in result.data) {
+      expect(result.data.levels.l0_num_files).toEqual(expect.any(String));
+      for (const columnFamily of Object.values(result.data.column_families)) {
+        expect(columnFamily.estimate_num_keys).toEqual(expect.any(String));
+        expect(columnFamily.memtable_size).toEqual(expect.any(String));
+      }
+    } else {
+      expect(result.data.branch_pages).toEqual(expect.any(String));
+      expect(result.data.page_size).toEqual(expect.any(String));
+    }
   });
 });
