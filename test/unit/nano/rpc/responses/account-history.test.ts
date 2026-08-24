@@ -100,6 +100,7 @@ describe("AccountHistoryResponse schema", () => {
           subtype: "unknown",
           local_timestamp: TestData.Valid.Timestamp1(),
           height: TestData.Valid.Height1(),
+          topo_height: TestData.Valid.Height2(),
           hash: TestData.Valid.Hash1(),
           confirmed: "true",
         },
