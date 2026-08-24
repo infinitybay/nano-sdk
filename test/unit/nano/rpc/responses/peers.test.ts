@@ -20,13 +20,14 @@ describe("PeersResponse schema", () => {
           node_id: TestData.Valid.NodeId1(),
           type: "tcp",
           peering: "[::ffff:2.59.133.106]:7075",
+          capabilities: ["topo_index", "vote_storage", "no_ledger", "unknown(0x08)"],
         },
       },
     });
     assert(result.success);
   });
 
-  test("parses peers response with detailed entries when peer_details is true and node_id is empty", () => {
+  test("parses peers response with empty detail fields when peer_details is true", () => {
     const schema = PeersResponse({ peer_details: true });
     const result = schema.safeParse({
       peers: {
@@ -35,6 +36,7 @@ describe("PeersResponse schema", () => {
           node_id: "",
           type: "tcp",
           peering: "[::ffff:2.59.133.106]:7075",
+          capabilities: "",
         },
       },
     });
@@ -51,13 +53,15 @@ describe("PeersResponse schema", () => {
     assert(result.success);
   });
 
-  test("rejects peers response missing detail fields when peer_details is true", () => {
+  test("rejects peers response missing capabilities when peer_details is true", () => {
     const schema = PeersResponse({ peer_details: true });
     const result = schema.safeParse({
       peers: {
         "[::ffff:2.59.133.106]:7075": {
+          protocol_version: "21",
           node_id: TestData.Valid.NodeId1(),
           type: "tcp",
+          peering: "[::ffff:2.59.133.106]:7075",
         },
       },
     });

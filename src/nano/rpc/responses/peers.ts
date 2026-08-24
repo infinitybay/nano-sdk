@@ -11,6 +11,7 @@ const PeerDetails = () =>
     node_id: NodeIdString().or(z.literal("")),
     type: z.string(),
     peering: z.string(),
+    capabilities: z.array(z.string()).or(z.literal("")),
   });
 
 type PeersResponseOptions = {

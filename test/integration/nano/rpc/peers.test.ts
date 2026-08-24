@@ -28,6 +28,8 @@ describe("peers RPC integration", () => {
     assert(result.success);
     assert(result.data.peers);
     expect(Object.keys(result.data.peers).length).toBeGreaterThan(0);
-    expect(result.data.peers[Object.keys(result.data.peers)[0]].protocol_version).toBeDefined();
+    const peer = result.data.peers[Object.keys(result.data.peers)[0]];
+    expect(peer.protocol_version).toBeDefined();
+    expect(peer.capabilities === "" || Array.isArray(peer.capabilities)).toBe(true);
   });
 });
