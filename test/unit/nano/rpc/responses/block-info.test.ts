@@ -49,6 +49,27 @@ describe("BlockInfo schema", () => {
     expect(result.contents).toBe("block-data");
   });
 
+  test("rejects the unknown subtype", () => {
+    const schema = BlockInfo({
+      include_linked_account: false,
+      json_block: false,
+      receivable: false,
+      receive_hash: false,
+      source: false,
+    });
+    const result = schema.safeParse({
+      block_account: TestData.Valid.Account1(),
+      balance: TestData.Valid.RawAmount1(),
+      height: TestData.Valid.Height1(),
+      local_timestamp: TestData.Valid.Timestamp1(),
+      successor: TestData.Valid.Hash1(),
+      confirmed: "false",
+      subtype: "unknown",
+      contents: "block-data",
+    });
+    assert(!result.success);
+  });
+
   test("rejects block info with invalid linked account", () => {
     const schema = BlockInfo({
       include_linked_account: true,

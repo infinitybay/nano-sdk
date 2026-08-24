@@ -28,7 +28,7 @@ export { PublicKeyString, PublicKeyStrings } from "./public-key";
 export { RootString, RootStrings } from "./root";
 export { SeedIndex, SeedIndexBounds, SeedIndexString, SeedString } from "./seed";
 export { SignatureString, SignatureStrings } from "./signature";
-export { SubtypeString } from "./subtype";
+export { SubtypeOpenString, SubtypeString, SubtypeUnknownString } from "./subtype";
 export {
   FinalVoteTimestamp,
   FinalVoteTimestampString,
