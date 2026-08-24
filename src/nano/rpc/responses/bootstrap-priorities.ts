@@ -21,11 +21,16 @@ const BootstrapBlocking = () =>
     })
     .array();
 
-export function BootstrapPrioritiesResponse() {
-  return z.object({
+const BootstrapPrioritiesBlocking = () =>
+  z.object({
     priorities: BootstrapPriorities().or(z.literal("")),
     blocking: BootstrapBlocking().or(z.literal("")),
   });
-}
 
-export type BootstrapPrioritiesResponse = z.infer<ReturnType<typeof BootstrapPrioritiesResponse>>;
+export type BootstrapPrioritiesResponse = {
+  bootstrap: z.infer<ReturnType<typeof BootstrapPrioritiesBlocking>>;
+};
+
+export function BootstrapPrioritiesResponse(): z.ZodType<BootstrapPrioritiesResponse> {
+  return z.object({ bootstrap: BootstrapPrioritiesBlocking() });
+}
