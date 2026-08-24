@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { TimestampString } from "../../types/timestamp";
-import { UIntString } from "../../types/uint";
+import { UInt64String } from "../../types/uint";
 import { UppercaseKeys } from "../../types/uppercase-keys";
 
 export type StatsCountersEntry = z.infer<ReturnType<typeof StatsCountersEntry>>;
@@ -50,71 +50,71 @@ export const StatsObjects = () =>
 
 const StatsDatabaseLmdb = () =>
   z.object({
-    branch_pages: UIntString(),
-    depth: UIntString(),
-    entries: UIntString(),
-    leaf_pages: UIntString(),
-    overflow_pages: UIntString(),
-    page_size: UIntString(),
+    branch_pages: UInt64String(),
+    depth: UInt64String(),
+    entries: UInt64String(),
+    leaf_pages: UInt64String(),
+    overflow_pages: UInt64String(),
+    page_size: UInt64String(),
   });
 
 const StatsDatabaseRocksDBLevels = () =>
   z.object({
-    l0_num_files: UIntString(),
-    l1_num_files: UIntString(),
-    l2_num_files: UIntString(),
-    l3_num_files: UIntString(),
-    l4_num_files: UIntString(),
-    l5_num_files: UIntString(),
-    l6_num_files: UIntString(),
+    l0_num_files: UInt64String(),
+    l1_num_files: UInt64String(),
+    l2_num_files: UInt64String(),
+    l3_num_files: UInt64String(),
+    l4_num_files: UInt64String(),
+    l5_num_files: UInt64String(),
+    l6_num_files: UInt64String(),
   });
 
 const StatsDatabaseRocksDBColumnFamily = () =>
   z.object({
-    estimate_num_keys: UIntString(),
-    memtable_size: UIntString(),
-    num_deletes_active_mem_table: UIntString(),
-    num_deletes_imm_mem_tables: UIntString(),
-    num_entries_active_mem_table: UIntString(),
-    num_entries_imm_mem_tables: UIntString(),
-    num_immutable_mem_table: UIntString(),
+    estimate_num_keys: UInt64String(),
+    memtable_size: UInt64String(),
+    num_deletes_active_mem_table: UInt64String(),
+    num_deletes_imm_mem_tables: UInt64String(),
+    num_entries_active_mem_table: UInt64String(),
+    num_entries_imm_mem_tables: UInt64String(),
+    num_immutable_mem_table: UInt64String(),
   });
 
 const StatsDatabaseRocksDB = () =>
   z.object({
-    actual_delayed_write_rate: UIntString(),
-    background_errors: UIntString(),
-    base_level: UIntString(),
-    block_cache_capacity: UIntString(),
-    block_cache_pinned_usage: UIntString(),
-    block_cache_usage: UIntString(),
+    actual_delayed_write_rate: UInt64String(),
+    background_errors: UInt64String(),
+    base_level: UInt64String(),
+    block_cache_capacity: UInt64String(),
+    block_cache_pinned_usage: UInt64String(),
+    block_cache_usage: UInt64String(),
     column_families: z.record(z.string(), StatsDatabaseRocksDBColumnFamily()),
-    compaction_pending: UIntString(),
-    cur_size_all_mem_tables: UIntString(),
-    estimate_live_data_size: UIntString(),
-    estimate_num_keys: UIntString(),
-    estimate_pending_compaction_bytes: UIntString(),
-    estimate_table_readers_mem: UIntString(),
-    is_file_deletions_enabled: UIntString(),
-    is_write_stopped: UIntString(),
+    compaction_pending: UInt64String(),
+    cur_size_all_mem_tables: UInt64String(),
+    estimate_live_data_size: UInt64String(),
+    estimate_num_keys: UInt64String(),
+    estimate_pending_compaction_bytes: UInt64String(),
+    estimate_table_readers_mem: UInt64String(),
+    is_file_deletions_enabled: UInt64String(),
+    is_write_stopped: UInt64String(),
     levels: StatsDatabaseRocksDBLevels(),
-    live_sst_files_size: UIntString(),
-    mem_table_flush_pending: UIntString(),
-    min_log_number_to_keep: UIntString(),
-    min_obsolete_sst_number_to_keep: UIntString(),
-    num_deletes_active_mem_table: UIntString(),
-    num_deletes_imm_mem_tables: UIntString(),
-    num_entries_active_mem_table: UIntString(),
-    num_entries_imm_mem_tables: UIntString(),
-    num_immutable_mem_table: UIntString(),
-    num_immutable_mem_table_flushed: UIntString(),
-    num_live_versions: UIntString(),
-    num_running_compactions: UIntString(),
-    num_running_flushes: UIntString(),
-    num_snapshots: UIntString(),
-    oldest_snapshot_time: UIntString(),
-    size_all_mem_tables: UIntString(),
-    total_sst_files_size: UIntString(),
+    live_sst_files_size: UInt64String(),
+    mem_table_flush_pending: UInt64String(),
+    min_log_number_to_keep: UInt64String(),
+    min_obsolete_sst_number_to_keep: UInt64String(),
+    num_deletes_active_mem_table: UInt64String(),
+    num_deletes_imm_mem_tables: UInt64String(),
+    num_entries_active_mem_table: UInt64String(),
+    num_entries_imm_mem_tables: UInt64String(),
+    num_immutable_mem_table: UInt64String(),
+    num_immutable_mem_table_flushed: UInt64String(),
+    num_live_versions: UInt64String(),
+    num_running_compactions: UInt64String(),
+    num_running_flushes: UInt64String(),
+    num_snapshots: UInt64String(),
+    oldest_snapshot_time: UInt64String(),
+    size_all_mem_tables: UInt64String(),
+    total_sst_files_size: UInt64String(),
   });
 
 export type StatsDatabase = z.infer<ReturnType<typeof StatsDatabase>>;
