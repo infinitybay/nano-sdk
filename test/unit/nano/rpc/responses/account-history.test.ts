@@ -86,6 +86,35 @@ describe("AccountHistoryResponse schema", () => {
     assert(result.success);
   });
 
+  test("parses an unknown raw state subtype when the previous block is pruned", () => {
+    const schema = AccountHistoryResponse({
+      include_linked_account: false,
+      raw: true,
+      reverse: false,
+    });
+    const result = schema.safeParse({
+      account: TestData.Valid.Account1(),
+      history: [
+        {
+          ...TestData.Valid.StateBlock1(),
+          subtype: "unknown",
+          local_timestamp: TestData.Valid.Timestamp1(),
+          height: TestData.Valid.Height1(),
+          hash: TestData.Valid.Hash1(),
+          confirmed: "true",
+        },
+      ],
+      previous: TestData.Valid.PrevHash1(),
+    });
+    assert(result.success);
+    expect(result.data.history).not.toBe("");
+    if (result.data.history !== "") {
+      const entry = result.data.history[0];
+      assert(entry?.type === "state");
+      expect(entry.subtype).toBe("unknown");
+    }
+  });
+
   test("parses account history response with reverse flag and raw", () => {
     const schema = AccountHistoryResponse({
       include_linked_account: false,

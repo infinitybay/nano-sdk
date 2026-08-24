@@ -8,6 +8,7 @@ import { HashString } from "../../types/hash";
 import { HeightString } from "../../types/height";
 import { LinkString } from "../../types/link";
 import { SignatureString } from "../../types/signature";
+import { SubtypeUnknownString } from "../../types/subtype";
 import { TimestampString } from "../../types/timestamp";
 import {
   LegacyChangeTypeString,
@@ -74,7 +75,7 @@ const SendStateBlockHistory = () =>
 type UnknownStateBlockHistory = z.infer<ReturnType<typeof UnknownStateBlockHistory>>; // Only if pruning is enabled
 const UnknownStateBlockHistory = () =>
   BaseStateBlockHistory().extend({
-    subtype: z.literal("unknown"),
+    subtype: SubtypeUnknownString(),
   });
 
 type LegacyChangeBlockHistory = z.infer<ReturnType<typeof LegacyChangeBlockHistory>>;

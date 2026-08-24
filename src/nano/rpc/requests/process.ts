@@ -2,8 +2,9 @@ import { z } from "zod";
 
 import { StateBlock } from "../../blocks/state-block";
 import { BooleanString } from "../../types/boolean";
+import { SubtypeOpenString, SubtypeString } from "../../types/subtype";
 
-const ProcessSubtypeString = () => z.enum(["change", "epoch", "open", "receive", "send"]);
+const ProcessSubtypeString = () => SubtypeString().or(SubtypeOpenString());
 
 export function ProcessRequest() {
   return z.union([

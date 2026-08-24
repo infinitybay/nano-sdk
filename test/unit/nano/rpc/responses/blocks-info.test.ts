@@ -78,6 +78,32 @@ describe("BlocksInfoResponse schema", () => {
     assert(result.success);
   });
 
+  test("rejects the unknown subtype", () => {
+    const schema = BlocksInfoResponse({
+      include_linked_account: false,
+      include_not_found: false,
+      json_block: false,
+      receivable: false,
+      receive_hash: false,
+      source: false,
+    });
+    const result = schema.safeParse({
+      blocks: {
+        [TestData.Valid.Hash1()]: {
+          block_account: TestData.Valid.Account1(),
+          balance: TestData.Valid.RawAmount1(),
+          height: TestData.Valid.Height1(),
+          local_timestamp: TestData.Valid.Timestamp1(),
+          successor: TestData.Valid.Hash2(),
+          confirmed: "false",
+          subtype: "unknown",
+          contents: "block-data",
+        },
+      },
+    });
+    assert(!result.success);
+  });
+
   test("rejects blocks info response with invalid block account entry", () => {
     const schema = BlocksInfoResponse({
       include_linked_account: false,

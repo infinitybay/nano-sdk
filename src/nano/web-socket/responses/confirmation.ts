@@ -9,6 +9,7 @@ import { AccountString } from "../../types/account";
 import { RawAmountString } from "../../types/amount";
 import { HashString } from "../../types/hash";
 import { HeightString } from "../../types/height";
+import { SubtypeString } from "../../types/subtype";
 import { FinalVoteTimestampString, TimestampString } from "../../types/timestamp";
 import { UIntString } from "../../types/uint";
 
@@ -17,7 +18,7 @@ export const ConfirmationMessageBlock = () =>
   z.union([
     StateBlock().extend({
       linked_account: AccountString().or(z.literal("0")).optional(),
-      subtype: z.union([z.literal("change"), z.literal("epoch"), z.literal("receive"), z.literal("send")]),
+      subtype: SubtypeString(),
     }),
     LegacyChangeBlock().extend({ linked_account: AccountString().or(z.literal("0")).optional() }),
     LegacyOpenBlock().extend({ linked_account: AccountString().or(z.literal("0")).optional() }),
