@@ -10,6 +10,18 @@ Production-grade TypeScript SDK for interacting with a **Nano** node, providing 
 npm i nano-sdk zod
 ```
 
+<a name="compatibility"></a>
+## Compatibility
+
+**Nano node compatibility:** This version of `nano-sdk` is compatible with Nano node **V29.0**.
+
+Choose the SDK major version that matches your Nano node version:
+
+| nano-sdk version | Nano node version | npm package       |
+| ---------------- | ----------------- | ----------------- |
+| `2.x.x`          | `V29.0`           | `nano-sdk@latest` |
+| `1.x.x`          | `V28.2`           | `nano-sdk@1`      |
+
 <a name="quick-start"></a>
 ## Quick Start
 
