@@ -174,9 +174,17 @@ RPC methods accept a custom `httpClient` via the request config. See the `axios`
 
 - [`axios-http-client.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/rpc/axios-http-client.example.ts)
 
+### Custom RPCs
+
+Non-standard RPC providers can be integrated by defining custom Zod request and response schemas and passing them
+to `Nano.RPC.postFunction`. For example, Nano.to extends and changes parts of the official Nano Node RPC API; the
+[`custom-rpc.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/rpc/custom-rpc.example.ts)
+example demonstrates how to integrate its custom `work_generate` action.
+
 ### Examples
 
 - [`account-info.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/rpc/account-info.example.ts)
+- [`custom-rpc.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/rpc/custom-rpc.example.ts)
 - [`version.example.ts`](https://github.com/infinitybay/nano-sdk/blob/master/examples/rpc/version.example.ts)
 
 <a name="websocket"></a>
