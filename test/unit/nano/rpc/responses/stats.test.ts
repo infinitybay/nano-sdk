@@ -87,15 +87,15 @@ describe("StatsResponse schema", () => {
     assert(result.success);
   });
 
-  test("parses database stats response", () => {
+  test("parses database stats response with uint64 values", () => {
     const schema = StatsResponse({ type: "database" });
     const result = schema.safeParse({
-      branch_pages: "1",
-      depth: "1",
-      entries: "1",
-      leaf_pages: "1",
-      overflow_pages: "1",
-      page_size: "1",
+      branch_pages: "18446744073709551615",
+      depth: "18446744073709551615",
+      entries: "18446744073709551615",
+      leaf_pages: "18446744073709551615",
+      overflow_pages: "18446744073709551615",
+      page_size: "18446744073709551615",
     });
     assert(result.success);
   });

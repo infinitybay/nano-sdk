@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { TimestampString } from "../../types/timestamp";
-import { UIntString } from "../../types/uint";
+import { UInt64String } from "../../types/uint";
 import { UppercaseKeys } from "../../types/uppercase-keys";
 
 export type StatsCountersEntry = z.infer<ReturnType<typeof StatsCountersEntry>>;
@@ -51,12 +51,12 @@ export const StatsObjects = () =>
 export type StatsDatabase = z.infer<ReturnType<typeof StatsDatabase>>;
 export const StatsDatabase = () =>
   z.object({
-    branch_pages: UIntString(),
-    depth: UIntString(),
-    entries: UIntString(),
-    leaf_pages: UIntString(),
-    overflow_pages: UIntString(),
-    page_size: UIntString(),
+    branch_pages: UInt64String(),
+    depth: UInt64String(),
+    entries: UInt64String(),
+    leaf_pages: UInt64String(),
+    overflow_pages: UInt64String(),
+    page_size: UInt64String(),
   });
 
 type StatsType = "counters" | "samples" | "objects" | "database";
