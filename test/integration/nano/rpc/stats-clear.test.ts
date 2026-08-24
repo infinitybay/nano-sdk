@@ -3,7 +3,8 @@ import assert from "assert";
 import { Nano } from "../../../../src";
 import { rpcRequestConfig, rpcUrl } from "../../config";
 
-describe("stats_clear RPC integration", () => {
+// Requires enable_control to be enabled
+xdescribe("stats_clear RPC integration", () => {
   test("clears node stats", async () => {
     const result = await Nano.RPC.stats_clear(
       rpcUrl,
